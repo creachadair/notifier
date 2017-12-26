@@ -45,8 +45,8 @@ func main() {
 		log.Fatal("A non-empty --address is required")
 	} else if *doServe {
 		runServer(*serverAddr)
-	} else if *noteBody == "" {
-		log.Fatal("A notification --body is required")
+	} else if *noteTitle == "" && *noteBody == "" {
+		log.Fatal("A notification --title or --body is required")
 	}
 
 	conn, err := net.Dial("tcp", *serverAddr)
@@ -89,8 +89,8 @@ type postReq struct {
 }
 
 func handlePostNote(ctx context.Context, req *postReq) (bool, error) {
-	if req.Body == "" {
-		return false, jrpc2.Errorf(jrpc2.E_InvalidParams, "missing notification body")
+	if req.Body == "" && req.Title == "" {
+		return false, jrpc2.Errorf(jrpc2.E_InvalidParams, "missing notification body and title")
 	}
 	program := []string{
 		fmt.Sprintf("display notification %q", req.Body),
