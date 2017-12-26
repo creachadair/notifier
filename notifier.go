@@ -92,9 +92,9 @@ func handlePostNote(ctx context.Context, req *postReq) (bool, error) {
 	if req.Body == "" {
 		return false, jrpc2.Errorf(jrpc2.E_InvalidParams, "missing notification body")
 	}
-	program := []string{fmt.Sprintf("display notification %q", req.Body)}
-	if t := req.Title; t != "" {
-		program = append(program, fmt.Sprintf("with title %q", t))
+	program := []string{
+		fmt.Sprintf("display notification %q", req.Body),
+		fmt.Sprintf("with title %q", req.Title),
 	}
 	if t := req.Subtitle; t != "" {
 		program = append(program, fmt.Sprintf("subtitle %q", t))
