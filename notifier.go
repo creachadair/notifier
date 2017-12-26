@@ -65,6 +65,7 @@ func main() {
 	}); err != nil {
 		log.Fatalf("Posting notification failed: %v", err)
 	}
+	cli.Close()
 }
 
 const notifyPost = "Notify.Post"
