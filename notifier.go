@@ -23,6 +23,7 @@ var (
 	noteSubtitle = flag.String("subtitle", "", "Notification subtitle")
 	noteBody     = flag.String("body", "", "Notification body")
 	noteAudible  = flag.Bool("audible", false, "Whether notification should be audible")
+	soundName    = flag.String("sound", "Glass", "Sound name to use for audible notifications")
 )
 
 func init() {
@@ -100,7 +101,7 @@ func handlePostNote(ctx context.Context, req *postReq) (bool, error) {
 		program = append(program, fmt.Sprintf("subtitle %q", t))
 	}
 	if req.Audible {
-		program = append(program, `sound name "Ping"`)
+		program = append(program, fmt.Sprintf("sound name %q", *soundName))
 	}
 	cmd := exec.Command("osascript")
 	cmd.Stdin = strings.NewReader(strings.Join(program, " "))
