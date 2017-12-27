@@ -17,6 +17,7 @@ import (
 
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/jrpc2/server"
+	"bitbucket.org/creachadair/misctools/notifier"
 )
 
 var (
@@ -40,14 +41,7 @@ func main() {
 	}
 }
 
-type postReq struct {
-	Title    string `json:"title,omitempty"`
-	Subtitle string `json:"subtitle,omitempty"`
-	Body     string `json:"body"`
-	Audible  bool   `json:"audible,omitempty"`
-}
-
-func handlePostNote(ctx context.Context, req *postReq) (bool, error) {
+func handlePostNote(ctx context.Context, req *notifier.PostRequest) (bool, error) {
 	if req.Body == "" && req.Title == "" {
 		return false, jrpc2.Errorf(jrpc2.E_InvalidParams, "missing notification body and title")
 	}

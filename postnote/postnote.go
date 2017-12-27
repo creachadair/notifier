@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"bitbucket.org/creachadair/jrpc2"
+	"bitbucket.org/creachadair/misctools/notifier"
 )
 
 var (
@@ -21,14 +22,20 @@ var (
 	noteSubtitle = flag.String("subtitle", "", "Notification subtitle")
 	noteAudible  = flag.Bool("audible", false, "Whether notification should be audible")
 
-	postNote = jrpc2.NewCaller("Notify.Post",
-		(*postReq)(nil), false).(func(*jrpc2.Client, *postReq) (bool, error))
+	postNote = jrpc2.NewCaller("Notify.Post", (*notifier.PostRequest)(nil),
+		false).(func(*jrpc2.Client, *notifier.PostRequest) (bool, error))
 )
 
 func main() {
 	flag.Parse()
-	if *noteTitle == "" && flag.NArg() == 0 {
-		log.Fatal("A notification --title or body is required")
+	var title, body string
+	if *noteTitle != "" {
+		title = *noteTitle
+		body = strings.Join(flag.Args(), " ")
+	} else if flag.NArg() == 0 {
+		log.Fatal("A notification title or body is required")
+	} else {
+		title = strings.Join(flag.Args(), " ")
 	}
 
 	conn, err := net.Dial("tcp", *serverAddr)
@@ -38,19 +45,12 @@ func main() {
 	cli := jrpc2.NewClient(conn, nil)
 	defer cli.Close()
 
-	if _, err := postNote(cli, &postReq{
-		Title:    *noteTitle,
+	if _, err := postNote(cli, &notifier.PostRequest{
+		Title:    title,
 		Subtitle: *noteSubtitle,
-		Body:     strings.Join(flag.Args(), " "),
+		Body:     body,
 		Audible:  *noteAudible,
 	}); err != nil {
 		log.Fatalf("Posting notification failed: %v", err)
 	}
-}
-
-type postReq struct {
-	Title    string `json:"title,omitempty"`
-	Subtitle string `json:"subtitle,omitempty"`
-	Body     string `json:"body"`
-	Audible  bool   `json:"audible,omitempty"`
 }
