@@ -6,6 +6,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"flag"
 	"fmt"
@@ -36,6 +37,7 @@ func main() {
 	}
 	if err := server.Loop(server.Listener(lst), jrpc2.MapAssigner{
 		"Notify.Post": jrpc2.NewMethod(handlePostNote),
+		"Clip.Set":    jrpc2.NewMethod(handleClipSet),
 	}, nil); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
@@ -57,6 +59,16 @@ func handlePostNote(ctx context.Context, req *notifier.PostRequest) (bool, error
 	}
 	cmd := exec.Command("osascript")
 	cmd.Stdin = strings.NewReader(strings.Join(program, " "))
+	err := cmd.Run()
+	return err == nil, err
+}
+
+func handleClipSet(ctx context.Context, req *notifier.ClipRequest) (bool, error) {
+	if len(req.Data) == 0 {
+		return false, jrpc2.Errorf(jrpc2.E_InvalidParams, "empty clip data")
+	}
+	cmd := exec.Command("pbcopy")
+	cmd.Stdin = bytes.NewReader(req.Data)
 	err := cmd.Run()
 	return err == nil, err
 }
