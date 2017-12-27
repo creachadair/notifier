@@ -19,9 +19,11 @@ import (
 var (
 	serverAddr = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
 	allowEmpty = flag.Bool("empty", false, "Allow empty clip contents")
+	doRead     = flag.Bool("read", false, "Read clipboard contents")
 
 	clipSet = jrpc2.NewCaller("Clip.Set", (*notifier.ClipRequest)(nil),
 		false).(func(*jrpc2.Client, *notifier.ClipRequest) (bool, error))
+	clipGet = jrpc2.NewCaller("Clip.Get", nil, []byte(nil)).(func(*jrpc2.Client) ([]byte, error))
 )
 
 func main() {
@@ -33,12 +35,15 @@ func main() {
 	cli := jrpc2.NewClient(conn, nil)
 	defer cli.Close()
 
-	data, err := ioutil.ReadAll(os.Stdin)
-	if err != nil {
+	if *doRead {
+		data, err := clipGet(cli)
+		if err != nil {
+			log.Fatalf("Reading clipboard: %v", err)
+		}
+		os.Stdout.Write(data)
+	} else if data, err := ioutil.ReadAll(os.Stdin); err != nil {
 		log.Fatalf("Reading stdin: %v", err)
-	}
-
-	if _, err := clipSet(cli, &notifier.ClipRequest{
+	} else if _, err := clipSet(cli, &notifier.ClipRequest{
 		Data:       data,
 		AllowEmpty: *allowEmpty,
 	}); err != nil {
