@@ -64,7 +64,7 @@ func handlePostNote(ctx context.Context, req *notifier.PostRequest) (bool, error
 }
 
 func handleClipSet(ctx context.Context, req *notifier.ClipRequest) (bool, error) {
-	if len(req.Data) == 0 {
+	if len(req.Data) == 0 && !req.AllowEmpty {
 		return false, jrpc2.Errorf(jrpc2.E_InvalidParams, "empty clip data")
 	}
 	cmd := exec.Command("pbcopy")

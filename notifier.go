@@ -11,5 +11,6 @@ type PostRequest struct {
 
 // A ClipRequest is sent to update the contents of the clipboard.
 type ClipRequest struct {
-	Data []byte `json:"data"`
+	Data       []byte `json:"data"`
+	AllowEmpty bool   `json:"allowEmpty"`
 }

@@ -18,6 +18,7 @@ import (
 
 var (
 	serverAddr = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
+	allowEmpty = flag.Bool("empty", false, "Allow empty clip contents")
 
 	clipSet = jrpc2.NewCaller("Clip.Set", (*notifier.ClipRequest)(nil),
 		false).(func(*jrpc2.Client, *notifier.ClipRequest) (bool, error))
@@ -38,7 +39,8 @@ func main() {
 	}
 
 	if _, err := clipSet(cli, &notifier.ClipRequest{
-		Data: data,
+		Data:       data,
+		AllowEmpty: *allowEmpty,
 	}); err != nil {
 		log.Fatalf("Setting clipboard failed: %v", err)
 	}
