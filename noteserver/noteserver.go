@@ -35,9 +35,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("Listen: %v", err)
 	}
-	if err := server.Loop(server.Listener(lst), jrpc2.MapAssigner{
-		"Notify.Post": jrpc2.NewMethod(handlePostNote),
-		"Clip.Set":    jrpc2.NewMethod(handleClipSet),
+	if err := server.Loop(server.Listener(lst), jrpc2.ServiceMapper{
+		"Notify": jrpc2.MapAssigner{"Post": jrpc2.NewMethod(handlePostNote)},
+		"Clip": jrpc2.MapAssigner{
+			"Set": jrpc2.NewMethod(handleClipSet),
+			"Get": jrpc2.NewMethod(handleClipGet),
+		},
 	}, nil); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
@@ -71,4 +74,12 @@ func handleClipSet(ctx context.Context, req *notifier.ClipRequest) (bool, error)
 	cmd.Stdin = bytes.NewReader(req.Data)
 	err := cmd.Run()
 	return err == nil, err
+}
+
+func handleClipGet(ctx context.Context) ([]byte, error) {
+	out, err := exec.Command("pbpaste").Output()
+	if err != nil {
+		return nil, jrpc2.Errorf(jrpc2.E_InternalError, "reading clipboard: %v", err)
+	}
+	return out, nil
 }
