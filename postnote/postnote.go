@@ -9,13 +9,14 @@ import (
 	"flag"
 	"log"
 	"net"
+	"os"
 	"strings"
 
 	"bitbucket.org/creachadair/jrpc2"
 )
 
 var (
-	serverAddr   = flag.String("server", "", "Server address")
+	serverAddr   = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
 	noteTitle    = flag.String("title", "", "Notification title")
 	noteSubtitle = flag.String("subtitle", "", "Notification subtitle")
 	noteAudible  = flag.Bool("audible", false, "Whether notification should be audible")

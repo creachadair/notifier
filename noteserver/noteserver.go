@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -19,7 +20,7 @@ import (
 )
 
 var (
-	serverAddr = flag.String("address", "", "Server address")
+	serverAddr = flag.String("address", os.Getenv("NOTIFIER_ADDR"), "Server address")
 	soundName  = flag.String("sound", "Glass", "Sound name to use for audible notifications")
 )
 
