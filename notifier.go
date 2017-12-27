@@ -14,3 +14,8 @@ type ClipRequest struct {
 	Data       []byte `json:"data"`
 	AllowEmpty bool   `json:"allowEmpty"`
 }
+
+// A SayRequest is a request to speak a notification to the user.
+type SayRequest struct {
+	Text string `json:"text"`
+}

@@ -10,6 +10,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"os"
@@ -24,24 +25,34 @@ import (
 var (
 	serverAddr = flag.String("address", os.Getenv("NOTIFIER_ADDR"), "Server address")
 	soundName  = flag.String("sound", "Glass", "Sound name to use for audible notifications")
+	voiceName  = flag.String("voice", "Moira", "Voice name to use for voice notifications")
+	debugLog   = flag.Bool("log", false, "Enable debug logging")
+
+	lw io.Writer
 )
 
 func main() {
 	flag.Parse()
 	if *serverAddr == "" {
 		log.Fatal("A non-empty --address is required")
+	} else if *debugLog {
+		lw = os.Stderr
 	}
+
 	lst, err := net.Listen("tcp", *serverAddr)
 	if err != nil {
 		log.Fatalf("Listen: %v", err)
 	}
 	if err := server.Loop(server.Listener(lst), jrpc2.ServiceMapper{
-		"Notify": jrpc2.MapAssigner{"Post": jrpc2.NewMethod(handlePostNote)},
+		"Notify": jrpc2.MapAssigner{
+			"Post": jrpc2.NewMethod(handlePostNote),
+			"Say":  jrpc2.NewMethod(handleSayNote),
+		},
 		"Clip": jrpc2.MapAssigner{
 			"Set": jrpc2.NewMethod(handleClipSet),
 			"Get": jrpc2.NewMethod(handleClipGet),
 		},
-	}, nil); err != nil {
+	}, &jrpc2.ServerOptions{LogWriter: lw}); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
 }
@@ -60,8 +71,18 @@ func handlePostNote(ctx context.Context, req *notifier.PostRequest) (bool, error
 	if req.Audible {
 		program = append(program, fmt.Sprintf("sound name %q", *soundName))
 	}
-	cmd := exec.Command("osascript")
+	cmd := exec.CommandContext(ctx, "osascript")
 	cmd.Stdin = strings.NewReader(strings.Join(program, " "))
+	err := cmd.Run()
+	return err == nil, err
+}
+
+func handleSayNote(ctx context.Context, req *notifier.SayRequest) (bool, error) {
+	if req.Text == "" {
+		return false, jrpc2.Errorf(jrpc2.E_InvalidParams, "empty text")
+	}
+	cmd := exec.CommandContext(ctx, "say", "-v", *voiceName)
+	cmd.Stdin = strings.NewReader(req.Text)
 	err := cmd.Run()
 	return err == nil, err
 }
@@ -70,14 +91,14 @@ func handleClipSet(ctx context.Context, req *notifier.ClipRequest) (bool, error)
 	if len(req.Data) == 0 && !req.AllowEmpty {
 		return false, jrpc2.Errorf(jrpc2.E_InvalidParams, "empty clip data")
 	}
-	cmd := exec.Command("pbcopy")
+	cmd := exec.CommandContext(ctx, "pbcopy")
 	cmd.Stdin = bytes.NewReader(req.Data)
 	err := cmd.Run()
 	return err == nil, err
 }
 
 func handleClipGet(ctx context.Context) ([]byte, error) {
-	out, err := exec.Command("pbpaste").Output()
+	out, err := exec.CommandContext(ctx, "pbpaste").Output()
 	if err != nil {
 		return nil, jrpc2.Errorf(jrpc2.E_InternalError, "reading clipboard: %v", err)
 	}
