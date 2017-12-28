@@ -6,8 +6,9 @@
 package main
 
 import (
+	"bytes"
 	"flag"
-	"io/ioutil"
+	"io"
 	"log"
 	"net"
 	"os"
@@ -20,6 +21,7 @@ var (
 	serverAddr = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
 	allowEmpty = flag.Bool("empty", false, "Allow empty clip contents")
 	doRead     = flag.Bool("read", false, "Read clipboard contents")
+	doTee      = flag.Bool("tee", false, "Also copy input to stdout")
 
 	clipSet = jrpc2.NewCaller("Clip.Set", (*notifier.ClipRequest)(nil),
 		false).(func(*jrpc2.Client, *notifier.ClipRequest) (bool, error))
@@ -41,10 +43,19 @@ func main() {
 			log.Fatalf("Reading clipboard: %v", err)
 		}
 		os.Stdout.Write(data)
-	} else if data, err := ioutil.ReadAll(os.Stdin); err != nil {
+		return
+	}
+
+	var buf bytes.Buffer
+	var w io.Writer = &buf
+	if *doTee {
+		w = io.MultiWriter(&buf, os.Stdout)
+	}
+	if _, err := io.Copy(w, os.Stdin); err != nil {
 		log.Fatalf("Reading stdin: %v", err)
-	} else if _, err := clipSet(cli, &notifier.ClipRequest{
-		Data:       data,
+	}
+	if _, err := clipSet(cli, &notifier.ClipRequest{
+		Data:       buf.Bytes(),
 		AllowEmpty: *allowEmpty,
 	}); err != nil {
 		log.Fatalf("Setting clipboard failed: %v", err)
