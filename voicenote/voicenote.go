@@ -1,4 +1,4 @@
-// Program voice sends a voice notification request to a noteserver.
+// Program voicenote sends a voice notification request to a noteserver.
 //
 // Usage:
 //    voicenote -server :8080 This is the notification
