@@ -11,6 +11,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"strings"
 
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/misctools/notifier"
@@ -18,7 +19,6 @@ import (
 
 var (
 	serverAddr  = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
-	promptText  = flag.String("prompt", "", "Prompt string (required)")
 	defaultText = flag.String("default", "", "Default answer")
 	hiddenText  = flag.Bool("hidden", false, "Request hidden text entry")
 
@@ -35,7 +35,7 @@ func main() {
 	defer cli.Close()
 
 	text, err := userText(cli, &notifier.TextRequest{
-		Prompt:  *promptText,
+		Prompt:  strings.Join(flag.Args(), " "),
 		Default: *defaultText,
 		Hide:    *hiddenText,
 	})
