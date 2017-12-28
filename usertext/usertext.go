@@ -20,7 +20,7 @@ var (
 	serverAddr  = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
 	promptText  = flag.String("prompt", "", "Prompt string (required)")
 	defaultText = flag.String("default", "", "Default answer")
-	hiddenText  = flag.Bool("hide", false, "Hide text entry")
+	hiddenText  = flag.Bool("hidden", false, "Request hidden text entry")
 
 	userText = jrpc2.NewCaller("User.Text", (*notifier.TextRequest)(nil), "").(func(*jrpc2.Client, *notifier.TextRequest) (string, error))
 )
