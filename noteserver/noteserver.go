@@ -52,6 +52,9 @@ func main() {
 			"Set": jrpc2.NewMethod(handleClipSet),
 			"Get": jrpc2.NewMethod(handleClipGet),
 		},
+		"User": jrpc2.MapAssigner{
+			"Text": jrpc2.NewMethod(handleText),
+		},
 	}, &jrpc2.ServerOptions{LogWriter: lw}); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
@@ -103,4 +106,30 @@ func handleClipGet(ctx context.Context) ([]byte, error) {
 		return nil, jrpc2.Errorf(jrpc2.E_InternalError, "reading clipboard: %v", err)
 	}
 	return out, nil
+}
+
+func handleText(ctx context.Context, req *notifier.TextRequest) (string, error) {
+	if req.Prompt == "" {
+		return "", jrpc2.Errorf(jrpc2.E_InvalidParams, "missing prompt string")
+	}
+
+	// Ask osascript to send error text to stdout to simplify error plumbing.
+	cmd := exec.Command("osascript", "-s", "ho")
+	cmd.Stdin = strings.NewReader(fmt.Sprintf(`display dialog %q default answer %q hidden answer %v`,
+		req.Prompt, req.Default, req.Hide))
+	raw, err := cmd.Output()
+	out := strings.TrimRight(string(raw), "\n")
+	if err != nil {
+		if strings.Contains(out, "User canceled") {
+			return "", notifier.E_UserCancelled
+		}
+		return "", err
+	}
+
+	// Parse the result out of the text delivered to stdout.
+	const needle = "text returned:"
+	if i := strings.Index(out, needle); i >= 0 {
+		return out[i+len(needle):], nil
+	}
+	return "", jrpc2.Errorf(jrpc2.E_InternalError, "missing user input")
 }
