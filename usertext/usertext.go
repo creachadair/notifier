@@ -41,6 +41,8 @@ func main() {
 	})
 	if err == nil {
 		fmt.Println(text)
+	} else if e, ok := err.(*jrpc2.Error); ok && e.Code == notifier.E_UserCancelled {
+		os.Exit(2)
 	} else {
 		log.Fatal(err)
 	}
