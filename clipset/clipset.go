@@ -7,12 +7,14 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"flag"
 	"io"
 	"log"
 	"net"
 	"os"
 
+	"bitbucket.org/creachadair/cmdutil/files"
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/misctools/notifier"
 )
@@ -51,7 +53,8 @@ func main() {
 	if *doTee {
 		w = io.MultiWriter(&buf, os.Stdout)
 	}
-	if _, err := io.Copy(w, os.Stdin); err != nil {
+	in := files.CatOrFile(context.Background(), flag.Args(), os.Stdin)
+	if _, err := io.Copy(w, in); err != nil {
 		log.Fatalf("Reading stdin: %v", err)
 	}
 	if _, err := clipSet(cli, &notifier.ClipRequest{
