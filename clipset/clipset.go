@@ -40,6 +40,9 @@ var (
 
 func main() {
 	flag.Parse()
+	if *doRead && flag.NArg() != 0 {
+		log.Fatal("You may not specify filenames when -read is set")
+	}
 	conn, err := net.Dial("tcp", *serverAddr)
 	if err != nil {
 		log.Fatalf("Dial %q: %v", *serverAddr, err)
