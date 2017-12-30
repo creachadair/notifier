@@ -11,10 +11,18 @@ type PostRequest struct {
 	Audible  bool   `json:"audible,omitempty"`
 }
 
-// A ClipRequest is sent to update the contents of the clipboard.
-type ClipRequest struct {
-	Data       []byte `json:"data"`
-	AllowEmpty bool   `json:"allowEmpty"`
+// A ClipSetRequest is sent to update the contents of the clipboard.
+type ClipSetRequest struct {
+	Data       []byte `json:"data"`           // the data to be stored
+	Tag        string `json:"tag,omitempty"`  // the tag to assign the data
+	Save       string `json:"save,omitempty"` // save active paste to this tag
+	AllowEmpty bool   `json:"allowEmpty"`     // allow data to be empty
+}
+
+// A ClipGetRequest is sent to query the contents of the clipboard.
+type ClipGetRequest struct {
+	Tag      string `json:"tag,omitempty"`
+	Activate bool   `json:"activate,omitempty"`
 }
 
 // A SayRequest is a request to speak a notification to the user.
