@@ -16,6 +16,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/jrpc2/server"
@@ -29,6 +30,9 @@ var (
 	debugLog   = flag.Bool("log", false, "Enable debug logging")
 
 	lw io.Writer
+
+	// E_NotFound is the code returned when a requested resource is not found.
+	E_NotFound = jrpc2.RegisterCode(-29998, "resource not found")
 )
 
 func main() {
@@ -48,10 +52,9 @@ func main() {
 			"Post": jrpc2.NewMethod(handlePostNote),
 			"Say":  jrpc2.NewMethod(handleSayNote),
 		},
-		"Clip": jrpc2.MapAssigner{
-			"Set": jrpc2.NewMethod(handleClipSet),
-			"Get": jrpc2.NewMethod(handleClipGet),
-		},
+		"Clip": jrpc2.NewService(&clipper{
+			saved: make(map[string][]byte),
+		}),
 		"User": jrpc2.MapAssigner{
 			"Text": jrpc2.NewMethod(handleText),
 		},
@@ -90,24 +93,6 @@ func handleSayNote(ctx context.Context, req *notifier.SayRequest) (bool, error) 
 	return err == nil, err
 }
 
-func handleClipSet(ctx context.Context, req *notifier.ClipRequest) (bool, error) {
-	if len(req.Data) == 0 && !req.AllowEmpty {
-		return false, jrpc2.Errorf(jrpc2.E_InvalidParams, "empty clip data")
-	}
-	cmd := exec.CommandContext(ctx, "pbcopy")
-	cmd.Stdin = bytes.NewReader(req.Data)
-	err := cmd.Run()
-	return err == nil, err
-}
-
-func handleClipGet(ctx context.Context) ([]byte, error) {
-	out, err := exec.CommandContext(ctx, "pbpaste").Output()
-	if err != nil {
-		return nil, jrpc2.Errorf(jrpc2.E_InternalError, "reading clipboard: %v", err)
-	}
-	return out, nil
-}
-
 func handleText(ctx context.Context, req *notifier.TextRequest) (string, error) {
 	if req.Prompt == "" {
 		return "", jrpc2.Errorf(jrpc2.E_InvalidParams, "missing prompt string")
@@ -132,4 +117,74 @@ func handleText(ctx context.Context, req *notifier.TextRequest) (string, error) 
 		return out[i+len(needle):], nil
 	}
 	return "", jrpc2.Errorf(jrpc2.E_InternalError, "missing user input")
+}
+
+type clipper struct {
+	sync.Mutex
+	saved map[string][]byte
+}
+
+func (c *clipper) Set(ctx context.Context, req *notifier.ClipSetRequest) (bool, error) {
+	if len(req.Data) == 0 && !req.AllowEmpty {
+		return false, jrpc2.Errorf(jrpc2.E_InvalidParams, "empty clip data")
+	} else if req.Tag != "" && req.Save == req.Tag {
+		return false, jrpc2.Errorf(jrpc2.E_InvalidParams, "tag and save are equal")
+	}
+
+	// If we were requested to save the existing clip, extract its data.
+	var saved []byte
+	if req.Save != "" {
+		data, err := getClip(ctx)
+		if err != nil {
+			return false, err
+		}
+		saved = data
+	}
+
+	if err := setClip(ctx, req.Data); err != nil {
+		return false, err
+	}
+
+	// If a tag was provided, save the new clip under that tag.
+	// If a save tag was provided, save the existing clip under that tag.
+	c.Lock()
+	if req.Tag != "" {
+		if len(req.Data) == 0 {
+			delete(c.saved, req.Tag)
+		} else {
+			c.saved[req.Tag] = req.Data
+		}
+	}
+	if req.Save != "" {
+		c.saved[req.Save] = saved
+	}
+	c.Unlock()
+	return true, nil
+}
+
+func (c *clipper) Get(ctx context.Context, req *notifier.ClipGetRequest) ([]byte, error) {
+	if req.Tag != "" {
+		c.Lock()
+		data, ok := c.saved[req.Tag]
+		c.Unlock()
+		if !ok {
+			return nil, jrpc2.Errorf(E_NotFound, "tag %q not found", req.Tag)
+		} else if req.Activate {
+			if err := setClip(ctx, data); err != nil {
+				return nil, err
+			}
+		}
+		return data, nil
+	}
+	return getClip(ctx)
+}
+
+func setClip(ctx context.Context, data []byte) error {
+	cmd := exec.CommandContext(ctx, "pbcopy")
+	cmd.Stdin = bytes.NewReader(data)
+	return cmd.Run()
+}
+
+func getClip(ctx context.Context) ([]byte, error) {
+	return exec.CommandContext(ctx, "pbpaste").Output()
 }

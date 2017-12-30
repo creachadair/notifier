@@ -21,13 +21,17 @@ import (
 
 var (
 	serverAddr = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
+	clipTag    = flag.String("tag", "", "Clipboard tag")
+	saveTag    = flag.String("save", "", "Save tag")
 	allowEmpty = flag.Bool("empty", false, "Allow empty clip contents")
+	doActivate = flag.Bool("a", false, "Activate selected clip")
 	doRead     = flag.Bool("read", false, "Read clipboard contents")
 	doTee      = flag.Bool("tee", false, "Also copy input to stdout")
 
-	clipSet = jrpc2.NewCaller("Clip.Set", (*notifier.ClipRequest)(nil),
-		false).(func(*jrpc2.Client, *notifier.ClipRequest) (bool, error))
-	clipGet = jrpc2.NewCaller("Clip.Get", nil, []byte(nil)).(func(*jrpc2.Client) ([]byte, error))
+	clipSet = jrpc2.NewCaller("Clip.Set", (*notifier.ClipSetRequest)(nil),
+		false).(func(*jrpc2.Client, *notifier.ClipSetRequest) (bool, error))
+	clipGet = jrpc2.NewCaller("Clip.Get", (*notifier.ClipGetRequest)(nil),
+		[]byte(nil)).(func(*jrpc2.Client, *notifier.ClipGetRequest) ([]byte, error))
 )
 
 func main() {
@@ -40,7 +44,10 @@ func main() {
 	defer cli.Close()
 
 	if *doRead {
-		data, err := clipGet(cli)
+		data, err := clipGet(cli, &notifier.ClipGetRequest{
+			Tag:      *clipTag,
+			Activate: *doActivate,
+		})
 		if err != nil {
 			log.Fatalf("Reading clipboard: %v", err)
 		}
@@ -57,8 +64,10 @@ func main() {
 	if _, err := io.Copy(w, in); err != nil {
 		log.Fatalf("Reading stdin: %v", err)
 	}
-	if _, err := clipSet(cli, &notifier.ClipRequest{
+	if _, err := clipSet(cli, &notifier.ClipSetRequest{
 		Data:       buf.Bytes(),
+		Tag:        *clipTag,
+		Save:       *saveTag,
 		AllowEmpty: *allowEmpty,
 	}); err != nil {
 		log.Fatalf("Setting clipboard failed: %v", err)
