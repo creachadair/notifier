@@ -9,10 +9,12 @@ import (
 	"bytes"
 	"context"
 	"flag"
+	"fmt"
 	"io"
 	"log"
 	"net"
 	"os"
+	"strings"
 
 	"bitbucket.org/creachadair/cmdutil/files"
 	"bitbucket.org/creachadair/jrpc2"
@@ -26,12 +28,14 @@ var (
 	allowEmpty = flag.Bool("empty", false, "Allow empty clip contents")
 	doActivate = flag.Bool("a", false, "Activate selected clip")
 	doRead     = flag.Bool("read", false, "Read clipboard contents")
+	doList     = flag.Bool("list", false, "List clipboard tags")
 	doTee      = flag.Bool("tee", false, "Also copy input to stdout")
 
 	clipSet = jrpc2.NewCaller("Clip.Set", (*notifier.ClipSetRequest)(nil),
 		false).(func(*jrpc2.Client, *notifier.ClipSetRequest) (bool, error))
 	clipGet = jrpc2.NewCaller("Clip.Get", (*notifier.ClipGetRequest)(nil),
 		[]byte(nil)).(func(*jrpc2.Client, *notifier.ClipGetRequest) ([]byte, error))
+	clipList = jrpc2.NewCaller("Clip.List", nil, []string(nil)).(func(*jrpc2.Client) ([]string, error))
 )
 
 func main() {
@@ -43,6 +47,15 @@ func main() {
 	cli := jrpc2.NewClient(conn, nil)
 	defer cli.Close()
 
+	if *doList {
+		tags, err := clipList(cli)
+		if err != nil {
+			log.Fatalf("Listing tags: %v", err)
+		} else if len(tags) != 0 {
+			fmt.Println(strings.Join(tags, "\n"))
+		}
+		return
+	}
 	if *doRead {
 		data, err := clipGet(cli, &notifier.ClipGetRequest{
 			Tag:      *clipTag,

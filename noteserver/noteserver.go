@@ -21,6 +21,7 @@ import (
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/jrpc2/server"
 	"bitbucket.org/creachadair/misctools/notifier"
+	"bitbucket.org/creachadair/stringset"
 )
 
 var (
@@ -177,6 +178,13 @@ func (c *clipper) Get(ctx context.Context, req *notifier.ClipGetRequest) ([]byte
 		return data, nil
 	}
 	return getClip(ctx)
+}
+
+func (c *clipper) List(ctx context.Context) ([]string, error) {
+	c.Lock()
+	tags := stringset.FromKeys(c.saved).Elements()
+	c.Unlock()
+	return tags, nil
 }
 
 func setClip(ctx context.Context, data []byte) error {
