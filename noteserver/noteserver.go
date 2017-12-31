@@ -48,7 +48,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Listen: %v", err)
 	}
-	if err := server.Loop(server.Listener(lst), jrpc2.ServiceMapper{
+	if err := server.Loop(lst, jrpc2.ServiceMapper{
 		"Notify": jrpc2.MapAssigner{
 			"Post": jrpc2.NewMethod(handlePostNote),
 			"Say":  jrpc2.NewMethod(handleSayNote),
