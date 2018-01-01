@@ -40,8 +40,12 @@ var (
 
 func main() {
 	flag.Parse()
-	if *doRead && flag.NArg() != 0 {
-		log.Fatal("You may not specify filenames when -read is set")
+	if *doRead {
+		if *clipTag == "" && flag.NArg() == 1 {
+			*clipTag = flag.Arg(0)
+		} else if flag.NArg() != 0 {
+			log.Fatal("You may not specify arguments when -read is set")
+		}
 	}
 	conn, err := net.Dial("tcp", *serverAddr)
 	if err != nil {
