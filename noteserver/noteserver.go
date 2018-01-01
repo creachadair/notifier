@@ -120,6 +120,11 @@ func handleText(ctx context.Context, req *notifier.TextRequest) (string, error) 
 	return "", jrpc2.Errorf(jrpc2.E_InternalError, "missing user input")
 }
 
+// systemClip is a special-case clipset tag that identifies the currently
+// active system clipboard contents. It appears in clip listings, but is not
+// stored in the server memory.
+const systemClip = "active"
+
 type clipper struct {
 	sync.Mutex
 	saved map[string][]byte
@@ -148,8 +153,9 @@ func (c *clipper) Set(ctx context.Context, req *notifier.ClipSetRequest) (bool, 
 
 	// If a tag was provided, save the new clip under that tag.
 	// If a save tag was provided, save the existing clip under that tag.
+	// The systemClip tag is a special case for the system clipboard.
 	c.Lock()
-	if req.Tag != "" {
+	if req.Tag != "" && req.Tag != systemClip {
 		if len(req.Data) == 0 {
 			delete(c.saved, req.Tag)
 		} else {
@@ -164,27 +170,28 @@ func (c *clipper) Set(ctx context.Context, req *notifier.ClipSetRequest) (bool, 
 }
 
 func (c *clipper) Get(ctx context.Context, req *notifier.ClipGetRequest) ([]byte, error) {
-	if req.Tag != "" {
-		c.Lock()
-		data, ok := c.saved[req.Tag]
-		c.Unlock()
-		if !ok {
-			return nil, jrpc2.Errorf(E_NotFound, "tag %q not found", req.Tag)
-		} else if req.Activate {
-			if err := setClip(ctx, data); err != nil {
-				return nil, err
-			}
-		}
-		return data, nil
+	if req.Tag == "" || req.Tag == systemClip {
+		return getClip(ctx)
 	}
-	return getClip(ctx)
+	c.Lock()
+	data, ok := c.saved[req.Tag]
+	c.Unlock()
+	if !ok {
+		return nil, jrpc2.Errorf(E_NotFound, "tag %q not found", req.Tag)
+	} else if req.Activate {
+		if err := setClip(ctx, data); err != nil {
+			return nil, err
+		}
+	}
+	return data, nil
 }
 
 func (c *clipper) List(ctx context.Context) ([]string, error) {
 	c.Lock()
-	tags := stringset.FromKeys(c.saved).Elements()
+	tags := stringset.FromKeys(c.saved)
+	tags.Add(systemClip)
 	c.Unlock()
-	return tags, nil
+	return tags.Elements(), nil
 }
 
 func setClip(ctx context.Context, data []byte) error {
