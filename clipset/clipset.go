@@ -67,6 +67,7 @@ func main() {
 	if *doRead {
 		data, err := clipGet(cli, &notifier.ClipGetRequest{
 			Tag:      *clipTag,
+			Save:     *saveTag,
 			Activate: *doActivate,
 		})
 		if err != nil {
