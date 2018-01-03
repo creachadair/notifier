@@ -172,13 +172,22 @@ func (c *clipper) Set(ctx context.Context, req *notifier.ClipSetRequest) (bool, 
 func (c *clipper) Get(ctx context.Context, req *notifier.ClipGetRequest) ([]byte, error) {
 	if req.Tag == "" || req.Tag == systemClip {
 		return getClip(ctx)
+	} else if req.Activate && req.Tag == req.Save {
+		return nil, jrpc2.Errorf(jrpc2.E_InvalidParams, "tag and save are equal")
 	}
 	c.Lock()
+	defer c.Unlock()
 	data, ok := c.saved[req.Tag]
-	c.Unlock()
 	if !ok {
 		return nil, jrpc2.Errorf(E_NotFound, "tag %q not found", req.Tag)
 	} else if req.Activate {
+		if req.Save != "" {
+			active, err := getClip(ctx)
+			if err != nil {
+				return nil, err
+			}
+			c.saved[req.Save] = active
+		}
 		if err := setClip(ctx, data); err != nil {
 			return nil, err
 		}

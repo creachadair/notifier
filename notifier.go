@@ -15,14 +15,15 @@ type PostRequest struct {
 type ClipSetRequest struct {
 	Data       []byte `json:"data"`           // the data to be stored
 	Tag        string `json:"tag,omitempty"`  // the tag to assign the data
-	Save       string `json:"save,omitempty"` // save active paste to this tag
+	Save       string `json:"save,omitempty"` // save active clip to this tag
 	AllowEmpty bool   `json:"allowEmpty"`     // allow data to be empty
 }
 
 // A ClipGetRequest is sent to query the contents of the clipboard.
 type ClipGetRequest struct {
-	Tag      string `json:"tag,omitempty"`
-	Activate bool   `json:"activate,omitempty"`
+	Tag      string `json:"tag,omitempty"`      // the tag to assign the data
+	Save     string `json:"save,omitempty"`     // save active clip to this tag
+	Activate bool   `json:"activate,omitempty"` // make this clip active
 }
 
 // A SayRequest is a request to speak a notification to the user.
