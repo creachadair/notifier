@@ -76,7 +76,7 @@ func main() {
 		os.Stdout.Write(data)
 
 		// When printing to a terminal, ensure the output ends with a newline.
-		if terminal.IsTerminal(int(os.Stdout.Fd())) && !bytes.HasSuffix(data, []byte("\n")) {
+		if terminal.IsTerminal(int(os.Stdout.Fd())) && len(data) != 0 && !bytes.HasSuffix(data, []byte("\n")) {
 			os.Stdout.Write([]byte("\n"))
 		}
 		return
