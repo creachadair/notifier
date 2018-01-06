@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"bitbucket.org/creachadair/jrpc2"
+	"bitbucket.org/creachadair/jrpc2/channel"
 	"bitbucket.org/creachadair/misctools/notifier"
 )
 
@@ -31,7 +32,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Dial %q: %v", *serverAddr, err)
 	}
-	cli := jrpc2.NewClient(conn, nil)
+	cli := jrpc2.NewClient(channel.NewRaw(conn), nil)
 	defer cli.Close()
 
 	text, err := userText(cli, &notifier.TextRequest{

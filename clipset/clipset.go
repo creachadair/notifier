@@ -18,6 +18,7 @@ import (
 
 	"bitbucket.org/creachadair/cmdutil/files"
 	"bitbucket.org/creachadair/jrpc2"
+	"bitbucket.org/creachadair/jrpc2/channel"
 	"bitbucket.org/creachadair/misctools/notifier"
 	"golang.org/x/crypto/ssh/terminal"
 )
@@ -52,7 +53,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Dial %q: %v", *serverAddr, err)
 	}
-	cli := jrpc2.NewClient(conn, nil)
+	cli := jrpc2.NewClient(channel.NewRaw(conn), nil)
 	defer cli.Close()
 
 	if *doList {
