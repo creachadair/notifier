@@ -32,7 +32,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Dial %q: %v", *serverAddr, err)
 	}
-	cli := jrpc2.NewClient(channel.NewRaw(conn), nil)
+	cli := jrpc2.NewClient(channel.Raw(conn), nil)
 	defer cli.Close()
 
 	text, err := userText(cli, &notifier.TextRequest{
