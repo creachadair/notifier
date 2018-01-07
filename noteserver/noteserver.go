@@ -59,7 +59,9 @@ func main() {
 		"User": jrpc2.MapAssigner{
 			"Text": jrpc2.NewMethod(handleText),
 		},
-	}, &jrpc2.ServerOptions{LogWriter: lw}); err != nil {
+	}, &server.LoopOptions{
+		ServerOptions: &jrpc2.ServerOptions{LogWriter: lw},
+	}); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
 }
