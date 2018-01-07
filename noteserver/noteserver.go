@@ -21,6 +21,7 @@ import (
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/jrpc2/server"
 	"bitbucket.org/creachadair/keyfish/config"
+	"bitbucket.org/creachadair/keyfish/wordhash"
 	"bitbucket.org/creachadair/misctools/notifier"
 	"bitbucket.org/creachadair/stringset"
 )
@@ -251,10 +252,18 @@ func (k keygen) Generate(ctx context.Context, req *notifier.KeyGenRequest) (stri
 	} else {
 		pw = pctx.Password(site.Host, site.Length)
 	}
+
+	// If the user asked us to copy to the clipboard, return the verification
+	// hash; otherwise return the passphrase itself.
 	if req.Copy {
-		return "", setClip(ctx, []byte(pw))
+		return wordhash.String(pw), setClip(ctx, []byte(pw))
 	}
 	return pw, nil
+}
+
+func (k keygen) List(ctx context.Context) ([]string, error) {
+	sites := stringset.FromKeys(k.cfg.Sites)
+	return sites.Elements(), nil
 }
 
 func loadKeyConfig(path string) *config.Config {
