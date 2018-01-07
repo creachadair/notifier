@@ -40,3 +40,9 @@ type TextRequest struct {
 
 // E_UserCancelled is the code returned when a user cancels a text request.
 var E_UserCancelled = jrpc2.RegisterCode(-29999, "user cancelled request")
+
+// A KeyGenRequest is a request to generate a password.
+type KeyGenRequest struct {
+	Host string `json:"host,omitempty"`
+	Copy bool   `json:"copy,omitempty"`
+}

@@ -20,6 +20,7 @@ import (
 
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/jrpc2/server"
+	"bitbucket.org/creachadair/keyfish/config"
 	"bitbucket.org/creachadair/misctools/notifier"
 	"bitbucket.org/creachadair/stringset"
 )
@@ -28,6 +29,7 @@ var (
 	serverAddr = flag.String("address", os.Getenv("NOTIFIER_ADDR"), "Server address")
 	soundName  = flag.String("sound", "Glass", "Sound name to use for audible notifications")
 	voiceName  = flag.String("voice", "Moira", "Voice name to use for voice notifications")
+	keyConfig  = flag.String("keyconfig", "", "Config file to load for key requests")
 	debugLog   = flag.Bool("log", false, "Enable debug logging")
 
 	lw io.Writer
@@ -59,6 +61,9 @@ func main() {
 		"User": jrpc2.MapAssigner{
 			"Text": jrpc2.NewMethod(handleText),
 		},
+		"Key": jrpc2.NewService(keygen{
+			cfg: loadKeyConfig(*keyConfig),
+		}),
 	}, &server.LoopOptions{
 		ServerOptions: &jrpc2.ServerOptions{LogWriter: lw},
 	}); err != nil {
@@ -213,4 +218,53 @@ func setClip(ctx context.Context, data []byte) error {
 
 func getClip(ctx context.Context) ([]byte, error) {
 	return exec.CommandContext(ctx, "pbpaste").Output()
+}
+
+type keygen struct {
+	cfg    *config.Config
+	secret string
+}
+
+func (k keygen) Generate(ctx context.Context, req *notifier.KeyGenRequest) (string, error) {
+	if req.Host == "" {
+		return "", jrpc2.Errorf(jrpc2.E_InvalidParams, "missing host name")
+	}
+	const minLength = 6
+	site := k.cfg.Site(req.Host)
+	if site.Length < minLength {
+		return "", jrpc2.Errorf(jrpc2.E_InvalidParams, "invalid key length %d < %d", site.Length, minLength)
+	} else if site.Format != "" && len(site.Format) < minLength {
+		return "", jrpc2.Errorf(jrpc2.E_InvalidParams, "invalid format length %d < %d", len(site.Format), minLength)
+	}
+
+	secret, err := handleText(ctx, &notifier.TextRequest{
+		Prompt: "Secret key:",
+		Hide:   true,
+	})
+	if err != nil {
+		return "", err
+	}
+	pctx := site.Context(secret)
+	var pw string
+	if fmt := site.Format; fmt != "" {
+		pw = pctx.Format(site.Host, fmt)
+	} else {
+		pw = pctx.Password(site.Host, site.Length)
+	}
+	if req.Copy {
+		return "", setClip(ctx, []byte(pw))
+	}
+	return pw, nil
+}
+
+func loadKeyConfig(path string) *config.Config {
+	cfg := new(config.Config)
+	if path == "" {
+		cfg.Default.Length = 16
+		return cfg
+	}
+	if err := cfg.Load(path); err != nil {
+		log.Fatalf("Loading key config: %v", err)
+	}
+	return cfg
 }
