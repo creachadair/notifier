@@ -66,7 +66,10 @@ func main() {
 			cfg: loadKeyConfig(*keyConfig),
 		}),
 	}, &server.LoopOptions{
-		ServerOptions: &jrpc2.ServerOptions{LogWriter: lw},
+		ServerOptions: &jrpc2.ServerOptions{
+			LogWriter:  lw,
+			ServerInfo: new(jrpc2.ServerInfo),
+		},
 	}); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
