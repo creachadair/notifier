@@ -271,6 +271,17 @@ func (k keygen) List(ctx context.Context) ([]string, error) {
 	return sites.Elements(), nil
 }
 
+func (k keygen) Site(ctx context.Context, req *notifier.SiteRequest) (*config.Site, error) {
+	if req.Host == "" {
+		return nil, jrpc2.Errorf(jrpc2.E_InvalidParams, "missing host name")
+	}
+	site := k.cfg.Site(req.Host)
+	if !req.Full {
+		site.Hints = nil
+	}
+	return &site, nil
+}
+
 func loadKeyConfig(path string) *config.Config {
 	cfg := new(config.Config)
 	if path == "" {

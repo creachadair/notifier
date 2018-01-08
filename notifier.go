@@ -46,3 +46,9 @@ type KeyGenRequest struct {
 	Host string `json:"host,omitempty"`
 	Copy bool   `json:"copy,omitempty"`
 }
+
+// A SiteRequest is a request for site data.
+type SiteRequest struct {
+	Host string `json:"host,omitempty"`
+	Full bool   `json:"full,omitempty"`
+}
