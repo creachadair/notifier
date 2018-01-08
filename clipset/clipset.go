@@ -29,6 +29,7 @@ var (
 	saveTag    = flag.String("save", "", "Save tag")
 	allowEmpty = flag.Bool("empty", false, "Allow empty clip contents")
 	doActivate = flag.Bool("a", false, "Activate selected clip")
+	doClear    = flag.Bool("clear", false, "Clear clipboard contents")
 	doRead     = flag.Bool("read", false, "Read clipboard contents")
 	doList     = flag.Bool("list", false, "List clipboard tags")
 	doTee      = flag.Bool("tee", false, "Also copy input to stdout")
@@ -37,11 +38,15 @@ var (
 		false).(func(*jrpc2.Client, *notifier.ClipSetRequest) (bool, error))
 	clipGet = jrpc2.NewCaller("Clip.Get", (*notifier.ClipGetRequest)(nil),
 		[]byte(nil)).(func(*jrpc2.Client, *notifier.ClipGetRequest) ([]byte, error))
-	clipList = jrpc2.NewCaller("Clip.List", nil, []string(nil)).(func(*jrpc2.Client) ([]string, error))
+	clipList  = jrpc2.NewCaller("Clip.List", nil, []string(nil)).(func(*jrpc2.Client) ([]string, error))
+	clipClear = jrpc2.NewCaller("Clip.Clear", nil, false).(func(*jrpc2.Client) (bool, error))
 )
 
 func main() {
 	flag.Parse()
+	if *doList && (*doRead || *doClear) {
+		log.Fatal("You may not combine -list with -read or -clear")
+	}
 	if *doRead {
 		if *clipTag == "" && flag.NArg() == 1 {
 			*clipTag = flag.Arg(0)
@@ -65,6 +70,8 @@ func main() {
 		}
 		return
 	}
+
+	// Read falls through to clear, so we can handle both.
 	if *doRead {
 		data, err := clipGet(cli, &notifier.ClipGetRequest{
 			Tag:      *clipTag,
@@ -80,6 +87,13 @@ func main() {
 		if terminal.IsTerminal(int(os.Stdout.Fd())) && len(data) != 0 && !bytes.HasSuffix(data, []byte("\n")) {
 			os.Stdout.Write([]byte("\n"))
 		}
+	}
+	if *doClear {
+		if _, err := clipClear(cli); err != nil {
+			log.Fatalf("Clearing clipboard: %v", err)
+		}
+	}
+	if *doRead || *doClear {
 		return
 	}
 

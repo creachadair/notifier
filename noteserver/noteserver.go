@@ -211,6 +211,11 @@ func (c *clipper) List(ctx context.Context) ([]string, error) {
 	return tags.Elements(), nil
 }
 
+func (c *clipper) Clear(ctx context.Context) (bool, error) {
+	err := setClip(ctx, nil)
+	return err == nil, err
+}
+
 func setClip(ctx context.Context, data []byte) error {
 	cmd := exec.CommandContext(ctx, "pbcopy")
 	cmd.Stdin = bytes.NewReader(data)
