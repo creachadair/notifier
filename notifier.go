@@ -43,8 +43,12 @@ var E_UserCancelled = jrpc2.RegisterCode(-29999, "user cancelled request")
 
 // A KeyGenRequest is a request to generate a password.
 type KeyGenRequest struct {
-	Host string `json:"host,omitempty"`
-	Copy bool   `json:"copy,omitempty"`
+	Host   string  `json:"host,omitempty"`
+	Copy   bool    `json:"copy,omitempty"`
+	Format *string `json:"format,omitempty"`
+	Length *int    `json:"length,omitempty"`
+	Punct  *bool   `json:"punct,omitempty"`
+	Salt   *string `json:"salt,omitempty"`
 }
 
 // A SiteRequest is a request for site data.

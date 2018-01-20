@@ -234,12 +234,28 @@ type keygen struct {
 	secret string
 }
 
+func mergeSiteReq(site *config.Site, req *notifier.KeyGenRequest) {
+	if req.Format != nil {
+		site.Format = *req.Format
+	}
+	if req.Length != nil {
+		site.Length = *req.Length
+	}
+	if req.Punct != nil {
+		site.Punct = *req.Punct
+	}
+	if req.Salt != nil {
+		site.Salt = *req.Salt
+	}
+}
+
 func (k keygen) Generate(ctx context.Context, req *notifier.KeyGenRequest) (string, error) {
 	if req.Host == "" {
 		return "", jrpc2.Errorf(jrpc2.E_InvalidParams, "missing host name")
 	}
 	const minLength = 6
 	site := k.cfg.Site(req.Host)
+	mergeSiteReq(&site, req)
 	if site.Length < minLength {
 		return "", jrpc2.Errorf(jrpc2.E_InvalidParams, "invalid key length %d < %d", site.Length, minLength)
 	} else if site.Format != "" && len(site.Format) < minLength {
