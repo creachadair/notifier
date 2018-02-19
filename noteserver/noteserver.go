@@ -214,9 +214,16 @@ func (c *clipper) List(ctx context.Context) ([]string, error) {
 	return tags.Elements(), nil
 }
 
-func (c *clipper) Clear(ctx context.Context) (bool, error) {
-	err := setClip(ctx, nil)
-	return err == nil, err
+func (c *clipper) Clear(ctx context.Context, req *notifier.ClipClearRequest) (bool, error) {
+	if req.Tag == "" || req.Tag == systemClip {
+		err := setClip(ctx, nil)
+		return err == nil, err
+	}
+	c.Lock()
+	defer c.Unlock()
+	_, ok := c.saved[req.Tag]
+	delete(c.saved, req.Tag)
+	return ok, nil
 }
 
 func setClip(ctx context.Context, data []byte) error {

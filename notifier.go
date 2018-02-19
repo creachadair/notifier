@@ -26,6 +26,11 @@ type ClipGetRequest struct {
 	Activate bool   `json:"activate,omitempty"` // make this clip active
 }
 
+// A ClipClearRequest is sent to clear the contents of the clipboard.
+type ClipClearRequest struct {
+	Tag string `json:"tag,omitempty"` // the tag to clear or remove
+}
+
 // A SayRequest is a request to speak a notification to the user.
 type SayRequest struct {
 	Text string `json:"text"`
