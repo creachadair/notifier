@@ -39,7 +39,8 @@ var (
 	clipGet = jrpc2.NewCaller("Clip.Get", (*notifier.ClipGetRequest)(nil),
 		[]byte(nil)).(func(*jrpc2.Client, *notifier.ClipGetRequest) ([]byte, error))
 	clipList  = jrpc2.NewCaller("Clip.List", nil, []string(nil)).(func(*jrpc2.Client) ([]string, error))
-	clipClear = jrpc2.NewCaller("Clip.Clear", nil, false).(func(*jrpc2.Client) (bool, error))
+	clipClear = jrpc2.NewCaller("Clip.Clear", (*notifier.ClipClearRequest)(nil),
+		false).(func(*jrpc2.Client, *notifier.ClipClearRequest) (bool, error))
 )
 
 func main() {
@@ -89,7 +90,9 @@ func main() {
 		}
 	}
 	if *doClear {
-		if _, err := clipClear(cli); err != nil {
+		if _, err := clipClear(cli, &notifier.ClipClearRequest{
+			Tag: *clipTag,
+		}); err != nil {
 			log.Fatalf("Clearing clipboard: %v", err)
 		}
 	}
