@@ -48,11 +48,11 @@ func main() {
 	if *doList && (*doRead || *doClear) {
 		log.Fatal("You may not combine -list with -read or -clear")
 	}
-	if *doRead {
+	if *doRead || *doClear {
 		if *clipTag == "" && flag.NArg() == 1 {
 			*clipTag = flag.Arg(0)
 		} else if flag.NArg() != 0 {
-			log.Fatal("You may not specify arguments when -read is set")
+			log.Fatal("You may not specify arguments when -read or -clear is set")
 		}
 	}
 	conn, err := net.Dial("tcp", *serverAddr)
