@@ -6,6 +6,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -26,12 +27,12 @@ var (
 	doPrint    = flag.Bool("print", false, "Print the result instead of copying it")
 	doShow     = flag.Bool("show", false, "Show the configuration for the specified site")
 
-	generateKey = jrpc2.NewCaller("Key.Generate",
-		(*notifier.KeyGenRequest)(nil), "").(func(*jrpc2.Client, *notifier.KeyGenRequest) (string, error))
-	listSites = jrpc2.NewCaller("Key.List",
-		nil, []string(nil)).(func(*jrpc2.Client) ([]string, error))
-	showSite = jrpc2.NewCaller("Key.Site",
-		(*notifier.SiteRequest)(nil), (*config.Site)(nil)).(func(*jrpc2.Client, *notifier.SiteRequest) (*config.Site, error))
+	generateKey = jrpc2.NewCaller("Key.Generate", (*notifier.KeyGenRequest)(nil),
+		"").(func(context.Context, *jrpc2.Client, *notifier.KeyGenRequest) (string, error))
+	listSites = jrpc2.NewCaller("Key.List", nil,
+		[]string(nil)).(func(context.Context, *jrpc2.Client) ([]string, error))
+	showSite = jrpc2.NewCaller("Key.Site", (*notifier.SiteRequest)(nil),
+		(*config.Site)(nil)).(func(context.Context, *jrpc2.Client, *notifier.SiteRequest) (*config.Site, error))
 )
 
 func main() {
@@ -45,9 +46,10 @@ func main() {
 	}
 	cli := jrpc2.NewClient(channel.Raw(conn), nil)
 	defer cli.Close()
+	ctx := context.Background()
 
 	if *doList {
-		sites, err := listSites(cli)
+		sites, err := listSites(ctx, cli)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -55,7 +57,7 @@ func main() {
 		return
 	}
 	if *doShow {
-		site, err := showSite(cli, &notifier.SiteRequest{
+		site, err := showSite(ctx, cli, &notifier.SiteRequest{
 			Host: flag.Arg(0),
 			Full: *doPrint,
 		})
@@ -69,7 +71,7 @@ func main() {
 		fmt.Println(string(bits))
 		return
 	}
-	pw, err := generateKey(cli, &notifier.KeyGenRequest{
+	pw, err := generateKey(ctx, cli, &notifier.KeyGenRequest{
 		Host: flag.Arg(0),
 		Copy: !*doPrint,
 	})

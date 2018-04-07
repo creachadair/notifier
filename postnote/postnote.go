@@ -6,6 +6,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"net"
@@ -24,7 +25,7 @@ var (
 	noteAudible  = flag.Bool("audible", false, "Whether notification should be audible")
 
 	postNote = jrpc2.NewCaller("Notify.Post", (*notifier.PostRequest)(nil),
-		false).(func(*jrpc2.Client, *notifier.PostRequest) (bool, error))
+		false).(func(context.Context, *jrpc2.Client, *notifier.PostRequest) (bool, error))
 )
 
 func main() {
@@ -45,8 +46,9 @@ func main() {
 	}
 	cli := jrpc2.NewClient(channel.Raw(conn), nil)
 	defer cli.Close()
+	ctx := context.Background()
 
-	if _, err := postNote(cli, &notifier.PostRequest{
+	if _, err := postNote(ctx, cli, &notifier.PostRequest{
 		Title:    title,
 		Subtitle: *noteSubtitle,
 		Body:     body,

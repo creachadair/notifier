@@ -6,6 +6,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"net"
@@ -31,8 +32,9 @@ func main() {
 	}
 	cli := jrpc2.NewClient(channel.Raw(conn), nil)
 	defer cli.Close()
+	ctx := context.Background()
 
-	if _, err := cli.CallWait("Notify.Say", &notifier.SayRequest{
+	if _, err := cli.CallWait(ctx, "Notify.Say", &notifier.SayRequest{
 		Text: strings.Join(flag.Args(), " "),
 	}); err != nil {
 		log.Fatalf("Sending notification failed: %v", err)

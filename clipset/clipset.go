@@ -35,12 +35,13 @@ var (
 	doTee      = flag.Bool("tee", false, "Also copy input to stdout")
 
 	clipSet = jrpc2.NewCaller("Clip.Set", (*notifier.ClipSetRequest)(nil),
-		false).(func(*jrpc2.Client, *notifier.ClipSetRequest) (bool, error))
+		false).(func(context.Context, *jrpc2.Client, *notifier.ClipSetRequest) (bool, error))
 	clipGet = jrpc2.NewCaller("Clip.Get", (*notifier.ClipGetRequest)(nil),
-		[]byte(nil)).(func(*jrpc2.Client, *notifier.ClipGetRequest) ([]byte, error))
-	clipList  = jrpc2.NewCaller("Clip.List", nil, []string(nil)).(func(*jrpc2.Client) ([]string, error))
+		[]byte(nil)).(func(context.Context, *jrpc2.Client, *notifier.ClipGetRequest) ([]byte, error))
+	clipList = jrpc2.NewCaller("Clip.List", nil,
+		[]string(nil)).(func(context.Context, *jrpc2.Client) ([]string, error))
 	clipClear = jrpc2.NewCaller("Clip.Clear", (*notifier.ClipClearRequest)(nil),
-		false).(func(*jrpc2.Client, *notifier.ClipClearRequest) (bool, error))
+		false).(func(context.Context, *jrpc2.Client, *notifier.ClipClearRequest) (bool, error))
 )
 
 func main() {
@@ -61,9 +62,10 @@ func main() {
 	}
 	cli := jrpc2.NewClient(channel.Raw(conn), nil)
 	defer cli.Close()
+	ctx := context.Background()
 
 	if *doList {
-		tags, err := clipList(cli)
+		tags, err := clipList(ctx, cli)
 		if err != nil {
 			log.Fatalf("Listing tags: %v", err)
 		} else if len(tags) != 0 {
@@ -74,7 +76,7 @@ func main() {
 
 	// Read falls through to clear, so we can handle both.
 	if *doRead {
-		data, err := clipGet(cli, &notifier.ClipGetRequest{
+		data, err := clipGet(ctx, cli, &notifier.ClipGetRequest{
 			Tag:      *clipTag,
 			Save:     *saveTag,
 			Activate: *doActivate,
@@ -90,7 +92,7 @@ func main() {
 		}
 	}
 	if *doClear {
-		if _, err := clipClear(cli, &notifier.ClipClearRequest{
+		if _, err := clipClear(ctx, cli, &notifier.ClipClearRequest{
 			Tag: *clipTag,
 		}); err != nil {
 			log.Fatalf("Clearing clipboard: %v", err)
@@ -109,7 +111,7 @@ func main() {
 	if _, err := io.Copy(w, in); err != nil {
 		log.Fatalf("Reading stdin: %v", err)
 	}
-	if _, err := clipSet(cli, &notifier.ClipSetRequest{
+	if _, err := clipSet(ctx, cli, &notifier.ClipSetRequest{
 		Data:       buf.Bytes(),
 		Tag:        *clipTag,
 		Save:       *saveTag,

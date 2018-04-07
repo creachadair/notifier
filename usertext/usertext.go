@@ -6,6 +6,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -23,7 +24,8 @@ var (
 	defaultText = flag.String("default", "", "Default answer")
 	hiddenText  = flag.Bool("hidden", false, "Request hidden text entry")
 
-	userText = jrpc2.NewCaller("User.Text", (*notifier.TextRequest)(nil), "").(func(*jrpc2.Client, *notifier.TextRequest) (string, error))
+	userText = jrpc2.NewCaller("User.Text", (*notifier.TextRequest)(nil),
+		"").(func(context.Context, *jrpc2.Client, *notifier.TextRequest) (string, error))
 )
 
 func main() {
@@ -34,8 +36,9 @@ func main() {
 	}
 	cli := jrpc2.NewClient(channel.Raw(conn), nil)
 	defer cli.Close()
+	ctx := context.Background()
 
-	text, err := userText(cli, &notifier.TextRequest{
+	text, err := userText(ctx, cli, &notifier.TextRequest{
 		Prompt:  strings.Join(flag.Args(), " "),
 		Default: *defaultText,
 		Hide:    *hiddenText,
