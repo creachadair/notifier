@@ -62,7 +62,7 @@ func main() {
 		"User": jrpc2.MapAssigner{
 			"Text": jrpc2.NewMethod(handleText),
 		},
-		"Key": jrpc2.NewService(keygen{
+		"Key": jrpc2.NewService(&keygen{
 			cfg: loadKeyConfig(*keyConfig),
 		}),
 	}, &server.LoopOptions{
@@ -237,8 +237,15 @@ func getClip(ctx context.Context) ([]byte, error) {
 }
 
 type keygen struct {
+	μ      sync.Mutex
 	cfg    *config.Config
 	secret string
+}
+
+func (k *keygen) site(host string) config.Site {
+	k.μ.Lock()
+	defer k.μ.Unlock()
+	return k.cfg.Site(host)
 }
 
 func mergeSiteReq(site *config.Site, req *notifier.KeyGenRequest) {
@@ -256,12 +263,12 @@ func mergeSiteReq(site *config.Site, req *notifier.KeyGenRequest) {
 	}
 }
 
-func (k keygen) Generate(ctx context.Context, req *notifier.KeyGenRequest) (string, error) {
+func (k *keygen) Generate(ctx context.Context, req *notifier.KeyGenRequest) (string, error) {
 	if req.Host == "" {
 		return "", jrpc2.Errorf(jrpc2.E_InvalidParams, "missing host name")
 	}
 	const minLength = 6
-	site := k.cfg.Site(req.Host)
+	site := k.site(req.Host)
 	mergeSiteReq(&site, req)
 	if site.Length < minLength {
 		return "", jrpc2.Errorf(jrpc2.E_InvalidParams, "invalid key length %d < %d", site.Length, minLength)
@@ -292,16 +299,18 @@ func (k keygen) Generate(ctx context.Context, req *notifier.KeyGenRequest) (stri
 	return pw, nil
 }
 
-func (k keygen) List(ctx context.Context) ([]string, error) {
+func (k *keygen) List(ctx context.Context) ([]string, error) {
+	k.μ.Lock()
+	defer k.μ.Unlock()
 	sites := stringset.FromKeys(k.cfg.Sites)
 	return sites.Elements(), nil
 }
 
-func (k keygen) Site(ctx context.Context, req *notifier.SiteRequest) (*config.Site, error) {
+func (k *keygen) Site(ctx context.Context, req *notifier.SiteRequest) (*config.Site, error) {
 	if req.Host == "" {
 		return nil, jrpc2.Errorf(jrpc2.E_InvalidParams, "missing host name")
 	}
-	site := k.cfg.Site(req.Host)
+	site := k.site(req.Host)
 	if !req.Full {
 		site.Hints = nil
 	}
