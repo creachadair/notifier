@@ -15,8 +15,10 @@ import (
 	"net"
 	"os"
 	"os/exec"
+	"os/signal"
 	"strings"
 	"sync"
+	"syscall"
 
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/jrpc2/server"
@@ -62,9 +64,7 @@ func main() {
 		"User": jrpc2.MapAssigner{
 			"Text": jrpc2.NewMethod(handleText),
 		},
-		"Key": jrpc2.NewService(&keygen{
-			cfg: loadKeyConfig(*keyConfig),
-		}),
+		"Key": jrpc2.NewService(newKeygen(*keyConfig)),
 	}, &server.LoopOptions{
 		ServerOptions: &jrpc2.ServerOptions{
 			LogWriter:  lw,
@@ -242,6 +242,37 @@ type keygen struct {
 	secret string
 }
 
+func newKeygen(path string) *keygen {
+	cfg, err := loadKeyConfig(path)
+	if err != nil {
+		log.Fatalf("Creating key generator: %v", err)
+	}
+	gen := &keygen{cfg: cfg}
+
+	// Set up a signal handler for SIGHUP, which causes the configuration file
+	// to be reloaded.
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch, syscall.SIGHUP)
+	go func() {
+		for range ch {
+			// Reload the configuration file. Do this in a separate goroutine
+			// so that we do not block the signal handler.
+			go func() {
+				nc, err := loadKeyConfig(path)
+				if err != nil {
+					log.Printf("ERROR: Reloading: %v", err)
+				} else {
+					log.Printf("Reloaded config from %q", path)
+					gen.μ.Lock()
+					gen.cfg = nc
+					gen.μ.Unlock()
+				}
+			}()
+		}
+	}()
+	return gen
+}
+
 func (k *keygen) site(host string) config.Site {
 	k.μ.Lock()
 	defer k.μ.Unlock()
@@ -317,14 +348,14 @@ func (k *keygen) Site(ctx context.Context, req *notifier.SiteRequest) (*config.S
 	return &site, nil
 }
 
-func loadKeyConfig(path string) *config.Config {
+func loadKeyConfig(path string) (*config.Config, error) {
 	cfg := new(config.Config)
 	if path == "" {
 		cfg.Default.Length = 16
-		return cfg
+		return cfg, nil
 	}
 	if err := cfg.Load(path); err != nil {
-		log.Fatalf("Loading key config: %v", err)
+		return nil, fmt.Errorf("loading key config: %v", err)
 	}
-	return cfg
+	return cfg, nil
 }
