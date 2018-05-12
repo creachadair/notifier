@@ -15,6 +15,7 @@ import (
 	"strings"
 
 	"bitbucket.org/creachadair/jrpc2"
+	"bitbucket.org/creachadair/jrpc2/caller"
 	"bitbucket.org/creachadair/jrpc2/channel"
 	"bitbucket.org/creachadair/misctools/notifier"
 )
@@ -24,7 +25,7 @@ var (
 	defaultText = flag.String("default", "", "Default answer")
 	hiddenText  = flag.Bool("hidden", false, "Request hidden text entry")
 
-	userText = jrpc2.NewCaller("User.Text", (*notifier.TextRequest)(nil),
+	userText = caller.New("User.Text", (*notifier.TextRequest)(nil),
 		"").(func(context.Context, *jrpc2.Client, *notifier.TextRequest) (string, error))
 )
 

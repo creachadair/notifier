@@ -18,6 +18,7 @@ import (
 
 	"bitbucket.org/creachadair/cmdutil/files"
 	"bitbucket.org/creachadair/jrpc2"
+	"bitbucket.org/creachadair/jrpc2/caller"
 	"bitbucket.org/creachadair/jrpc2/channel"
 	"bitbucket.org/creachadair/misctools/notifier"
 	"golang.org/x/crypto/ssh/terminal"
@@ -34,13 +35,13 @@ var (
 	doList     = flag.Bool("list", false, "List clipboard tags")
 	doTee      = flag.Bool("tee", false, "Also copy input to stdout")
 
-	clipSet = jrpc2.NewCaller("Clip.Set", (*notifier.ClipSetRequest)(nil),
+	clipSet = caller.New("Clip.Set", (*notifier.ClipSetRequest)(nil),
 		false).(func(context.Context, *jrpc2.Client, *notifier.ClipSetRequest) (bool, error))
-	clipGet = jrpc2.NewCaller("Clip.Get", (*notifier.ClipGetRequest)(nil),
+	clipGet = caller.New("Clip.Get", (*notifier.ClipGetRequest)(nil),
 		[]byte(nil)).(func(context.Context, *jrpc2.Client, *notifier.ClipGetRequest) ([]byte, error))
-	clipList = jrpc2.NewCaller("Clip.List", nil,
+	clipList = caller.New("Clip.List", nil,
 		[]string(nil)).(func(context.Context, *jrpc2.Client) ([]string, error))
-	clipClear = jrpc2.NewCaller("Clip.Clear", (*notifier.ClipClearRequest)(nil),
+	clipClear = caller.New("Clip.Clear", (*notifier.ClipClearRequest)(nil),
 		false).(func(context.Context, *jrpc2.Client, *notifier.ClipClearRequest) (bool, error))
 )
 

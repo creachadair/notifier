@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"bitbucket.org/creachadair/jrpc2"
+	"bitbucket.org/creachadair/jrpc2/caller"
 	"bitbucket.org/creachadair/jrpc2/channel"
 	"bitbucket.org/creachadair/misctools/notifier"
 )
@@ -24,7 +25,7 @@ var (
 	noteSubtitle = flag.String("subtitle", "", "Notification subtitle")
 	noteAudible  = flag.Bool("audible", false, "Whether notification should be audible")
 
-	postNote = jrpc2.NewCaller("Notify.Post", (*notifier.PostRequest)(nil),
+	postNote = caller.New("Notify.Post", (*notifier.PostRequest)(nil),
 		false).(func(context.Context, *jrpc2.Client, *notifier.PostRequest) (bool, error))
 )
 

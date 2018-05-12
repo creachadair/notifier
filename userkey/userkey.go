@@ -16,6 +16,7 @@ import (
 	"strings"
 
 	"bitbucket.org/creachadair/jrpc2"
+	"bitbucket.org/creachadair/jrpc2/caller"
 	"bitbucket.org/creachadair/jrpc2/channel"
 	"bitbucket.org/creachadair/keyfish/config"
 	"bitbucket.org/creachadair/misctools/notifier"
@@ -27,11 +28,11 @@ var (
 	doPrint    = flag.Bool("print", false, "Print the result instead of copying it")
 	doShow     = flag.Bool("show", false, "Show the configuration for the specified site")
 
-	generateKey = jrpc2.NewCaller("Key.Generate", (*notifier.KeyGenRequest)(nil),
+	generateKey = caller.New("Key.Generate", (*notifier.KeyGenRequest)(nil),
 		"").(func(context.Context, *jrpc2.Client, *notifier.KeyGenRequest) (string, error))
-	listSites = jrpc2.NewCaller("Key.List", nil,
+	listSites = caller.New("Key.List", nil,
 		[]string(nil)).(func(context.Context, *jrpc2.Client) ([]string, error))
-	showSite = jrpc2.NewCaller("Key.Site", (*notifier.SiteRequest)(nil),
+	showSite = caller.New("Key.Site", (*notifier.SiteRequest)(nil),
 		(*config.Site)(nil)).(func(context.Context, *jrpc2.Client, *notifier.SiteRequest) (*config.Site, error))
 )
 
