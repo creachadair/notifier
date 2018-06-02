@@ -10,7 +10,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"net"
 	"os"
@@ -35,7 +34,7 @@ var (
 	keyConfig  = flag.String("keyconfig", "", "Config file to load for key requests")
 	debugLog   = flag.Bool("log", false, "Enable debug logging")
 
-	lw io.Writer
+	lw *log.Logger
 
 	// E_NotFound is the code returned when a requested resource is not found.
 	E_NotFound = jrpc2.RegisterCode(-29998, "resource not found")
@@ -46,7 +45,7 @@ func main() {
 	if *serverAddr == "" {
 		log.Fatal("A non-empty --address is required")
 	} else if *debugLog {
-		lw = os.Stderr
+		lw = log.New(os.Stderr, "[noteserver] ", log.LstdFlags)
 	}
 
 	lst, err := net.Listen("tcp", *serverAddr)
@@ -67,8 +66,8 @@ func main() {
 		"Key": jrpc2.NewService(newKeygen(*keyConfig)),
 	}, &server.LoopOptions{
 		ServerOptions: &jrpc2.ServerOptions{
-			LogWriter: lw,
-			Metrics:   jrpc2.NewMetrics(),
+			Logger:  lw,
+			Metrics: jrpc2.NewMetrics(),
 		},
 	}); err != nil {
 		log.Fatalf("Server failed: %v", err)
