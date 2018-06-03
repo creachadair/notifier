@@ -18,6 +18,7 @@ import (
 	"strings"
 	"sync"
 	"syscall"
+	"time"
 
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/jrpc2/server"
@@ -97,6 +98,13 @@ func handlePostNote(ctx context.Context, req *notifier.PostRequest) (bool, error
 func handleSayNote(ctx context.Context, req *notifier.SayRequest) (bool, error) {
 	if req.Text == "" {
 		return false, jrpc2.Errorf(jrpc2.E_InvalidParams, "empty text")
+	}
+	if wait := req.After; wait > 0 {
+		select {
+		case <-ctx.Done():
+			return false, ctx.Err()
+		case <-time.After(wait):
+		}
 	}
 	cmd := exec.CommandContext(ctx, "say", "-v", *voiceName)
 	cmd.Stdin = strings.NewReader(req.Text)

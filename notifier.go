@@ -1,7 +1,11 @@
 // Package notifier contains common data structures for notifications.
 package notifier
 
-import "bitbucket.org/creachadair/jrpc2"
+import (
+	"time"
+
+	"bitbucket.org/creachadair/jrpc2"
+)
 
 // A PostRequest is a request to post a notification to the user.
 type PostRequest struct {
@@ -33,7 +37,8 @@ type ClipClearRequest struct {
 
 // A SayRequest is a request to speak a notification to the user.
 type SayRequest struct {
-	Text string `json:"text"`
+	Text  string        `json:"text"`
+	After time.Duration `json:"after,omitempty"`
 }
 
 // A TextRequest is a request to read a string from the user.

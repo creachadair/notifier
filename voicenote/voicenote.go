@@ -18,7 +18,10 @@ import (
 	"bitbucket.org/creachadair/misctools/notifier"
 )
 
-var serverAddr = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
+var (
+	serverAddr = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
+	waitTime   = flag.Duration("after", 0, "Wait this long before speaking")
+)
 
 func main() {
 	flag.Parse()
@@ -34,8 +37,9 @@ func main() {
 	defer cli.Close()
 	ctx := context.Background()
 
-	if _, err := cli.CallWait(ctx, "Notify.Say", &notifier.SayRequest{
-		Text: strings.Join(flag.Args(), " "),
+	if err := cli.Notify(ctx, "Notify.Say", &notifier.SayRequest{
+		Text:  strings.Join(flag.Args(), " "),
+		After: *waitTime,
 	}); err != nil {
 		log.Fatalf("Sending notification failed: %v", err)
 	}
