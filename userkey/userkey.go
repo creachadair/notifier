@@ -28,12 +28,18 @@ var (
 	doPrint    = flag.Bool("print", false, "Print the result instead of copying it")
 	doShow     = flag.Bool("show", false, "Show the configuration for the specified site")
 
-	generateKey = caller.New("Key.Generate", (*notifier.KeyGenRequest)(nil),
-		"").(func(context.Context, *jrpc2.Client, *notifier.KeyGenRequest) (string, error))
-	listSites = caller.New("Key.List", nil,
-		[]string(nil)).(func(context.Context, *jrpc2.Client) ([]string, error))
-	showSite = caller.New("Key.Site", (*notifier.SiteRequest)(nil),
-		(*config.Site)(nil)).(func(context.Context, *jrpc2.Client, *notifier.SiteRequest) (*config.Site, error))
+	generateKey = caller.New("Key.Generate", caller.Options{
+		Params: (*notifier.KeyGenRequest)(nil),
+		Result: "",
+	}).(func(context.Context, *jrpc2.Client, *notifier.KeyGenRequest) (string, error))
+	listSites = caller.New("Key.List", caller.Options{
+		Params: nil,
+		Result: []string(nil),
+	}).(func(context.Context, *jrpc2.Client) ([]string, error))
+	showSite = caller.New("Key.Site", caller.Options{
+		Params: (*notifier.SiteRequest)(nil),
+		Result: (*config.Site)(nil),
+	}).(func(context.Context, *jrpc2.Client, *notifier.SiteRequest) (*config.Site, error))
 )
 
 func main() {

@@ -35,14 +35,22 @@ var (
 	doList     = flag.Bool("list", false, "List clipboard tags")
 	doTee      = flag.Bool("tee", false, "Also copy input to stdout")
 
-	clipSet = caller.New("Clip.Set", (*notifier.ClipSetRequest)(nil),
-		false).(func(context.Context, *jrpc2.Client, *notifier.ClipSetRequest) (bool, error))
-	clipGet = caller.New("Clip.Get", (*notifier.ClipGetRequest)(nil),
-		[]byte(nil)).(func(context.Context, *jrpc2.Client, *notifier.ClipGetRequest) ([]byte, error))
-	clipList = caller.New("Clip.List", nil,
-		[]string(nil)).(func(context.Context, *jrpc2.Client) ([]string, error))
-	clipClear = caller.New("Clip.Clear", (*notifier.ClipClearRequest)(nil),
-		false).(func(context.Context, *jrpc2.Client, *notifier.ClipClearRequest) (bool, error))
+	clipSet = caller.New("Clip.Set", caller.Options{
+		Params: (*notifier.ClipSetRequest)(nil),
+		Result: false,
+	}).(func(context.Context, *jrpc2.Client, *notifier.ClipSetRequest) (bool, error))
+	clipGet = caller.New("Clip.Get", caller.Options{
+		Params: (*notifier.ClipGetRequest)(nil),
+		Result: []byte(nil),
+	}).(func(context.Context, *jrpc2.Client, *notifier.ClipGetRequest) ([]byte, error))
+	clipList = caller.New("Clip.List", caller.Options{
+		Params: nil,
+		Result: []string(nil),
+	}).(func(context.Context, *jrpc2.Client) ([]string, error))
+	clipClear = caller.New("Clip.Clear", caller.Options{
+		Params: (*notifier.ClipClearRequest)(nil),
+		Result: false,
+	}).(func(context.Context, *jrpc2.Client, *notifier.ClipClearRequest) (bool, error))
 )
 
 func main() {

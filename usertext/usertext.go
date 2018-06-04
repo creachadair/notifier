@@ -25,8 +25,10 @@ var (
 	defaultText = flag.String("default", "", "Default answer")
 	hiddenText  = flag.Bool("hidden", false, "Request hidden text entry")
 
-	userText = caller.New("User.Text", (*notifier.TextRequest)(nil),
-		"").(func(context.Context, *jrpc2.Client, *notifier.TextRequest) (string, error))
+	userText = caller.New("User.Text", caller.Options{
+		Params: (*notifier.TextRequest)(nil),
+		Result: "",
+	}).(func(context.Context, *jrpc2.Client, *notifier.TextRequest) (string, error))
 )
 
 func main() {

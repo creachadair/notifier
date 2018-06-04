@@ -25,8 +25,10 @@ var (
 	noteSubtitle = flag.String("subtitle", "", "Notification subtitle")
 	noteAudible  = flag.Bool("audible", false, "Whether notification should be audible")
 
-	postNote = caller.New("Notify.Post", (*notifier.PostRequest)(nil),
-		false).(func(context.Context, *jrpc2.Client, *notifier.PostRequest) (bool, error))
+	postNote = caller.New("Notify.Post", caller.Options{
+		Params: (*notifier.PostRequest)(nil),
+		Result: false,
+	}).(func(context.Context, *jrpc2.Client, *notifier.PostRequest) (bool, error))
 )
 
 func main() {
