@@ -8,13 +8,16 @@ package main
 import (
 	"bytes"
 	"context"
+	"errors"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net"
 	"os"
 	"os/exec"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"sync"
 	"syscall"
@@ -31,6 +34,7 @@ import (
 
 var (
 	serverAddr = flag.String("address", os.Getenv("NOTIFIER_ADDR"), "Server address")
+	editorBin  = flag.String("editor", os.Getenv("EDITOR"), "Editor binary")
 	soundName  = flag.String("sound", "Glass", "Sound name to use for audible notifications")
 	voiceName  = flag.String("voice", "Moira", "Voice name to use for voice notifications")
 	keyConfig  = flag.String("keyconfig", "", "Config file to load for key requests")
@@ -63,6 +67,7 @@ func main() {
 			saved: make(map[string][]byte),
 		}),
 		"User": jrpc2.MapAssigner{
+			"Edit": jrpc2.NewMethod(handleEdit),
 			"Text": jrpc2.NewMethod(handleText),
 		},
 		"Key": jrpc2.NewService(newKeygen(*keyConfig)),
@@ -137,6 +142,31 @@ func handleText(ctx context.Context, req *notifier.TextRequest) (string, error) 
 		return out[i+len(needle):], nil
 	}
 	return "", jrpc2.Errorf(jrpc2.E_InternalError, "missing user input")
+}
+
+func handleEdit(ctx context.Context, req *notifier.EditRequest) ([]byte, error) {
+	if *editorBin == "" {
+		return nil, errors.New("no editor is defined")
+	} else if req.Name == "" {
+		return nil, jrpc2.Errorf(jrpc2.E_InvalidParams, "missing file name")
+	}
+
+	// Store the file in a temporary directory so we have a place to point the
+	// editor that will not conflict with other invocations. Use the name given
+	// by the caller so the editor will display the "correct" name.
+	tmp, err := ioutil.TempDir("", "User.Edit")
+	if err != nil {
+		return nil, err
+	}
+	defer os.RemoveAll(tmp) // attempt to clean up
+	path := filepath.Join(tmp, req.Name)
+	if err := ioutil.WriteFile(path, req.Content, 0644); err != nil {
+		return nil, err
+	}
+	if err := exec.CommandContext(ctx, *editorBin, path).Run(); err != nil {
+		return nil, err
+	}
+	return ioutil.ReadFile(path)
 }
 
 // systemClip is a special-case clipset tag that identifies the currently

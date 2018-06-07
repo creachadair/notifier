@@ -66,3 +66,12 @@ type SiteRequest struct {
 	Host string `json:"host,omitempty"`
 	Full bool   `json:"full,omitempty"`
 }
+
+// An EditRequest is a request to edit the contents of a file.
+type EditRequest struct {
+	// The base name of the file to edit.
+	Name string `json:"name,omitempty"`
+
+	// The current contents of the file.
+	Content []byte `json:"content,omitempty"`
+}
