@@ -8,12 +8,15 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net"
 	"os"
+	"sort"
 	"strings"
 
 	"bitbucket.org/creachadair/cmdutil/files"
@@ -28,9 +31,11 @@ var (
 	serverAddr = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
 	clipTag    = flag.String("tag", "", "Clipboard tag")
 	saveTag    = flag.String("save", "", "Save tag")
+	loadClips  = flag.String("load", "", "Load clip tags from JSON")
 	allowEmpty = flag.Bool("empty", false, "Allow empty clip contents")
 	doActivate = flag.Bool("a", false, "Activate selected clip")
 	doClear    = flag.Bool("clear", false, "Clear clipboard contents")
+	doDump     = flag.Bool("dump", false, "Dump all clips as JSON")
 	doRead     = flag.Bool("read", false, "Read clipboard contents")
 	doList     = flag.Bool("list", false, "List clipboard tags")
 	doTee      = flag.Bool("tee", false, "Also copy input to stdout")
@@ -53,16 +58,25 @@ var (
 	}).(func(context.Context, *jrpc2.Client, *notifier.ClipClearRequest) (bool, error))
 )
 
+func count(bs ...bool) (n int) {
+	for _, b := range bs {
+		if b {
+			n++
+		}
+	}
+	return
+}
+
 func main() {
 	flag.Parse()
-	if *doList && (*doRead || *doClear) {
-		log.Fatal("You may not combine -list with -read or -clear")
+	if count(*doList, (*doRead || *doClear), *loadClips != "", *doDump) > 1 {
+		log.Fatal("The -list, -load, -dump, and -read/-clear flags are mutually exlusive")
 	}
-	if *doRead || *doClear {
-		if *clipTag == "" && flag.NArg() == 1 {
+	if *doRead || *doClear || *loadClips != "" || *doDump {
+		if (*doRead || *doClear) && *clipTag == "" && flag.NArg() == 1 {
 			*clipTag = flag.Arg(0)
 		} else if flag.NArg() != 0 {
-			log.Fatal("You may not specify arguments when -read or -clear is set")
+			log.Fatal("You may not specify arguments with -read, -clear, -load, or -dump")
 		}
 	}
 	conn, err := net.Dial("tcp", *serverAddr)
@@ -73,12 +87,60 @@ func main() {
 	defer cli.Close()
 	ctx := context.Background()
 
-	if *doList {
+	if *doList || *doDump {
 		tags, err := clipList(ctx, cli)
 		if err != nil {
 			log.Fatalf("Listing tags: %v", err)
-		} else if len(tags) != 0 {
-			fmt.Println(strings.Join(tags, "\n"))
+		}
+
+		// Print a listing of the tag names, with -list.
+		if *doList {
+			if len(tags) > 0 {
+				fmt.Println(strings.Join(tags, "\n"))
+			}
+			return
+		}
+
+		// Dump a JSON listing of the tag contents, with -dump.
+		m := make(map[string][]byte)
+		for _, tag := range tags {
+			v, err := clipGet(ctx, cli, &notifier.ClipGetRequest{
+				Tag: tag,
+			})
+			if err != nil {
+				log.Fatalf("Reading tag %q: %v", tag, err)
+			}
+			m[tag] = v
+		}
+		out, err := json.Marshal(m)
+		if err != nil {
+			log.Fatalf("Encoding tag dump: %v", err)
+		}
+		fmt.Println(string(out))
+		return
+	}
+
+	// Handle loading clips from a JSON dump.
+	if *loadClips != "" {
+		saved, err := ioutil.ReadFile(*loadClips)
+		if err != nil {
+			log.Fatalf("Opening tag dump: %v", err)
+		}
+
+		var m map[string][]byte
+		if err := json.Unmarshal(saved, &m); err != nil {
+			log.Fatalf("Decoding tag dump: %v", err)
+		}
+		for _, tag := range loadOrder(m) {
+			data := m[tag]
+			if _, err := clipSet(ctx, cli, &notifier.ClipSetRequest{
+				Data:       data,
+				Tag:        tag,
+				AllowEmpty: true,
+			}); err != nil {
+				log.Fatalf("Setting tag %q: %v", tag, err)
+			}
+			fmt.Fprintf(os.Stderr, "Set clip %q (%d bytes)\n", tag, len(data))
 		}
 		return
 	}
@@ -128,4 +190,18 @@ func main() {
 	}); err != nil {
 		log.Fatalf("Setting clipboard failed: %v", err)
 	}
+}
+
+// loadOrder returns the keys of m in sorted order, save that the special key
+// "active" is always ordered last to ensure the active clip is set last, if it
+// is defined at all.
+func loadOrder(m map[string][]byte) []string {
+	var keys []string
+	for key := range m {
+		keys = append(keys, key)
+	}
+	sort.Slice(keys, func(i, j int) bool {
+		return keys[j] == "active" || keys[i] < keys[j]
+	})
+	return keys
 }
