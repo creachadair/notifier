@@ -6,6 +6,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"flag"
 	"fmt"
@@ -57,6 +58,8 @@ func main() {
 	})
 	if err != nil {
 		log.Fatalf("Error editing: %v", err)
+	} else if bytes.Equal(input, output) {
+		fmt.Fprintln(os.Stderr, "(unchanged)")
 	} else if err := ioutil.WriteFile(path, output, 0644); err != nil {
 		log.Fatalf("Writing output: %v", err)
 	}
