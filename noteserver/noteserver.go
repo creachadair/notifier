@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"bitbucket.org/creachadair/jrpc2"
+	"bitbucket.org/creachadair/jrpc2/metrics"
 	"bitbucket.org/creachadair/jrpc2/server"
 	"bitbucket.org/creachadair/keyfish/config"
 	"bitbucket.org/creachadair/keyfish/wordhash"
@@ -68,7 +69,7 @@ func main() {
 	}, &server.LoopOptions{
 		ServerOptions: &jrpc2.ServerOptions{
 			Logger:  lw,
-			Metrics: jrpc2.NewMetrics(),
+			Metrics: metrics.New(),
 		},
 	}); err != nil {
 		log.Fatalf("Server failed: %v", err)
