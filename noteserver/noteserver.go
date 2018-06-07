@@ -29,12 +29,13 @@ import (
 	"bitbucket.org/creachadair/keyfish/config"
 	"bitbucket.org/creachadair/keyfish/wordhash"
 	"bitbucket.org/creachadair/misctools/notifier"
+	"bitbucket.org/creachadair/shell"
 	"bitbucket.org/creachadair/stringset"
 )
 
 var (
 	serverAddr = flag.String("address", os.Getenv("NOTIFIER_ADDR"), "Server address")
-	editorBin  = flag.String("editor", os.Getenv("EDITOR"), "Editor binary")
+	editorCmd  = flag.String("editor", os.Getenv("EDITOR"), "Editor command line")
 	soundName  = flag.String("sound", "Glass", "Sound name to use for audible notifications")
 	voiceName  = flag.String("voice", "Moira", "Voice name to use for voice notifications")
 	keyConfig  = flag.String("keyconfig", "", "Config file to load for key requests")
@@ -145,7 +146,7 @@ func handleText(ctx context.Context, req *notifier.TextRequest) (string, error) 
 }
 
 func handleEdit(ctx context.Context, req *notifier.EditRequest) ([]byte, error) {
-	if *editorBin == "" {
+	if *editorCmd == "" {
 		return nil, errors.New("no editor is defined")
 	} else if req.Name == "" {
 		return nil, jrpc2.Errorf(jrpc2.E_InvalidParams, "missing file name")
@@ -163,7 +164,9 @@ func handleEdit(ctx context.Context, req *notifier.EditRequest) ([]byte, error) 
 	if err := ioutil.WriteFile(path, req.Content, 0644); err != nil {
 		return nil, err
 	}
-	if err := exec.CommandContext(ctx, *editorBin, path).Run(); err != nil {
+	args, _ := shell.Split(*editorCmd)
+	bin, rest := args[0], args[1:]
+	if err := exec.CommandContext(ctx, bin, append(rest, path)...).Run(); err != nil {
 		return nil, err
 	}
 	return ioutil.ReadFile(path)
