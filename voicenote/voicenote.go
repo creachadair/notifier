@@ -33,7 +33,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Dial %q: %v", *serverAddr, err)
 	}
-	cli := jrpc2.NewClient(channel.JSON(conn, conn), nil)
+	cli := jrpc2.NewClient(channel.RawJSON(conn, conn), nil)
 	defer cli.Close()
 	ctx := context.Background()
 
