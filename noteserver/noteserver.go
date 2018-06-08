@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"bitbucket.org/creachadair/jrpc2"
+	"bitbucket.org/creachadair/jrpc2/code"
 	"bitbucket.org/creachadair/jrpc2/metrics"
 	"bitbucket.org/creachadair/jrpc2/server"
 	"bitbucket.org/creachadair/keyfish/config"
@@ -43,8 +44,8 @@ var (
 
 	lw *log.Logger
 
-	// E_NotFound is the code returned when a requested resource is not found.
-	E_NotFound = jrpc2.RegisterCode(-29998, "resource not found")
+	// ResourceNotFound is returned when a requested resource is not found.
+	ResourceNotFound = code.Register(-29998, "resource not found")
 )
 
 func main() {
@@ -84,7 +85,7 @@ func main() {
 
 func handlePostNote(ctx context.Context, req *notifier.PostRequest) (bool, error) {
 	if req.Body == "" && req.Title == "" {
-		return false, jrpc2.Errorf(jrpc2.E_InvalidParams, "missing notification body and title")
+		return false, jrpc2.Errorf(code.InvalidParams, "missing notification body and title")
 	}
 	program := []string{
 		fmt.Sprintf("display notification %q", req.Body),
@@ -104,7 +105,7 @@ func handlePostNote(ctx context.Context, req *notifier.PostRequest) (bool, error
 
 func handleSayNote(ctx context.Context, req *notifier.SayRequest) (bool, error) {
 	if req.Text == "" {
-		return false, jrpc2.Errorf(jrpc2.E_InvalidParams, "empty text")
+		return false, jrpc2.Errorf(code.InvalidParams, "empty text")
 	}
 	if wait := req.After; wait > 0 {
 		select {
@@ -121,7 +122,7 @@ func handleSayNote(ctx context.Context, req *notifier.SayRequest) (bool, error) 
 
 func handleText(ctx context.Context, req *notifier.TextRequest) (string, error) {
 	if req.Prompt == "" {
-		return "", jrpc2.Errorf(jrpc2.E_InvalidParams, "missing prompt string")
+		return "", jrpc2.Errorf(code.InvalidParams, "missing prompt string")
 	}
 
 	// Ask osascript to send error text to stdout to simplify error plumbing.
@@ -132,7 +133,7 @@ func handleText(ctx context.Context, req *notifier.TextRequest) (string, error) 
 	out := strings.TrimRight(string(raw), "\n")
 	if err != nil {
 		if strings.Contains(out, "User canceled") {
-			return "", notifier.E_UserCancelled
+			return "", notifier.UserCancelled
 		}
 		return "", err
 	}
@@ -142,14 +143,14 @@ func handleText(ctx context.Context, req *notifier.TextRequest) (string, error) 
 	if i := strings.Index(out, needle); i >= 0 {
 		return out[i+len(needle):], nil
 	}
-	return "", jrpc2.Errorf(jrpc2.E_InternalError, "missing user input")
+	return "", jrpc2.Errorf(code.InternalError, "missing user input")
 }
 
 func handleEdit(ctx context.Context, req *notifier.EditRequest) ([]byte, error) {
 	if *editorCmd == "" {
 		return nil, errors.New("no editor is defined")
 	} else if req.Name == "" {
-		return nil, jrpc2.Errorf(jrpc2.E_InvalidParams, "missing file name")
+		return nil, jrpc2.Errorf(code.InvalidParams, "missing file name")
 	}
 
 	// Store the file in a temporary directory so we have a place to point the
@@ -184,9 +185,9 @@ type clipper struct {
 
 func (c *clipper) Set(ctx context.Context, req *notifier.ClipSetRequest) (bool, error) {
 	if len(req.Data) == 0 && !req.AllowEmpty {
-		return false, jrpc2.Errorf(jrpc2.E_InvalidParams, "empty clip data")
+		return false, jrpc2.Errorf(code.InvalidParams, "empty clip data")
 	} else if req.Tag != "" && req.Save == req.Tag {
-		return false, jrpc2.Errorf(jrpc2.E_InvalidParams, "tag and save are equal")
+		return false, jrpc2.Errorf(code.InvalidParams, "tag and save are equal")
 	}
 
 	// If we were requested to save the existing clip, extract its data.
@@ -225,13 +226,13 @@ func (c *clipper) Get(ctx context.Context, req *notifier.ClipGetRequest) ([]byte
 	if req.Tag == "" || req.Tag == systemClip {
 		return getClip(ctx)
 	} else if req.Activate && req.Tag == req.Save {
-		return nil, jrpc2.Errorf(jrpc2.E_InvalidParams, "tag and save are equal")
+		return nil, jrpc2.Errorf(code.InvalidParams, "tag and save are equal")
 	}
 	c.Lock()
 	defer c.Unlock()
 	data, ok := c.saved[req.Tag]
 	if !ok {
-		return nil, jrpc2.Errorf(E_NotFound, "tag %q not found", req.Tag)
+		return nil, jrpc2.Errorf(ResourceNotFound, "tag %q not found", req.Tag)
 	} else if req.Activate {
 		if req.Save != "" {
 			active, err := getClip(ctx)
@@ -337,15 +338,15 @@ func mergeSiteReq(site *config.Site, req *notifier.KeyGenRequest) {
 
 func (k *keygen) Generate(ctx context.Context, req *notifier.KeyGenRequest) (string, error) {
 	if req.Host == "" {
-		return "", jrpc2.Errorf(jrpc2.E_InvalidParams, "missing host name")
+		return "", jrpc2.Errorf(code.InvalidParams, "missing host name")
 	}
 	const minLength = 6
 	site := k.site(req.Host)
 	mergeSiteReq(&site, req)
 	if site.Length < minLength {
-		return "", jrpc2.Errorf(jrpc2.E_InvalidParams, "invalid key length %d < %d", site.Length, minLength)
+		return "", jrpc2.Errorf(code.InvalidParams, "invalid key length %d < %d", site.Length, minLength)
 	} else if site.Format != "" && len(site.Format) < minLength {
-		return "", jrpc2.Errorf(jrpc2.E_InvalidParams, "invalid format length %d < %d", len(site.Format), minLength)
+		return "", jrpc2.Errorf(code.InvalidParams, "invalid format length %d < %d", len(site.Format), minLength)
 	}
 
 	secret, err := handleText(ctx, &notifier.TextRequest{
@@ -380,7 +381,7 @@ func (k *keygen) List(ctx context.Context) ([]string, error) {
 
 func (k *keygen) Site(ctx context.Context, req *notifier.SiteRequest) (*config.Site, error) {
 	if req.Host == "" {
-		return nil, jrpc2.Errorf(jrpc2.E_InvalidParams, "missing host name")
+		return nil, jrpc2.Errorf(code.InvalidParams, "missing host name")
 	}
 	site := k.site(req.Host)
 	if !req.Full {

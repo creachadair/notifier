@@ -4,7 +4,7 @@ package notifier
 import (
 	"time"
 
-	"bitbucket.org/creachadair/jrpc2"
+	"bitbucket.org/creachadair/jrpc2/code"
 )
 
 // A PostRequest is a request to post a notification to the user.
@@ -49,7 +49,7 @@ type TextRequest struct {
 }
 
 // E_UserCancelled is the code returned when a user cancels a text request.
-var E_UserCancelled = jrpc2.RegisterCode(-29999, "user cancelled request")
+var UserCancelled = code.Register(-29999, "user cancelled request")
 
 // A KeyGenRequest is a request to generate a password.
 type KeyGenRequest struct {

@@ -82,7 +82,7 @@ func main() {
 		Host: flag.Arg(0),
 		Copy: !*doPrint,
 	})
-	if e, ok := err.(*jrpc2.Error); ok && e.Code == notifier.E_UserCancelled {
+	if e, ok := err.(*jrpc2.Error); ok && e.Code == notifier.UserCancelled {
 		os.Exit(2)
 	} else if err != nil {
 		log.Fatal(err)
