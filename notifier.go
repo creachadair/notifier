@@ -48,7 +48,7 @@ type TextRequest struct {
 	Hide    bool   `json:"hide,omitempty"`
 }
 
-// E_UserCancelled is the code returned when a user cancels a text request.
+// UserCancelled is the code returned when a user cancels a text request.
 var UserCancelled = code.Register(-29999, "user cancelled request")
 
 // A KeyGenRequest is a request to generate a password.
