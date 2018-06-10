@@ -16,7 +16,6 @@ import (
 	"log"
 	"net"
 	"os"
-	"sort"
 	"strings"
 
 	"bitbucket.org/creachadair/cmdutil/files"
@@ -192,16 +191,21 @@ func main() {
 	}
 }
 
-// loadOrder returns the keys of m in sorted order, save that the special key
-// "active" is always ordered last to ensure the active clip is set last, if it
-// is defined at all.
+// loadOrder returns the keys of m, save that the special key "active" is
+// always ordered last to ensure the active clip is set last, if it is defined
+// at all.
 func loadOrder(m map[string][]byte) []string {
 	var keys []string
+	active := false
 	for key := range m {
+		if key == "active" {
+			active = true
+			continue
+		}
 		keys = append(keys, key)
 	}
-	sort.Slice(keys, func(i, j int) bool {
-		return keys[j] == "active" || keys[i] < keys[j]
-	})
+	if active {
+		return append(keys, "active")
+	}
 	return keys
 }
