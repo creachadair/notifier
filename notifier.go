@@ -9,10 +9,11 @@ import (
 
 // A PostRequest is a request to post a notification to the user.
 type PostRequest struct {
-	Title    string `json:"title,omitempty"`
-	Subtitle string `json:"subtitle,omitempty"`
-	Body     string `json:"body,omitempty"`
-	Audible  bool   `json:"audible,omitempty"`
+	Title    string        `json:"title,omitempty"`
+	Subtitle string        `json:"subtitle,omitempty"`
+	Body     string        `json:"body,omitempty"`
+	Audible  bool          `json:"audible,omitempty"`
+	After    time.Duration `json:"after,omitempty"`
 }
 
 // A ClipSetRequest is sent to update the contents of the clipboard.

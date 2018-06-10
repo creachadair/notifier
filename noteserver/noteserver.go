@@ -99,6 +99,13 @@ func handlePostNote(ctx context.Context, req *notifier.PostRequest) (bool, error
 	}
 	cmd := exec.CommandContext(ctx, "osascript")
 	cmd.Stdin = strings.NewReader(strings.Join(program, " "))
+	if wait := req.After; wait > 0 {
+		select {
+		case <-ctx.Done():
+			return false, ctx.Err()
+		case <-time.After(req.After):
+		}
+	}
 	err := cmd.Run()
 	return err == nil, err
 }
@@ -156,7 +163,7 @@ func handleEdit(ctx context.Context, req *notifier.EditRequest) ([]byte, error) 
 	// Store the file in a temporary directory so we have a place to point the
 	// editor that will not conflict with other invocations. Use the name given
 	// by the caller so the editor will display the "correct" name.
-	tmp, err := ioutil.TempDir("", "User.Edit")
+	tmp, err := ioutil.TempDir("", "User.Edit.")
 	if err != nil {
 		return nil, err
 	}

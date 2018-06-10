@@ -14,7 +14,6 @@ import (
 	"strings"
 
 	"bitbucket.org/creachadair/jrpc2"
-	"bitbucket.org/creachadair/jrpc2/caller"
 	"bitbucket.org/creachadair/jrpc2/channel"
 	"bitbucket.org/creachadair/misctools/notifier"
 )
@@ -24,11 +23,7 @@ var (
 	noteTitle    = flag.String("title", "", "Notification title")
 	noteSubtitle = flag.String("subtitle", "", "Notification subtitle")
 	noteAudible  = flag.Bool("audible", false, "Whether notification should be audible")
-
-	postNote = caller.New("Notify.Post", caller.Options{
-		Params: (*notifier.PostRequest)(nil),
-		Result: false,
-	}).(func(context.Context, *jrpc2.Client, *notifier.PostRequest) (bool, error))
+	waitTime     = flag.Duration("after", 0, "Wait this long before posting")
 )
 
 func main() {
@@ -51,11 +46,12 @@ func main() {
 	defer cli.Close()
 	ctx := context.Background()
 
-	if _, err := postNote(ctx, cli, &notifier.PostRequest{
+	if _, err := cli.Call(ctx, "Notify.Post", &notifier.PostRequest{
 		Title:    title,
 		Subtitle: *noteSubtitle,
 		Body:     body,
 		Audible:  *noteAudible,
+		After:    *waitTime,
 	}); err != nil {
 		log.Fatalf("Posting notification failed: %v", err)
 	}
