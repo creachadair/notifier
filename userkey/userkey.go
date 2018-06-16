@@ -26,7 +26,8 @@ var (
 	serverAddr = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
 	doList     = flag.Bool("list", false, "List known site names")
 	doPrint    = flag.Bool("print", false, "Print the result instead of copying it")
-	doShow     = flag.Bool("show", false, "Show the configuration for the specified site")
+	doShow     = flag.Bool("show", false, "Show the configuration for a site")
+	doFull     = flag.Bool("full", false, "Show the full configuration for a site (implies -show)")
 
 	generateKey = caller.New("Key.Generate", caller.Options{
 		Params: (*notifier.KeyGenRequest)(nil),
@@ -63,10 +64,10 @@ func main() {
 		fmt.Println(strings.Join(sites, "\n"))
 		return
 	}
-	if *doShow {
+	if *doShow || *doFull {
 		site, err := showSite(ctx, cli, &notifier.SiteRequest{
 			Host: flag.Arg(0),
-			Full: *doPrint,
+			Full: *doFull,
 		})
 		if err != nil {
 			log.Fatal(err)
