@@ -62,15 +62,15 @@ func main() {
 	}
 	if err := server.Loop(lst, jrpc2.ServiceMapper{
 		"Notify": jrpc2.MapAssigner{
-			"Post": jrpc2.NewMethod(handlePostNote),
-			"Say":  jrpc2.NewMethod(handleSayNote),
+			"Post": jrpc2.NewHandler(handlePostNote),
+			"Say":  jrpc2.NewHandler(handleSayNote),
 		},
 		"Clip": jrpc2.NewService(&clipper{
 			saved: make(map[string][]byte),
 		}),
 		"User": jrpc2.MapAssigner{
-			"Edit": jrpc2.NewMethod(handleEdit),
-			"Text": jrpc2.NewMethod(handleText),
+			"Edit": jrpc2.NewHandler(handleEdit),
+			"Text": jrpc2.NewHandler(handleText),
 		},
 		"Key": jrpc2.NewService(newKeygen(*keyConfig)),
 	}, &server.LoopOptions{
