@@ -8,6 +8,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -40,6 +41,7 @@ var (
 	soundName  = flag.String("sound", "Glass", "Sound name to use for audible notifications")
 	voiceName  = flag.String("voice", "Moira", "Voice name to use for voice notifications")
 	keyConfig  = flag.String("keyconfig", "", "Config file to load for key requests")
+	clipStore  = flag.String("clips", "", "Storage file for named clips")
 	debugLog   = flag.Bool("log", false, "Enable debug logging")
 
 	lw *log.Logger
@@ -55,6 +57,13 @@ func main() {
 	} else if *debugLog {
 		lw = log.New(os.Stderr, "[noteserver] ", log.LstdFlags)
 	}
+	c := &clipper{
+		store: *clipStore,
+		saved: make(map[string][]byte),
+	}
+	if err := c.loadFromFile(); err != nil {
+		log.Fatalf("Loading clips: %v", err)
+	}
 
 	lst, err := net.Listen("tcp", *serverAddr)
 	if err != nil {
@@ -65,9 +74,7 @@ func main() {
 			"Post": jrpc2.NewHandler(handlePostNote),
 			"Say":  jrpc2.NewHandler(handleSayNote),
 		},
-		"Clip": jrpc2.NewService(&clipper{
-			saved: make(map[string][]byte),
-		}),
+		"Clip": jrpc2.NewService(c),
 		"User": jrpc2.MapAssigner{
 			"Edit": jrpc2.NewHandler(handleEdit),
 			"Text": jrpc2.NewHandler(handleText),
@@ -186,8 +193,45 @@ func handleEdit(ctx context.Context, req *notifier.EditRequest) ([]byte, error) 
 const systemClip = "active"
 
 type clipper struct {
+	store string
+
 	sync.Mutex
 	saved map[string][]byte
+}
+
+// saveToFile writes the contents of c.saved to the output file, if one is set.
+// The caller must hold the lock on c.
+func (c *clipper) saveToFile() error {
+	if c.store == "" {
+		return nil
+	}
+	out, err := json.Marshal(c.saved)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(c.store, out, 0644)
+}
+
+// loadFromFile loads the contents of c.saved and merges it with the current data.
+// The caller must hold the lock on c.
+func (c *clipper) loadFromFile() error {
+	if c.store == "" {
+		return nil
+	}
+	bits, err := ioutil.ReadFile(c.store)
+	if os.IsNotExist(err) {
+		return nil
+	} else if err != nil {
+		return err
+	}
+	m := make(map[string][]byte)
+	if err := json.Unmarshal(bits, &m); err != nil {
+		return err
+	}
+	for key, val := range m {
+		c.saved[key] = val
+	}
+	return nil
 }
 
 func (c *clipper) Set(ctx context.Context, req *notifier.ClipSetRequest) (bool, error) {
@@ -225,6 +269,7 @@ func (c *clipper) Set(ctx context.Context, req *notifier.ClipSetRequest) (bool, 
 	if req.Save != "" {
 		c.saved[req.Save] = saved
 	}
+	c.saveToFile()
 	c.Unlock()
 	return true, nil
 }
@@ -272,7 +317,7 @@ func (c *clipper) Clear(ctx context.Context, req *notifier.ClipClearRequest) (bo
 	defer c.Unlock()
 	_, ok := c.saved[req.Tag]
 	delete(c.saved, req.Tag)
-	return ok, nil
+	return ok, c.saveToFile()
 }
 
 func setClip(ctx context.Context, data []byte) error {
