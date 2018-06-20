@@ -46,7 +46,7 @@ func main() {
 	defer cli.Close()
 	ctx := context.Background()
 
-	if _, err := cli.Call(ctx, "Notify.Post", &notifier.PostRequest{
+	if err := cli.Notify(ctx, "Notify.Post", &notifier.PostRequest{
 		Title:    title,
 		Subtitle: *noteSubtitle,
 		Body:     body,
