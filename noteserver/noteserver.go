@@ -402,7 +402,7 @@ func (k *keygen) Generate(ctx context.Context, req *notifier.KeyGenRequest) (str
 	}
 
 	secret, err := handleText(ctx, &notifier.TextRequest{
-		Prompt: fmt.Sprintf("Secret key for %q", req.Host),
+		Prompt: fmt.Sprintf("Secret key for %q", site.Host),
 		Hide:   true,
 	})
 	if err != nil {
