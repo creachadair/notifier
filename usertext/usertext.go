@@ -15,7 +15,6 @@ import (
 	"strings"
 
 	"bitbucket.org/creachadair/jrpc2"
-	"bitbucket.org/creachadair/jrpc2/caller"
 	"bitbucket.org/creachadair/jrpc2/channel"
 	"bitbucket.org/creachadair/misctools/notifier"
 )
@@ -24,11 +23,6 @@ var (
 	serverAddr  = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
 	defaultText = flag.String("default", "", "Default answer")
 	hiddenText  = flag.Bool("hidden", false, "Request hidden text entry")
-
-	userText = caller.New("User.Text", caller.Options{
-		Params: (*notifier.TextRequest)(nil),
-		Result: "",
-	}).(func(context.Context, *jrpc2.Client, *notifier.TextRequest) (string, error))
 )
 
 func main() {
@@ -41,12 +35,12 @@ func main() {
 	defer cli.Close()
 	ctx := context.Background()
 
-	text, err := userText(ctx, cli, &notifier.TextRequest{
+	var text string
+	if err := cli.CallResult(ctx, "User.Text", &notifier.TextRequest{
 		Prompt:  strings.Join(flag.Args(), " "),
 		Default: *defaultText,
 		Hide:    *hiddenText,
-	})
-	if err == nil {
+	}, &text); err == nil {
 		fmt.Println(text)
 	} else if e, ok := err.(*jrpc2.Error); ok && e.Code() == notifier.UserCancelled {
 		os.Exit(2)

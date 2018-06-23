@@ -17,19 +17,11 @@ import (
 	"path/filepath"
 
 	"bitbucket.org/creachadair/jrpc2"
-	"bitbucket.org/creachadair/jrpc2/caller"
 	"bitbucket.org/creachadair/jrpc2/channel"
 	"bitbucket.org/creachadair/misctools/notifier"
 )
 
-var (
-	serverAddr = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
-
-	userEdit = caller.New("User.Edit", caller.Options{
-		Params: (*notifier.EditRequest)(nil),
-		Result: []byte(nil),
-	}).(func(context.Context, *jrpc2.Client, *notifier.EditRequest) ([]byte, error))
-)
+var serverAddr = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
 
 func main() {
 	flag.Parse()
@@ -52,11 +44,11 @@ func main() {
 	defer cli.Close()
 	ctx := context.Background()
 
-	output, err := userEdit(ctx, cli, &notifier.EditRequest{
+	var output []byte
+	if err := cli.CallResult(ctx, "User.Edit", &notifier.EditRequest{
 		Name:    filepath.Base(path),
 		Content: input,
-	})
-	if err != nil {
+	}, &output); err != nil {
 		log.Fatalf("Error editing: %v", err)
 	} else if bytes.Equal(input, output) {
 		fmt.Fprintln(os.Stderr, "(unchanged)")
