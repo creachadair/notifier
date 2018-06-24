@@ -36,36 +36,44 @@ import (
 )
 
 var (
-	serverAddr = flag.String("address", os.Getenv("NOTIFIER_ADDR"), "Server address")
-	editorCmd  = flag.String("editor", os.Getenv("EDITOR"), "Editor command line")
-	soundName  = flag.String("sound", "Glass", "Sound name to use for audible notifications")
-	voiceName  = flag.String("voice", "Moira", "Voice name to use for voice notifications")
-	keyConfig  = flag.String("keyconfig", "", "Config file to load for key requests")
-	clipStore  = flag.String("clips", "", "Storage file for named clips")
-	debugLog   = flag.Bool("log", false, "Enable debug logging")
-
-	lw *log.Logger
+	cfg notifier.Config
+	lw  *log.Logger
 
 	// ResourceNotFound is returned when a requested resource is not found.
 	ResourceNotFound = code.Register(-29998, "resource not found")
+
+	configPath = flag.String("config", "", "Configuration file path (overrides other flags)")
 )
+
+func init() {
+	flag.StringVar(&cfg.Address, "address", os.Getenv("NOTIFIER_ADDR"), "Server address")
+	flag.StringVar(&cfg.Edit.Command, "editor", os.Getenv("EDITOR"), "Editor command line")
+	flag.StringVar(&cfg.Note.Sound, "sound", "Glass", "Sound name to use for audible notifications")
+	flag.StringVar(&cfg.Note.Voice, "voice", "Moira", "Voice name to use for voice notifications")
+	flag.StringVar(&cfg.Key.ConfigFile, "keyconfig", "", "Config file to load for key requests")
+	flag.StringVar(&cfg.Clip.SaveFile, "clips", "", "Storage file for named clips")
+	flag.BoolVar(&cfg.DebugLog, "log", false, "Enable debug logging")
+}
 
 func main() {
 	flag.Parse()
-	if *serverAddr == "" {
+	if err := notifier.LoadConfig(*configPath, &cfg); err != nil {
+		log.Fatalf("Loading configuration: %v", err)
+	}
+	if cfg.Address == "" {
 		log.Fatal("A non-empty --address is required")
-	} else if *debugLog {
+	} else if cfg.DebugLog {
 		lw = log.New(os.Stderr, "[noteserver] ", log.LstdFlags)
 	}
 	c := &clipper{
-		store: *clipStore,
+		store: os.ExpandEnv(cfg.Clip.SaveFile),
 		saved: make(map[string][]byte),
 	}
 	if err := c.loadFromFile(); err != nil {
 		log.Fatalf("Loading clips: %v", err)
 	}
 
-	lst, err := net.Listen("tcp", *serverAddr)
+	lst, err := net.Listen("tcp", cfg.Address)
 	if err != nil {
 		log.Fatalf("Listen: %v", err)
 	}
@@ -79,7 +87,7 @@ func main() {
 			"Edit": jrpc2.NewHandler(handleEdit),
 			"Text": jrpc2.NewHandler(handleText),
 		},
-		"Key": jrpc2.NewService(newKeygen(*keyConfig)),
+		"Key": jrpc2.NewService(newKeygen(os.ExpandEnv(cfg.Key.ConfigFile))),
 	}, &server.LoopOptions{
 		ServerOptions: &jrpc2.ServerOptions{
 			Logger:  lw,
@@ -102,7 +110,7 @@ func handlePostNote(ctx context.Context, req *notifier.PostRequest) (bool, error
 		program = append(program, fmt.Sprintf("subtitle %q", t))
 	}
 	if req.Audible {
-		program = append(program, fmt.Sprintf("sound name %q", *soundName))
+		program = append(program, fmt.Sprintf("sound name %q", cfg.Note.Sound))
 	}
 	cmd := exec.CommandContext(ctx, "osascript")
 	cmd.Stdin = strings.NewReader(strings.Join(program, " "))
@@ -128,7 +136,7 @@ func handleSayNote(ctx context.Context, req *notifier.SayRequest) (bool, error) 
 		case <-time.After(wait):
 		}
 	}
-	cmd := exec.CommandContext(ctx, "say", "-v", *voiceName)
+	cmd := exec.CommandContext(ctx, "say", "-v", cfg.Note.Voice)
 	cmd.Stdin = strings.NewReader(req.Text)
 	err := cmd.Run()
 	return err == nil, err
@@ -161,7 +169,7 @@ func handleText(ctx context.Context, req *notifier.TextRequest) (string, error) 
 }
 
 func handleEdit(ctx context.Context, req *notifier.EditRequest) ([]byte, error) {
-	if *editorCmd == "" {
+	if cfg.Edit.Command == "" {
 		return nil, errors.New("no editor is defined")
 	} else if req.Name == "" {
 		return nil, jrpc2.Errorf(code.InvalidParams, "missing file name")
@@ -179,7 +187,7 @@ func handleEdit(ctx context.Context, req *notifier.EditRequest) ([]byte, error) 
 	if err := ioutil.WriteFile(path, req.Content, 0644); err != nil {
 		return nil, err
 	}
-	args, _ := shell.Split(*editorCmd)
+	args, _ := shell.Split(cfg.Edit.Command)
 	bin, rest := args[0], args[1:]
 	if err := exec.CommandContext(ctx, bin, append(rest, path)...).Run(); err != nil {
 		return nil, err
