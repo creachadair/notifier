@@ -76,3 +76,17 @@ type EditRequest struct {
 	// The current contents of the file.
 	Content []byte `json:"content,omitempty"`
 }
+
+// An EditNotesRequest is a request to edit the contents of a notes file.
+type EditNotesRequest struct {
+	// The base name of the notes file to edit.
+	Base string `json:"base,omitempty"`
+
+	// An optional note category, e.g., "meetings".
+	Category string `json:"category,omitempty"`
+
+	// Which version of the notes to edit. If empty, a new set of notes are
+	// created for this base name. If "latest", the most recent notes with this
+	// tag are opened. Otherwise, this should be a date in YYYY-MM-DD format.
+	Version string `json:"version,omitempty"`
+}
