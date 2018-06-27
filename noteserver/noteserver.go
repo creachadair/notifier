@@ -84,8 +84,9 @@ func main() {
 		},
 		"Clip": jrpc2.NewService(c),
 		"User": jrpc2.MapAssigner{
-			"Edit": jrpc2.NewHandler(handleEdit),
-			"Text": jrpc2.NewHandler(handleText),
+			"Edit":      jrpc2.NewHandler(handleEdit),
+			"EditNotes": jrpc2.NewHandler(handleEditNotes),
+			"Text":      jrpc2.NewHandler(handleText),
 		},
 		"Key": jrpc2.NewService(newKeygen(os.ExpandEnv(cfg.Key.ConfigFile))),
 	}, &server.LoopOptions{
@@ -186,13 +187,53 @@ func handleEdit(ctx context.Context, req *notifier.EditRequest) ([]byte, error) 
 	path := filepath.Join(tmp, req.Name)
 	if err := ioutil.WriteFile(path, req.Content, 0644); err != nil {
 		return nil, err
-	}
-	args, _ := shell.Split(cfg.Edit.Command)
-	bin, rest := args[0], args[1:]
-	if err := exec.CommandContext(ctx, bin, append(rest, path)...).Run(); err != nil {
+	} else if err := editFile(ctx, path, cfg.Edit.TouchNew); err != nil {
 		return nil, err
 	}
 	return ioutil.ReadFile(path)
+}
+
+func editFile(ctx context.Context, path string, create bool) error {
+	if _, err := os.Stat(path); os.IsNotExist(err) && create {
+		f, err := os.Create(path)
+		if err != nil {
+			return err
+		}
+		f.Close()
+	}
+	args, _ := shell.Split(cfg.Edit.Command)
+	bin, rest := args[0], args[1:]
+	return exec.CommandContext(ctx, bin, append(rest, path)...).Run()
+}
+
+func handleEditNotes(ctx context.Context, req *notifier.EditNotesRequest) error {
+	if cfg.Edit.Command == "" {
+		return errors.New("no editor is defined")
+	} else if cfg.Edit.NotesDir == "" {
+		return errors.New("no notes directory is defined")
+	} else if req.Base == "" {
+		return jrpc2.Errorf(code.InvalidParams, "missing base note name")
+	} else if strings.Contains(req.Base, "/") {
+		return jrpc2.Errorf(code.InvalidParams, "base may not contain '/'")
+	} else if strings.Contains(req.Category, "/") {
+		return jrpc2.Errorf(code.InvalidParams, "category may not contain '/'")
+	}
+
+	var version time.Time
+	if req.Version == "" {
+		version = time.Now()
+	} else if req.Version == "latest" {
+		return errors.New("latest lookup is not implemented yet")
+	} else if t, err := time.Parse("2016-01-02", req.Version); err != nil {
+		return jrpc2.Errorf(code.InvalidParams, "invalid version: %v", err)
+	} else {
+		version = t
+	}
+
+	name := fmt.Sprintf("%s-%s.txt", req.Base, version.Format("20060102"))
+	path := filepath.Join(os.ExpandEnv(cfg.Edit.NotesDir), req.Category, name)
+	log.Printf("Editing notes file %q...", path)
+	return editFile(ctx, path, cfg.Edit.TouchNew)
 }
 
 // systemClip is a special-case clipset tag that identifies the currently
