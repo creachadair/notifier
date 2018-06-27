@@ -222,8 +222,6 @@ func handleEditNotes(ctx context.Context, req *notifier.EditNotesRequest) error 
 	var version time.Time
 	if req.Version == "" {
 		version = time.Now()
-	} else if req.Version == "latest" {
-		return errors.New("latest lookup is not implemented yet")
 	} else if t, err := time.Parse("2016-01-02", req.Version); err != nil {
 		return jrpc2.Errorf(code.InvalidParams, "invalid version: %v", err)
 	} else {

@@ -86,7 +86,7 @@ type EditNotesRequest struct {
 	Category string `json:"category,omitempty"`
 
 	// Which version of the notes to edit. If empty, a new set of notes are
-	// created for this base name. If "latest", the most recent notes with this
-	// tag are opened. Otherwise, this should be a date in YYYY-MM-DD format.
+	// created for this base name.  Otherwise, this should be a date in
+	// YYYY-MM-DD format.
 	Version string `json:"version,omitempty"`
 }
