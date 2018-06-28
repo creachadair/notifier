@@ -213,7 +213,7 @@ func handleEditNotes(ctx context.Context, req *notifier.EditNotesRequest) error 
 	var version time.Time
 	if req.Version == "" {
 		version = time.Now()
-	} else if t, err := time.Parse("2016-01-02", req.Version); err != nil {
+	} else if t, err := time.Parse("2006-01-02", req.Version); err != nil {
 		return jrpc2.Errorf(code.InvalidParams, "invalid version: %v", err)
 	} else {
 		version = t
