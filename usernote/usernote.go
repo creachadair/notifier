@@ -32,7 +32,7 @@ var (
 
 func main() {
 	flag.Parse()
-	if flag.NArg() != 1 && !*doList {
+	if flag.NArg() != 1 && !*doList && !*doCategories {
 		log.Fatalf("Usage: %s <tag>", filepath.Base(os.Args[0]))
 	} else if *doList && *doCategories {
 		log.Fatal("You may not specify both -list and -categories")
