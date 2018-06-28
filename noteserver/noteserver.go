@@ -198,33 +198,11 @@ type notes struct{}
 func (notes) Edit(ctx context.Context, req *notifier.EditNotesRequest) error {
 	if cfg.Edit.Command == "" {
 		return errors.New("no editor is defined")
-	} else if cfg.Notes.NotesDir == "" {
-		return errors.New("no notes directory is defined")
-	} else if req.Tag == "" {
-		return jrpc2.Errorf(code.InvalidParams, "missing base note name")
-	} else if strings.Contains(req.Tag, "/") {
-		return jrpc2.Errorf(code.InvalidParams, "base may not contain '/'")
-	} else if strings.Contains(req.Category, "/") {
-		return jrpc2.Errorf(code.InvalidParams, "category may not contain '/'")
 	}
-
-	var version string
-	if req.Version == "new" {
-		version = time.Now().Format("20060102")
-	} else if req.Version == "" || req.Version == "latest" {
-		old, err := latestNote(req.Tag, req.Category)
-		if err != nil {
-			return err
-		}
-		version = strings.Replace(old.Version, "-", "", -1)
-	} else if t, err := time.Parse("2006-01-02", req.Version); err != nil {
-		return jrpc2.Errorf(code.InvalidParams, "invalid version: %v", err)
-	} else {
-		version = t.Format("20060102")
+	path, err := findNotePath(req)
+	if err != nil {
+		return err
 	}
-
-	name := fmt.Sprintf("%s-%s.txt", req.Tag, version)
-	path := filepath.Join(os.ExpandEnv(cfg.Notes.NotesDir), req.Category, name)
 	log.Printf("Editing notes file %q...", path)
 	return editFile(ctx, path, cfg.Edit.TouchNew)
 }
@@ -234,6 +212,18 @@ func (notes) List(ctx context.Context, req *notifier.ListNotesRequest) ([]*notif
 		return nil, errors.New("no notes directory is defined")
 	}
 	return listNotes(req.Tag, req.Category)
+}
+
+func (notes) Read(ctx context.Context, req *notifier.EditNotesRequest) (string, error) {
+	path, err := findNotePath(req)
+	if err != nil {
+		return "", err
+	}
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
 }
 
 func (notes) Categories(ctx context.Context) ([]string, error) {
@@ -260,6 +250,35 @@ func (notes) Categories(ctx context.Context) ([]string, error) {
 }
 
 var noteName = regexp.MustCompile(`(.*)-([0-9]{4})([0-9]{2})([0-9]{2})\.txt$`)
+
+func findNotePath(req *notifier.EditNotesRequest) (string, error) {
+	if cfg.Notes.NotesDir == "" {
+		return "", errors.New("no notes directory is defined")
+	} else if req.Tag == "" {
+		return "", jrpc2.Errorf(code.InvalidParams, "missing base note name")
+	} else if strings.Contains(req.Tag, "/") {
+		return "", jrpc2.Errorf(code.InvalidParams, "tag may not contain '/'")
+	} else if strings.Contains(req.Category, "/") {
+		return "", jrpc2.Errorf(code.InvalidParams, "category may not contain '/'")
+	}
+	var version string
+	if req.Version == "new" {
+		version = time.Now().Format("20060102")
+	} else if req.Version == "" || req.Version == "latest" {
+		old, err := latestNote(req.Tag, req.Category)
+		if err != nil {
+			return "", err
+		}
+		version = strings.Replace(old.Version, "-", "", -1)
+	} else if t, err := time.Parse("2006-01-02", req.Version); err != nil {
+		return "", jrpc2.Errorf(code.InvalidParams, "invalid version: %v", err)
+	} else {
+		version = t.Format("20060102")
+	}
+
+	name := fmt.Sprintf("%s-%s.txt", req.Tag, version)
+	return filepath.Join(os.ExpandEnv(cfg.Notes.NotesDir), req.Category, name), nil
+}
 
 func latestNote(tag, category string) (*notifier.Note, error) {
 	old, err := listNotes(tag, category)
