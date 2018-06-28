@@ -209,9 +209,9 @@ func (notes) Edit(ctx context.Context, req *notifier.EditNotesRequest) error {
 	}
 
 	var version string
-	if req.Version == "" || req.Version == "new" {
+	if req.Version == "new" {
 		version = time.Now().Format("20060102")
-	} else if req.Version == "latest" {
+	} else if req.Version == "" || req.Version == "latest" {
 		old, err := latestNote(req.Tag, req.Category)
 		if err != nil {
 			return err

@@ -85,10 +85,10 @@ type EditNotesRequest struct {
 	// An optional note category, e.g., "meetings".
 	Category string `json:"category,omitempty"`
 
-	// Which version of the notes to edit. If it is empty or "new", a new
-	// version is created for this base name.  If it is "latest", the latest
-	// matching version for this base name is edited.  Otherwise, this should
-	// be a date in YYYY-MM-DD format.
+	// Which version of the notes to edit. If it is "new", a new version is
+	// created for this base name.  If it is "" or "latest", the latest
+	// matching version for this base name is edited.  Otherwise, this must be
+	// a date in YYYY-MM-DD format.
 	Version string `json:"version,omitempty"`
 }
 
