@@ -27,6 +27,7 @@ var (
 	noteCategory = flag.String("c", "", "Category label (optional)")
 	noteVersion  = flag.String("v", "", `Version to edit ("", "latest", "2006-01-02")`)
 	doList       = flag.Bool("list", false, "List matching notes")
+	doRead       = flag.Bool("read", false, "Read the specified note text")
 	doCategories = flag.Bool("cats", false, "List known categories")
 )
 
@@ -73,6 +74,17 @@ func main() {
 			log.Fatalf("Error listing categories: %v", err)
 		}
 		fmt.Println(strings.Join(cats, "\n"))
+
+	} else if *doRead {
+		var text string
+		if err := cli.CallResult(ctx, "Notes.Read", &notifier.EditNotesRequest{
+			Tag:      flag.Arg(0),
+			Category: *noteCategory,
+			Version:  *noteVersion,
+		}, &text); err != nil {
+			log.Fatalf("Error reading note: %v", err)
+		}
+		fmt.Println(text)
 
 	} else if err := cli.Notify(ctx, "Notes.Edit", &notifier.EditNotesRequest{
 		Tag:      flag.Arg(0),
