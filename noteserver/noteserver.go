@@ -236,6 +236,29 @@ func (notes) List(ctx context.Context, req *notifier.ListNotesRequest) ([]*notif
 	return listNotes(req.Tag, req.Category)
 }
 
+func (notes) Categories(ctx context.Context) ([]string, error) {
+	if cfg.Edit.NotesDir == "" {
+		return nil, errors.New("no notes directory is defined")
+	}
+	f, err := os.Open(cfg.Edit.NotesDir)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	info, err := f.Readdir(-1)
+	if err != nil {
+		return nil, err
+	}
+	var result []string
+	for _, fi := range info {
+		if fi.IsDir() {
+			result = append(result, fi.Name())
+		}
+	}
+	sort.Strings(result)
+	return result, nil
+}
+
 var noteName = regexp.MustCompile(`(.*)-([0-9]{4})([0-9]{2})([0-9]{2})\.txt$`)
 
 func latestNote(tag, category string) (*notifier.Note, error) {

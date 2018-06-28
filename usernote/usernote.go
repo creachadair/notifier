@@ -14,6 +14,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"text/tabwriter"
 
 	"bitbucket.org/creachadair/jrpc2"
@@ -26,12 +27,15 @@ var (
 	noteCategory = flag.String("c", "", "Category label (optional)")
 	noteVersion  = flag.String("v", "", `Version to edit ("", "latest", "2006-01-02")`)
 	doList       = flag.Bool("list", false, "List matching notes")
+	doCategories = flag.Bool("cats", false, "List known categories")
 )
 
 func main() {
 	flag.Parse()
 	if flag.NArg() != 1 && !*doList {
 		log.Fatalf("Usage: %s <tag>", filepath.Base(os.Args[0]))
+	} else if *doList && *doCategories {
+		log.Fatal("You may not specify both -list and -categories")
 	}
 
 	conn, err := net.Dial("tcp", *serverAddr)
@@ -62,6 +66,14 @@ func main() {
 			fmt.Fprint(tw, note.Tag, "\t", note.Version, "\n")
 		}
 		tw.Flush()
+
+	} else if *doCategories {
+		var cats []string
+		if err := cli.CallResult(ctx, "Notes.Categories", nil, &cats); err != nil {
+			log.Fatalf("Error listing categories: %v", err)
+		}
+		fmt.Println(strings.Join(cats, "\n"))
+
 	} else if err := cli.Notify(ctx, "Notes.Edit", &notifier.EditNotesRequest{
 		Tag:      flag.Arg(0),
 		Category: *noteCategory,
