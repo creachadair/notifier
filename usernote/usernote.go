@@ -55,7 +55,7 @@ func main() {
 			log.Fatalf("Error listing notes: %v", err)
 		}
 		sort.Slice(rsp, func(i, j int) bool {
-			return noteLess(rsp[i], rsp[j])
+			return notifier.NoteLess(rsp[i], rsp[j])
 		})
 		tw := tabwriter.NewWriter(os.Stdout, 0, 8, 0, '\t', 0)
 		for _, note := range rsp {
@@ -69,11 +69,4 @@ func main() {
 	}); err != nil {
 		log.Fatalf("Error editing note: %v", err)
 	}
-}
-
-func noteLess(a, b *notifier.Note) bool {
-	if a.Tag == b.Tag {
-		return a.Version < b.Version
-	}
-	return a.Tag < b.Tag
 }

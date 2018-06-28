@@ -20,6 +20,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"sync"
 	"syscall"
@@ -210,16 +211,22 @@ func handleEditNotes(ctx context.Context, req *notifier.EditNotesRequest) error 
 		return jrpc2.Errorf(code.InvalidParams, "category may not contain '/'")
 	}
 
-	var version time.Time
+	var version string
 	if req.Version == "" {
-		version = time.Now()
+		version = time.Now().Format("20060102")
+	} else if req.Version == "latest" {
+		old, err := latestNote(req.Tag, req.Category)
+		if err != nil {
+			return err
+		}
+		version = strings.Replace(old.Version, "-", "", -1)
 	} else if t, err := time.Parse("2006-01-02", req.Version); err != nil {
 		return jrpc2.Errorf(code.InvalidParams, "invalid version: %v", err)
 	} else {
-		version = t
+		version = t.Format("20060102")
 	}
 
-	name := fmt.Sprintf("%s-%s.txt", req.Tag, version.Format("20060102"))
+	name := fmt.Sprintf("%s-%s.txt", req.Tag, version)
 	path := filepath.Join(os.ExpandEnv(cfg.Edit.NotesDir), req.Category, name)
 	log.Printf("Editing notes file %q...", path)
 	return editFile(ctx, path, cfg.Edit.TouchNew)
@@ -231,11 +238,29 @@ func handleListNotes(ctx context.Context, req *notifier.ListNotesRequest) ([]*no
 	if cfg.Edit.NotesDir == "" {
 		return nil, errors.New("no notes directory is defined")
 	}
-	glob := req.Tag + "-????????.txt"
-	if req.Tag == "" {
-		glob = "*-????????.txt"
+	return listNotes(req.Tag, req.Category)
+}
+
+func latestNote(tag, category string) (*notifier.Note, error) {
+	old, err := listNotes(tag, category)
+	if err != nil {
+		return nil, err
+	} else if len(old) == 0 {
+		return nil, fmt.Errorf("no notes matching %q", tag)
 	}
-	pattern := filepath.Join(os.ExpandEnv(cfg.Edit.NotesDir), req.Category, glob)
+	sort.Slice(old, func(i, j int) bool {
+		return notifier.NoteLess(old[j], old[i])
+	})
+	return old[0], nil
+}
+
+func listNotes(tag, category string) ([]*notifier.Note, error) {
+	if tag == "" {
+		tag = "*-????????.txt"
+	} else {
+		tag += "-????????.txt"
+	}
+	pattern := filepath.Join(os.ExpandEnv(cfg.Edit.NotesDir), category, tag)
 	names, err := filepath.Glob(pattern)
 	if err != nil {
 		return nil, err
