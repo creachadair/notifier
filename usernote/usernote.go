@@ -24,7 +24,7 @@ import (
 var (
 	serverAddr   = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
 	noteCategory = flag.String("c", "", "Category label (optional)")
-	noteVersion  = flag.String("version", "", "Version to edit")
+	noteVersion  = flag.String("v", "", `Version to edit ("", "latest", "2006-01-02")`)
 	doList       = flag.Bool("list", false, "List matching notes")
 )
 
