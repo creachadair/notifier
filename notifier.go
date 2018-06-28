@@ -85,10 +85,10 @@ type EditNotesRequest struct {
 	// An optional note category, e.g., "meetings".
 	Category string `json:"category,omitempty"`
 
-	// Which version of the notes to edit. If it is empty, a new version is
-	// created for this base name.  If it is "latest", the latest matching
-	// version for this base name is edited.  Otherwise, this should be a date
-	// in YYYY-MM-DD format.
+	// Which version of the notes to edit. If it is empty or "new", a new
+	// version is created for this base name.  If it is "latest", the latest
+	// matching version for this base name is edited.  Otherwise, this should
+	// be a date in YYYY-MM-DD format.
 	Version string `json:"version,omitempty"`
 }
 
@@ -107,6 +107,8 @@ type Note struct {
 	Version string `json:"version,omitempty"`
 }
 
+// NoteLess reports whether a should be ordered prior to b, first by tag and
+// then by version.
 func NoteLess(a, b *Note) bool {
 	if a.Tag == b.Tag {
 		return a.Version < b.Version
