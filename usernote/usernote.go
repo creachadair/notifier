@@ -39,8 +39,8 @@ func main() {
 	defer cli.Close()
 	ctx := context.Background()
 
-	if err := cli.Notify(ctx, "User.EditNotes", &notifier.EditNotesRequest{
-		Base:     tag,
+	if err := cli.Notify(ctx, "Notes.Edit", &notifier.EditNotesRequest{
+		Tag:      tag,
 		Category: *noteCategory,
 		Version:  *noteVersion,
 	}); err != nil {
