@@ -79,8 +79,8 @@ type EditRequest struct {
 
 // An EditNotesRequest is a request to edit the contents of a notes file.
 type EditNotesRequest struct {
-	// The base name of the notes file to edit.
-	Base string `json:"base,omitempty"`
+	// The name tag of the notes file to edit.
+	Tag string `json:"tag,omitempty"`
 
 	// An optional note category, e.g., "meetings".
 	Category string `json:"category,omitempty"`
@@ -88,5 +88,20 @@ type EditNotesRequest struct {
 	// Which version of the notes to edit. If empty, a new set of notes are
 	// created for this base name.  Otherwise, this should be a date in
 	// YYYY-MM-DD format.
+	Version string `json:"version,omitempty"`
+}
+
+// A ListNotesRequest is a request to list the available notes.
+type ListNotesRequest struct {
+	// List files matching this name tag (match all, if empty)
+	Tag string `json:"tag,omitempty"`
+
+	// List files in this note category, e.g., "meetings".
+	Category string `json:"category,omitempty"`
+}
+
+// A Note describes an editable note.
+type Note struct {
+	Tag     string `json:"tag,omitempty"`
 	Version string `json:"version,omitempty"`
 }
