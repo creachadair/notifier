@@ -19,8 +19,12 @@ type Config struct {
 	Edit struct {
 		Command  string `json:"command"`
 		TouchNew bool   `json:"touchNew"`
-		NotesDir string `json:"notesDir"`
 	} `json:"edit"`
+
+	// Settings for the notes service.
+	Notes struct {
+		NotesDir string `json:"notesDir"`
+	}
 
 	// Settings for the key generation service.
 	Key struct {

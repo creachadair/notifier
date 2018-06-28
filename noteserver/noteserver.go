@@ -198,7 +198,7 @@ type notes struct{}
 func (notes) Edit(ctx context.Context, req *notifier.EditNotesRequest) error {
 	if cfg.Edit.Command == "" {
 		return errors.New("no editor is defined")
-	} else if cfg.Edit.NotesDir == "" {
+	} else if cfg.Notes.NotesDir == "" {
 		return errors.New("no notes directory is defined")
 	} else if req.Tag == "" {
 		return jrpc2.Errorf(code.InvalidParams, "missing base note name")
@@ -224,23 +224,23 @@ func (notes) Edit(ctx context.Context, req *notifier.EditNotesRequest) error {
 	}
 
 	name := fmt.Sprintf("%s-%s.txt", req.Tag, version)
-	path := filepath.Join(os.ExpandEnv(cfg.Edit.NotesDir), req.Category, name)
+	path := filepath.Join(os.ExpandEnv(cfg.Notes.NotesDir), req.Category, name)
 	log.Printf("Editing notes file %q...", path)
 	return editFile(ctx, path, cfg.Edit.TouchNew)
 }
 
 func (notes) List(ctx context.Context, req *notifier.ListNotesRequest) ([]*notifier.Note, error) {
-	if cfg.Edit.NotesDir == "" {
+	if cfg.Notes.NotesDir == "" {
 		return nil, errors.New("no notes directory is defined")
 	}
 	return listNotes(req.Tag, req.Category)
 }
 
 func (notes) Categories(ctx context.Context) ([]string, error) {
-	if cfg.Edit.NotesDir == "" {
+	if cfg.Notes.NotesDir == "" {
 		return nil, errors.New("no notes directory is defined")
 	}
-	f, err := os.Open(cfg.Edit.NotesDir)
+	f, err := os.Open(cfg.Notes.NotesDir)
 	if err != nil {
 		return nil, err
 	}
@@ -280,7 +280,7 @@ func listNotes(tag, category string) ([]*notifier.Note, error) {
 	} else {
 		tag += "-????????.txt"
 	}
-	pattern := filepath.Join(os.ExpandEnv(cfg.Edit.NotesDir), category, tag)
+	pattern := filepath.Join(os.ExpandEnv(cfg.Notes.NotesDir), category, tag)
 	names, err := filepath.Glob(pattern)
 	if err != nil {
 		return nil, err
