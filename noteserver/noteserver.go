@@ -52,8 +52,6 @@ func init() {
 	flag.StringVar(&cfg.Edit.Command, "editor", os.Getenv("EDITOR"), "Editor command line")
 	flag.StringVar(&cfg.Note.Sound, "sound", "Glass", "Sound name to use for audible notifications")
 	flag.StringVar(&cfg.Note.Voice, "voice", "Moira", "Voice name to use for voice notifications")
-	flag.StringVar(&cfg.Key.ConfigFile, "keyconfig", "", "Config file to load for key requests")
-	flag.StringVar(&cfg.Clip.SaveFile, "clips", "", "Storage file for named clips")
 	flag.BoolVar(&cfg.DebugLog, "log", false, "Enable debug logging")
 }
 
@@ -89,11 +87,8 @@ func main() {
 			"Edit": jrpc2.NewHandler(handleEdit),
 			"Text": jrpc2.NewHandler(handleText),
 		},
-		"Notes": jrpc2.MapAssigner{
-			"Edit": jrpc2.NewHandler(handleEditNotes),
-			"List": jrpc2.NewHandler(handleListNotes),
-		},
-		"Key": jrpc2.NewService(newKeygen(os.ExpandEnv(cfg.Key.ConfigFile))),
+		"Notes": jrpc2.NewService(notes{}),
+		"Key":   jrpc2.NewService(newKeygen(os.ExpandEnv(cfg.Key.ConfigFile))),
 	}, &server.LoopOptions{
 		ServerOptions: &jrpc2.ServerOptions{
 			Logger:  lw,
@@ -198,7 +193,9 @@ func handleEdit(ctx context.Context, req *notifier.EditRequest) ([]byte, error) 
 	return ioutil.ReadFile(path)
 }
 
-func handleEditNotes(ctx context.Context, req *notifier.EditNotesRequest) error {
+type notes struct{}
+
+func (notes) Edit(ctx context.Context, req *notifier.EditNotesRequest) error {
 	if cfg.Edit.Command == "" {
 		return errors.New("no editor is defined")
 	} else if cfg.Edit.NotesDir == "" {
@@ -212,7 +209,7 @@ func handleEditNotes(ctx context.Context, req *notifier.EditNotesRequest) error 
 	}
 
 	var version string
-	if req.Version == "" {
+	if req.Version == "" || req.Version == "new" {
 		version = time.Now().Format("20060102")
 	} else if req.Version == "latest" {
 		old, err := latestNote(req.Tag, req.Category)
@@ -232,14 +229,14 @@ func handleEditNotes(ctx context.Context, req *notifier.EditNotesRequest) error 
 	return editFile(ctx, path, cfg.Edit.TouchNew)
 }
 
-var noteName = regexp.MustCompile(`(.*)-([0-9]{4})([0-9]{2})([0-9]{2})\.txt$`)
-
-func handleListNotes(ctx context.Context, req *notifier.ListNotesRequest) ([]*notifier.Note, error) {
+func (notes) List(ctx context.Context, req *notifier.ListNotesRequest) ([]*notifier.Note, error) {
 	if cfg.Edit.NotesDir == "" {
 		return nil, errors.New("no notes directory is defined")
 	}
 	return listNotes(req.Tag, req.Category)
 }
+
+var noteName = regexp.MustCompile(`(.*)-([0-9]{4})([0-9]{2})([0-9]{2})\.txt$`)
 
 func latestNote(tag, category string) (*notifier.Note, error) {
 	old, err := listNotes(tag, category)
