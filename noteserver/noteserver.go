@@ -466,7 +466,7 @@ func (k *keygen) Generate(ctx context.Context, req *notifier.KeyGenRequest) (str
 	// If the user asked us to copy to the clipboard, return the verification
 	// hash; otherwise return the passphrase itself.
 	if req.Copy {
-		return wordhash.String(pw), setClip(ctx, []byte(pw))
+		return site.Host + "\t" + wordhash.String(pw), setClip(ctx, []byte(pw))
 	}
 	return pw, nil
 }
