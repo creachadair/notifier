@@ -240,7 +240,7 @@ func (notes) Categories(ctx context.Context) ([]string, error) {
 	if cfg.Notes.NotesDir == "" {
 		return nil, errors.New("no notes directory is defined")
 	}
-	f, err := os.Open(cfg.Notes.NotesDir)
+	f, err := os.Open(os.ExpandEnv(cfg.Notes.NotesDir))
 	if err != nil {
 		return nil, err
 	}
