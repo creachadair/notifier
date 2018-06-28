@@ -19,6 +19,7 @@ import (
 	"os/exec"
 	"os/signal"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 	"syscall"
@@ -84,9 +85,12 @@ func main() {
 		},
 		"Clip": jrpc2.NewService(c),
 		"User": jrpc2.MapAssigner{
-			"Edit":      jrpc2.NewHandler(handleEdit),
-			"EditNotes": jrpc2.NewHandler(handleEditNotes),
-			"Text":      jrpc2.NewHandler(handleText),
+			"Edit": jrpc2.NewHandler(handleEdit),
+			"Text": jrpc2.NewHandler(handleText),
+		},
+		"Notes": jrpc2.MapAssigner{
+			"Edit": jrpc2.NewHandler(handleEditNotes),
+			"List": jrpc2.NewHandler(handleListNotes),
 		},
 		"Key": jrpc2.NewService(newKeygen(os.ExpandEnv(cfg.Key.ConfigFile))),
 	}, &server.LoopOptions{
@@ -193,27 +197,14 @@ func handleEdit(ctx context.Context, req *notifier.EditRequest) ([]byte, error) 
 	return ioutil.ReadFile(path)
 }
 
-func editFile(ctx context.Context, path string, create bool) error {
-	if _, err := os.Stat(path); os.IsNotExist(err) && create {
-		f, err := os.Create(path)
-		if err != nil {
-			return err
-		}
-		f.Close()
-	}
-	args, _ := shell.Split(cfg.Edit.Command)
-	bin, rest := args[0], args[1:]
-	return exec.CommandContext(ctx, bin, append(rest, path)...).Run()
-}
-
 func handleEditNotes(ctx context.Context, req *notifier.EditNotesRequest) error {
 	if cfg.Edit.Command == "" {
 		return errors.New("no editor is defined")
 	} else if cfg.Edit.NotesDir == "" {
 		return errors.New("no notes directory is defined")
-	} else if req.Base == "" {
+	} else if req.Tag == "" {
 		return jrpc2.Errorf(code.InvalidParams, "missing base note name")
-	} else if strings.Contains(req.Base, "/") {
+	} else if strings.Contains(req.Tag, "/") {
 		return jrpc2.Errorf(code.InvalidParams, "base may not contain '/'")
 	} else if strings.Contains(req.Category, "/") {
 		return jrpc2.Errorf(code.InvalidParams, "category may not contain '/'")
@@ -228,10 +219,52 @@ func handleEditNotes(ctx context.Context, req *notifier.EditNotesRequest) error 
 		version = t
 	}
 
-	name := fmt.Sprintf("%s-%s.txt", req.Base, version.Format("20060102"))
+	name := fmt.Sprintf("%s-%s.txt", req.Tag, version.Format("20060102"))
 	path := filepath.Join(os.ExpandEnv(cfg.Edit.NotesDir), req.Category, name)
 	log.Printf("Editing notes file %q...", path)
 	return editFile(ctx, path, cfg.Edit.TouchNew)
+}
+
+var noteName = regexp.MustCompile(`(.*)-([0-9]{4})([0-9]{2})([0-9]{2})\.txt$`)
+
+func handleListNotes(ctx context.Context, req *notifier.ListNotesRequest) ([]*notifier.Note, error) {
+	if cfg.Edit.NotesDir == "" {
+		return nil, errors.New("no notes directory is defined")
+	}
+	glob := req.Tag + "-????????.txt"
+	if req.Tag == "" {
+		glob = "*-????????.txt"
+	}
+	pattern := filepath.Join(os.ExpandEnv(cfg.Edit.NotesDir), req.Category, glob)
+	names, err := filepath.Glob(pattern)
+	if err != nil {
+		return nil, err
+	}
+	var rsp []*notifier.Note
+	for _, name := range names {
+		m := noteName.FindStringSubmatch(filepath.Base(name))
+		if m == nil {
+			continue
+		}
+		rsp = append(rsp, &notifier.Note{
+			Tag:     m[1],
+			Version: fmt.Sprintf("%s-%s-%s", m[2], m[3], m[4]),
+		})
+	}
+	return rsp, nil
+}
+
+func editFile(ctx context.Context, path string, create bool) error {
+	if _, err := os.Stat(path); os.IsNotExist(err) && create {
+		f, err := os.Create(path)
+		if err != nil {
+			return err
+		}
+		f.Close()
+	}
+	args, _ := shell.Split(cfg.Edit.Command)
+	bin, rest := args[0], args[1:]
+	return exec.CommandContext(ctx, bin, append(rest, path)...).Run()
 }
 
 // systemClip is a special-case clipset tag that identifies the currently
