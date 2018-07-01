@@ -91,8 +91,9 @@ func main() {
 		"Key":   jrpc2.NewService(newKeygen(os.ExpandEnv(cfg.Key.ConfigFile))),
 	}, &server.LoopOptions{
 		ServerOptions: &jrpc2.ServerOptions{
-			Logger:  lw,
-			Metrics: metrics.New(),
+			Logger:    lw,
+			Metrics:   metrics.New(),
+			StartTime: time.Now(),
 		},
 	}); err != nil {
 		log.Fatalf("Server failed: %v", err)
