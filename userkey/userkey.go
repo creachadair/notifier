@@ -19,7 +19,7 @@ import (
 	"bitbucket.org/creachadair/jrpc2/caller"
 	"bitbucket.org/creachadair/jrpc2/channel"
 	"bitbucket.org/creachadair/keyfish/config"
-	"bitbucket.org/creachadair/misctools/notifier"
+	"bitbucket.org/creachadair/notifier"
 )
 
 var (

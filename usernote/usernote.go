@@ -19,7 +19,7 @@ import (
 
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/jrpc2/channel"
-	"bitbucket.org/creachadair/misctools/notifier"
+	"bitbucket.org/creachadair/notifier"
 )
 
 var (

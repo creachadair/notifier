@@ -32,7 +32,7 @@ import (
 	"bitbucket.org/creachadair/jrpc2/server"
 	"bitbucket.org/creachadair/keyfish/config"
 	"bitbucket.org/creachadair/keyfish/wordhash"
-	"bitbucket.org/creachadair/misctools/notifier"
+	"bitbucket.org/creachadair/notifier"
 	"bitbucket.org/creachadair/shell"
 	"bitbucket.org/creachadair/stringset"
 )
