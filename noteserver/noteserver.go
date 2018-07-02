@@ -93,7 +93,7 @@ func main() {
 		ServerOptions: &jrpc2.ServerOptions{
 			Logger:    lw,
 			Metrics:   metrics.New(),
-			StartTime: time.Now(),
+			StartTime: time.Now().In(time.UTC),
 		},
 	}); err != nil {
 		log.Fatalf("Server failed: %v", err)
