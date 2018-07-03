@@ -157,7 +157,7 @@ func handleText(ctx context.Context, req *notifier.TextRequest) (string, error) 
 	out := strings.TrimRight(string(raw), "\n")
 	if err != nil {
 		if strings.Contains(out, "User canceled") {
-			return "", notifier.UserCancelled
+			return "", jrpc2.Errorf(notifier.UserCancelled, "user cancelled request")
 		}
 		return "", err
 	}
