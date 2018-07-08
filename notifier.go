@@ -39,6 +39,7 @@ type ClipClearRequest struct {
 // A SayRequest is a request to speak a notification to the user.
 type SayRequest struct {
 	Text  string        `json:"text"`
+	Voice string        `json:"voice,omitempty"`
 	After time.Duration `json:"after,omitempty"`
 }
 

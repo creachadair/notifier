@@ -130,6 +130,8 @@ func handlePostNote(ctx context.Context, req *notifier.PostRequest) (bool, error
 func handleSayNote(ctx context.Context, req *notifier.SayRequest) (bool, error) {
 	if req.Text == "" {
 		return false, jrpc2.Errorf(code.InvalidParams, "empty text")
+	} else if req.Voice == "" {
+		req.Voice = cfg.Note.Voice
 	}
 	if wait := req.After; wait > 0 {
 		select {
@@ -138,7 +140,7 @@ func handleSayNote(ctx context.Context, req *notifier.SayRequest) (bool, error) 
 		case <-time.After(wait):
 		}
 	}
-	cmd := exec.CommandContext(ctx, "say", "-v", cfg.Note.Voice)
+	cmd := exec.CommandContext(ctx, "say", "-v", req.Voice)
 	cmd.Stdin = strings.NewReader(req.Text)
 	err := cmd.Run()
 	return err == nil, err
