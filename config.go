@@ -1,8 +1,13 @@
 package notifier
 
 import (
+	"context"
 	"encoding/json"
 	"io/ioutil"
+	"os"
+	"os/exec"
+
+	"bitbucket.org/creachadair/shell"
 )
 
 // Config stores settings for the various notifier services.
@@ -48,4 +53,18 @@ func LoadConfig(path string, cfg *Config) error {
 		return err
 	}
 	return json.Unmarshal(data, cfg)
+}
+
+// EditFile edits a file using the editor specified by c.
+func (c *Config) EditFile(ctx context.Context, path string) error {
+	if _, err := os.Stat(path); os.IsNotExist(err) && c.Edit.TouchNew {
+		f, err := os.Create(path)
+		if err != nil {
+			return err
+		}
+		f.Close()
+	}
+	args, _ := shell.Split(c.Edit.Command)
+	bin, rest := args[0], args[1:]
+	return exec.CommandContext(ctx, bin, append(rest, path)...).Run()
 }
