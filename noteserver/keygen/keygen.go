@@ -53,7 +53,7 @@ func (k *keygen) Update() error {
 // Assigner implements a method of notifier.Plugin.
 func (k *keygen) Assigner() jrpc2.Assigner { return jrpc2.NewService(k) }
 
-func (k *keygen) site(host string) config.Site {
+func (k *keygen) site(host string) (config.Site, bool) {
 	k.μ.Lock()
 	defer k.μ.Unlock()
 	return k.cfg.Site(host)
@@ -80,7 +80,7 @@ func (k *keygen) Generate(ctx context.Context, req *notifier.KeyGenRequest) (str
 		return "", jrpc2.Errorf(code.InvalidParams, "missing host name")
 	}
 	const minLength = 6
-	site := k.site(req.Host)
+	site, _ := k.site(req.Host)
 	mergeSiteReq(&site, req)
 	if site.Length < minLength {
 		return "", jrpc2.Errorf(code.InvalidParams, "invalid key length %d < %d", site.Length, minLength)
@@ -124,7 +124,10 @@ func (k *keygen) Site(ctx context.Context, req *notifier.SiteRequest) (*config.S
 	if req.Host == "" {
 		return nil, jrpc2.Errorf(code.InvalidParams, "missing host name")
 	}
-	site := k.site(req.Host)
+	site, ok := k.site(req.Host)
+	if !ok {
+		return nil, jrpc2.Errorf(notifier.ResourceNotFound, "no config for %q", req.Host)
+	}
 	if !req.Full {
 		site.Hints = nil
 	}
