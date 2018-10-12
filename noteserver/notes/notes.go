@@ -27,6 +27,9 @@ type notes struct {
 
 // Init implements part of notifier.Plugin.
 func (n *notes) Init(cfg *notifier.Config) error {
+	if cfg.Notes.NotesDir == "" {
+		return notifier.ErrNotApplicable
+	}
 	n.cfg = cfg
 	return nil
 }
