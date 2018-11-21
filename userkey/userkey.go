@@ -31,8 +31,8 @@ var (
 
 	generateKey = caller.New("Key.Generate", caller.Options{
 		Params: (*notifier.KeyGenRequest)(nil),
-		Result: "",
-	}).(func(context.Context, *jrpc2.Client, *notifier.KeyGenRequest) (string, error))
+		Result: (*notifier.KeyGenReply)(nil),
+	}).(func(context.Context, *jrpc2.Client, *notifier.KeyGenRequest) (*notifier.KeyGenReply, error))
 	listSites = caller.New("Key.List", caller.Options{
 		Params: nil,
 		Result: []string(nil),
@@ -88,5 +88,9 @@ func main() {
 	} else if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(pw)
+	if pw.Key == "" {
+		fmt.Print(pw.Label, "\t", pw.Hash, "\n")
+	} else {
+		fmt.Println(pw.Key)
+	}
 }

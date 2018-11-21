@@ -75,17 +75,17 @@ func mergeSiteReq(site *config.Site, req *notifier.KeyGenRequest) {
 }
 
 // Generate generates a passphrase for the given request.
-func (k *keygen) Generate(ctx context.Context, req *notifier.KeyGenRequest) (string, error) {
+func (k *keygen) Generate(ctx context.Context, req *notifier.KeyGenRequest) (*notifier.KeyGenReply, error) {
 	if req.Host == "" {
-		return "", jrpc2.Errorf(code.InvalidParams, "missing host name")
+		return nil, jrpc2.Errorf(code.InvalidParams, "missing host name")
 	}
 	const minLength = 6
 	site, _ := k.site(req.Host)
 	mergeSiteReq(&site, req)
 	if site.Length < minLength {
-		return "", jrpc2.Errorf(code.InvalidParams, "invalid key length %d < %d", site.Length, minLength)
+		return nil, jrpc2.Errorf(code.InvalidParams, "invalid key length %d < %d", site.Length, minLength)
 	} else if site.Format != "" && len(site.Format) < minLength {
-		return "", jrpc2.Errorf(code.InvalidParams, "invalid format length %d < %d", len(site.Format), minLength)
+		return nil, jrpc2.Errorf(code.InvalidParams, "invalid format length %d < %d", len(site.Format), minLength)
 	}
 
 	secret, err := notifier.PromptForText(ctx, &notifier.TextRequest{
@@ -93,7 +93,7 @@ func (k *keygen) Generate(ctx context.Context, req *notifier.KeyGenRequest) (str
 		Hide:   true,
 	})
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	pctx := site.Context(secret)
 	var pw string
@@ -103,12 +103,17 @@ func (k *keygen) Generate(ctx context.Context, req *notifier.KeyGenRequest) (str
 		pw = pctx.Password(site.Host, site.Length)
 	}
 
-	// If the user asked us to copy to the clipboard, return the verification
-	// hash; otherwise return the passphrase itself.
-	if req.Copy {
-		return site.Host + "\t" + wordhash.String(pw), notifier.SetSystemClipboard(ctx, []byte(pw))
+	rsp := &notifier.KeyGenReply{
+		Key:   pw,
+		Hash:  wordhash.String(pw),
+		Label: site.Host,
 	}
-	return pw, nil
+	// If the caller asked us to copy to the clipboard, don't include the
+	// passphrase in the response message.
+	if req.Copy {
+		rsp.Key = ""
+	}
+	return rsp, nil
 }
 
 // List returns the names of the known configuration settings, in lexicographic order.

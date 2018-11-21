@@ -63,6 +63,14 @@ type KeyGenRequest struct {
 	Salt   *string `json:"salt,omitempty"`
 }
 
+// A KeyGenReply is the response from the key generator.
+type KeyGenReply struct {
+	// If the key was copied, the "key" field will be omitted.
+	Key   string `json:"key,omitempty"`
+	Hash  string `json:"hash"`
+	Label string `json:"label"`
+}
+
 // A SiteRequest is a request for site data.
 type SiteRequest struct {
 	Host string `json:"host,omitempty"`
