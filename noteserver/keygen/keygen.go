@@ -111,6 +111,7 @@ func (k *keygen) Generate(ctx context.Context, req *notifier.KeyGenRequest) (*no
 	// If the caller asked us to copy to the clipboard, don't include the
 	// passphrase in the response message.
 	if req.Copy {
+		notifier.SetSystemClipboard(ctx, []byte(pw))
 		rsp.Key = ""
 	}
 	return rsp, nil
