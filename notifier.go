@@ -55,12 +55,13 @@ var UserCancelled = code.Register(-29999, "user cancelled request")
 
 // A KeyGenRequest is a request to generate a password.
 type KeyGenRequest struct {
-	Host   string  `json:"host,omitempty"`
-	Copy   bool    `json:"copy,omitempty"`
-	Format *string `json:"format,omitempty"`
-	Length *int    `json:"length,omitempty"`
-	Punct  *bool   `json:"punct,omitempty"`
-	Salt   *string `json:"salt,omitempty"`
+	Host   string  `json:"host,omitempty"`   // host or site label
+	Strict bool    `json:"strict,omitempty"` // report error if label is not known
+	Copy   bool    `json:"copy,omitempty"`   // copy to clipboard
+	Format *string `json:"format,omitempty"` // render using this format
+	Length *int    `json:"length,omitempty"` // generated passphrase length
+	Punct  *bool   `json:"punct,omitempty"`  // use punctuation in passphrases
+	Salt   *string `json:"salt,omitempty"`   // salt for passphrase generation
 }
 
 // A KeyGenReply is the response from the key generator.

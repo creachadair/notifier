@@ -80,7 +80,10 @@ func (k *keygen) Generate(ctx context.Context, req *notifier.KeyGenRequest) (*no
 		return nil, jrpc2.Errorf(code.InvalidParams, "missing host name")
 	}
 	const minLength = 6
-	site, _ := k.site(req.Host)
+	site, ok := k.site(req.Host)
+	if !ok && req.Strict {
+		return nil, jrpc2.Errorf(code.InvalidParams, "no match for host: %q", req.Host)
+	}
 	mergeSiteReq(&site, req)
 	if site.Length < minLength {
 		return nil, jrpc2.Errorf(code.InvalidParams, "invalid key length %d < %d", site.Length, minLength)

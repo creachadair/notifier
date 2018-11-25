@@ -28,6 +28,7 @@ var (
 	doPrint    = flag.Bool("print", false, "Print the result instead of copying it")
 	doShow     = flag.Bool("show", false, "Show the configuration for a site")
 	doFull     = flag.Bool("full", false, "Show the full configuration for a site (implies -show)")
+	doLax      = flag.Bool("lax", false, "Accept site names that do not match known configurations")
 
 	generateKey = caller.New("Key.Generate", caller.Options{
 		Params: (*notifier.KeyGenRequest)(nil),
@@ -80,8 +81,9 @@ func main() {
 		return
 	}
 	pw, err := generateKey(ctx, cli, &notifier.KeyGenRequest{
-		Host: flag.Arg(0),
-		Copy: !*doPrint,
+		Host:   flag.Arg(0),
+		Copy:   !*doPrint,
+		Strict: !*doLax,
 	})
 	if e, ok := err.(*jrpc2.Error); ok && e.Code() == notifier.UserCancelled {
 		os.Exit(2)
