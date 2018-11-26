@@ -62,7 +62,7 @@ func main() {
 		sort.Slice(rsp, func(i, j int) bool {
 			return notifier.NoteLess(rsp[i], rsp[j])
 		})
-		tw := tabwriter.NewWriter(os.Stdout, 0, 8, 0, '\t', 0)
+		tw := tabwriter.NewWriter(os.Stdout, 0, 8, 1, ' ', 0)
 		for _, note := range rsp {
 			fmt.Fprint(tw, note.Tag, "\t", note.Version, "\n")
 		}
