@@ -94,7 +94,7 @@ func (n *notes) Categories(ctx context.Context) ([]string, error) {
 	return result, nil
 }
 
-var noteName = regexp.MustCompile(`(.*)-([0-9]{4})([0-9]{2})([0-9]{2})\.txt$`)
+var noteName = regexp.MustCompile(`(.*)-([0-9]{4})([0-9]{2})([0-9]{2})\.\w+$`)
 
 func (n *notes) findNotePath(req *notifier.EditNotesRequest) (string, error) {
 	if n.cfg.Notes.NotesDir == "" {
@@ -106,14 +106,19 @@ func (n *notes) findNotePath(req *notifier.EditNotesRequest) (string, error) {
 	} else if strings.Contains(req.Category, "/") {
 		return "", jrpc2.Errorf(code.InvalidParams, "category may not contain '/'")
 	}
+
 	var version string
+	tag := req.Tag
 	if req.Version == "new" {
 		version = time.Now().Format("20060102")
 	} else if req.Version == "" || req.Version == "latest" {
-		old, err := n.latestNote(req.Tag, req.Category)
+		// If we found an existing version, override the specified tag so that we
+		// get the actual file extension.
+		old, err := n.latestNote(tag, req.Category)
 		if err != nil {
 			return "", err
 		}
+		tag = old.Tag
 		version = strings.Replace(old.Version, "-", "", -1)
 	} else if t, err := time.Parse("2006-01-02", req.Version); err != nil {
 		return "", jrpc2.Errorf(code.InvalidParams, "invalid version: %v", err)
@@ -121,7 +126,13 @@ func (n *notes) findNotePath(req *notifier.EditNotesRequest) (string, error) {
 		version = t.Format("20060102")
 	}
 
-	name := fmt.Sprintf("%s-%s.txt", req.Tag, version)
+	// Extract the file extension from the tag, e.g., base.txt, base.md.
+	// Default to .txt if no extension was included.
+	base, ext := splitExt(tag)
+	if ext == "" {
+		ext = ".txt"
+	}
+	name := fmt.Sprintf("%s-%s%s", base, version, ext)
 	return filepath.Join(os.ExpandEnv(n.cfg.Notes.NotesDir), req.Category, name), nil
 }
 
@@ -139,12 +150,16 @@ func (n *notes) latestNote(tag, category string) (*notifier.Note, error) {
 }
 
 func (n *notes) listNotes(tag, category string) ([]*notifier.Note, error) {
-	if tag == "" {
-		tag = "*-????????.txt"
-	} else {
-		tag += "-????????.txt"
+	base, ext := splitExt(tag)
+	tglob := base + "-????????" + ext
+	if ext == "" {
+		tglob += ".*"
 	}
-	pattern := filepath.Join(os.ExpandEnv(n.cfg.Notes.NotesDir), category, tag)
+	if base == "" {
+		tglob = "*" + tglob
+	}
+
+	pattern := filepath.Join(os.ExpandEnv(n.cfg.Notes.NotesDir), category, tglob)
 	names, err := filepath.Glob(pattern)
 	if err != nil {
 		return nil, err
@@ -155,10 +170,20 @@ func (n *notes) listNotes(tag, category string) ([]*notifier.Note, error) {
 		if m == nil {
 			continue
 		}
+		tag := m[1]
+		if ext := filepath.Ext(name); ext != ".txt" {
+			tag += ext
+		}
 		rsp = append(rsp, &notifier.Note{
-			Tag:     m[1],
+			Tag:     tag,
 			Version: fmt.Sprintf("%s-%s-%s", m[2], m[3], m[4]),
 		})
 	}
 	return rsp, nil
+}
+
+func splitExt(name string) (base, ext string) {
+	ext = filepath.Ext(name)
+	base = strings.TrimSuffix(name, ext)
+	return
 }
