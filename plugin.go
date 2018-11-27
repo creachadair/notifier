@@ -116,7 +116,7 @@ func PromptForText(ctx context.Context, req *TextRequest) (string, error) {
 
 // SetSystemClipboard sets the contents of the system clipboard to data.
 func SetSystemClipboard(ctx context.Context, data []byte) error {
-	cmd := exec.CommandContext(ctx, "pbcopy")
+	cmd := exec.CommandContext(ctx, "pbcopy", "-pboard", "general")
 	cmd.Stdin = bytes.NewReader(data)
 	return cmd.Run()
 }

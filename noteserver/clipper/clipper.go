@@ -169,5 +169,5 @@ func (c *clipper) Clear(ctx context.Context, req *notifier.ClipClearRequest) (bo
 }
 
 func getClip(ctx context.Context) ([]byte, error) {
-	return exec.CommandContext(ctx, "pbpaste").Output()
+	return exec.CommandContext(ctx, "pbpaste", "-pboard", "general").Output()
 }
