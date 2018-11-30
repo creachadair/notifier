@@ -47,7 +47,7 @@ var (
 func main() {
 	flag.Parse()
 	if flag.NArg() == 0 && !*doList {
-		log.Fatal("You must provide a hostname")
+		log.Fatal("You must provide a hostname or salt@hostname")
 	}
 	conn, err := net.Dial("tcp", *serverAddr)
 	if err != nil {
@@ -65,9 +65,11 @@ func main() {
 		fmt.Println(strings.Join(sites, "\n"))
 		return
 	}
+
+	site, salt := parseHost(flag.Arg(0))
 	if *doShow || *doFull {
 		site, err := showSite(ctx, cli, &notifier.SiteRequest{
-			Host: flag.Arg(0),
+			Host: site,
 			Full: *doFull,
 		})
 		if err != nil {
@@ -80,8 +82,10 @@ func main() {
 		fmt.Println(string(bits))
 		return
 	}
+
 	pw, err := generateKey(ctx, cli, &notifier.KeyGenRequest{
-		Host:   flag.Arg(0),
+		Host:   site,
+		Salt:   salt,
 		Copy:   !*doPrint,
 		Strict: !*doLax,
 	})
@@ -95,4 +99,12 @@ func main() {
 	} else {
 		fmt.Println(pw.Key)
 	}
+}
+
+func parseHost(host string) (site string, salt *string) {
+	parts := strings.SplitN(host, "@", 2)
+	if len(parts) == 2 {
+		return parts[1], &parts[0]
+	}
+	return parts[0], nil
 }
