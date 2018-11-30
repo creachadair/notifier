@@ -67,7 +67,7 @@ func mergeSiteReq(site *config.Site, req *notifier.KeyGenRequest) {
 		site.Length = *req.Length
 	}
 	if req.Punct != nil {
-		site.Punct = *req.Punct
+		site.Punct = req.Punct
 	}
 	if req.Salt != nil {
 		site.Salt = *req.Salt
