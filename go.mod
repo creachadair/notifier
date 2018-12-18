@@ -7,5 +7,5 @@ require (
 	bitbucket.org/creachadair/shell v0.0.4
 	bitbucket.org/creachadair/stringset v0.0.3
 	golang.org/x/crypto v0.0.0-20181203042331-505ab145d0a9
-	golang.org/x/sys v0.0.0-20181213200352-4d1cda033e06 // indirect
+	golang.org/x/sys v0.0.0-20181218192612-074acd46bca6 // indirect
 )
