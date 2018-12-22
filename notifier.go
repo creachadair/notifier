@@ -2,10 +2,44 @@
 package notifier
 
 import (
+	"context"
+	"flag"
+	"fmt"
+	"net"
+	"os"
 	"time"
 
+	"bitbucket.org/creachadair/jrpc2"
+	"bitbucket.org/creachadair/jrpc2/channel"
 	"bitbucket.org/creachadair/jrpc2/code"
+	"bitbucket.org/creachadair/jrpc2/jauth"
+	"bitbucket.org/creachadair/jrpc2/jctx"
 )
+
+var (
+	serverAddr = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
+	authUser   = flag.String("authuser", os.Getenv("NOTIFIER_USER"), "Username for authorization")
+	authKey    = os.Getenv("NOTIFIER_KEY")
+)
+
+// Dial connects to the flag-selected JSON-RPC server and returns a context and
+// a client ready for use. The caller is responsible for closing the client.
+func Dial(ctx context.Context) (context.Context, *jrpc2.Client, error) {
+	conn, err := net.Dial("tcp", *serverAddr)
+	if err != nil {
+		return ctx, nil, fmt.Errorf("address %q: %v", *serverAddr, err)
+	}
+	cli := jrpc2.NewClient(channel.RawJSON(conn, conn), &jrpc2.ClientOptions{
+		EncodeContext: jctx.Encode,
+	})
+	if *authUser != "" && authKey != "" {
+		ctx = jctx.WithAuthorizer(ctx, jauth.User{
+			Name: *authUser,
+			Key:  []byte(authKey),
+		}.Token)
+	}
+	return ctx, cli, nil
+}
 
 // A PostRequest is a request to post a notification to the user.
 type PostRequest struct {
