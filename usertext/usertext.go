@@ -10,30 +10,25 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"net"
 	"os"
 	"strings"
 
 	"bitbucket.org/creachadair/jrpc2"
-	"bitbucket.org/creachadair/jrpc2/channel"
 	"bitbucket.org/creachadair/notifier"
 )
 
 var (
-	serverAddr  = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
 	defaultText = flag.String("default", "", "Default answer")
 	hiddenText  = flag.Bool("hidden", false, "Request hidden text entry")
 )
 
 func main() {
 	flag.Parse()
-	conn, err := net.Dial("tcp", *serverAddr)
+	ctx, cli, err := notifier.Dial(context.Background())
 	if err != nil {
-		log.Fatalf("Dial %q: %v", *serverAddr, err)
+		log.Fatalf("Dial: %v", err)
 	}
-	cli := jrpc2.NewClient(channel.RawJSON(conn, conn), nil)
 	defer cli.Close()
-	ctx := context.Background()
 
 	var text string
 	if err := cli.CallResult(ctx, "User.Text", &notifier.TextRequest{

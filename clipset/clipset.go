@@ -14,20 +14,17 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
-	"net"
 	"os"
 	"strings"
 
 	"bitbucket.org/creachadair/cmdutil/files"
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/jrpc2/caller"
-	"bitbucket.org/creachadair/jrpc2/channel"
 	"bitbucket.org/creachadair/notifier"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
 var (
-	serverAddr = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
 	clipTag    = flag.String("tag", "", "Clipboard tag")
 	saveTag    = flag.String("save", "", "Save tag")
 	loadClips  = flag.String("load", "", "Load clip tags from JSON")
@@ -78,13 +75,11 @@ func main() {
 			log.Fatal("You may not specify arguments with -read, -clear, -load, or -dump")
 		}
 	}
-	conn, err := net.Dial("tcp", *serverAddr)
+	ctx, cli, err := notifier.Dial(context.Background())
 	if err != nil {
-		log.Fatalf("Dial %q: %v", *serverAddr, err)
+		log.Fatalf("Dial: %v", err)
 	}
-	cli := jrpc2.NewClient(channel.RawJSON(conn, conn), nil)
 	defer cli.Close()
-	ctx := context.Background()
 
 	if *doList || *doDump {
 		tags, err := clipList(ctx, cli)

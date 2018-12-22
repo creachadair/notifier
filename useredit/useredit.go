@@ -12,16 +12,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net"
 	"os"
 	"path/filepath"
 
-	"bitbucket.org/creachadair/jrpc2"
-	"bitbucket.org/creachadair/jrpc2/channel"
 	"bitbucket.org/creachadair/notifier"
 )
-
-var serverAddr = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
 
 func main() {
 	flag.Parse()
@@ -36,13 +31,11 @@ func main() {
 		log.Fatalf("Reading input: %v", err)
 	}
 
-	conn, err := net.Dial("tcp", *serverAddr)
+	ctx, cli, err := notifier.Dial(context.Background())
 	if err != nil {
-		log.Fatalf("Dial %q: %v", *serverAddr, err)
+		log.Fatalf("Dial: %v", err)
 	}
-	cli := jrpc2.NewClient(channel.RawJSON(conn, conn), nil)
 	defer cli.Close()
-	ctx := context.Background()
 
 	var output []byte
 	if err := cli.CallResult(ctx, "User.Edit", &notifier.EditRequest{

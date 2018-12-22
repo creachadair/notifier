@@ -9,17 +9,12 @@ import (
 	"context"
 	"flag"
 	"log"
-	"net"
-	"os"
 	"strings"
 
-	"bitbucket.org/creachadair/jrpc2"
-	"bitbucket.org/creachadair/jrpc2/channel"
 	"bitbucket.org/creachadair/notifier"
 )
 
 var (
-	serverAddr   = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
 	noteTitle    = flag.String("title", "", "Notification title")
 	noteSubtitle = flag.String("subtitle", "", "Notification subtitle")
 	noteAudible  = flag.Bool("audible", false, "Whether notification should be audible")
@@ -38,13 +33,11 @@ func main() {
 		title = strings.Join(flag.Args(), " ")
 	}
 
-	conn, err := net.Dial("tcp", *serverAddr)
+	ctx, cli, err := notifier.Dial(context.Background())
 	if err != nil {
-		log.Fatalf("Dial %q: %v", *serverAddr, err)
+		log.Fatalf("Dial: %v", err)
 	}
-	cli := jrpc2.NewClient(channel.RawJSON(conn, conn), nil)
 	defer cli.Close()
-	ctx := context.Background()
 
 	if err := cli.Notify(ctx, "Notify.Post", &notifier.PostRequest{
 		Title:    title,

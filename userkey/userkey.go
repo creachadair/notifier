@@ -11,24 +11,21 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"net"
 	"os"
 	"strings"
 
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/jrpc2/caller"
-	"bitbucket.org/creachadair/jrpc2/channel"
 	"bitbucket.org/creachadair/keyfish/config"
 	"bitbucket.org/creachadair/notifier"
 )
 
 var (
-	serverAddr = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
-	doList     = flag.Bool("list", false, "List known site names")
-	doPrint    = flag.Bool("print", false, "Print the result instead of copying it")
-	doShow     = flag.Bool("show", false, "Show the configuration for a site")
-	doFull     = flag.Bool("full", false, "Show the full configuration for a site (implies -show)")
-	doLax      = flag.Bool("lax", false, "Accept site names that do not match known configurations")
+	doList  = flag.Bool("list", false, "List known site names")
+	doPrint = flag.Bool("print", false, "Print the result instead of copying it")
+	doShow  = flag.Bool("show", false, "Show the configuration for a site")
+	doFull  = flag.Bool("full", false, "Show the full configuration for a site (implies -show)")
+	doLax   = flag.Bool("lax", false, "Accept site names that do not match known configurations")
 
 	generateKey = caller.New("Key.Generate", caller.Options{
 		Params: (*notifier.KeyGenRequest)(nil),
@@ -49,13 +46,11 @@ func main() {
 	if flag.NArg() == 0 && !*doList {
 		log.Fatal("You must provide a hostname or salt@hostname")
 	}
-	conn, err := net.Dial("tcp", *serverAddr)
+	ctx, cli, err := notifier.Dial(context.Background())
 	if err != nil {
-		log.Fatalf("Dial %q: %v", *serverAddr, err)
+		log.Fatalf("Dial: %v", err)
 	}
-	cli := jrpc2.NewClient(channel.RawJSON(conn, conn), nil)
 	defer cli.Close()
-	ctx := context.Background()
 
 	if *doList {
 		sites, err := listSites(ctx, cli)

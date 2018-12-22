@@ -10,20 +10,16 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"net"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 	"text/tabwriter"
 
-	"bitbucket.org/creachadair/jrpc2"
-	"bitbucket.org/creachadair/jrpc2/channel"
 	"bitbucket.org/creachadair/notifier"
 )
 
 var (
-	serverAddr   = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
 	noteCategory = flag.String("c", "", "Category label (optional)")
 	noteVersion  = flag.String("v", "", `Version to edit ("", "latest", "new", "2006-01-02")`)
 	doList       = flag.Bool("list", false, "List matching notes")
@@ -39,13 +35,11 @@ func main() {
 		log.Fatal("You may not specify both -list and -categories")
 	}
 
-	conn, err := net.Dial("tcp", *serverAddr)
+	ctx, cli, err := notifier.Dial(context.Background())
 	if err != nil {
-		log.Fatalf("Dial %q: %v", *serverAddr, err)
+		log.Fatalf("Dial: %v", err)
 	}
-	cli := jrpc2.NewClient(channel.RawJSON(conn, conn), nil)
 	defer cli.Close()
-	ctx := context.Background()
 
 	if *doList {
 		var rsp []*notifier.Note

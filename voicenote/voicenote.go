@@ -9,19 +9,12 @@ import (
 	"context"
 	"flag"
 	"log"
-	"net"
-	"os"
 	"strings"
 
-	"bitbucket.org/creachadair/jrpc2"
-	"bitbucket.org/creachadair/jrpc2/channel"
 	"bitbucket.org/creachadair/notifier"
 )
 
-var (
-	serverAddr = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
-	waitTime   = flag.Duration("after", 0, "Wait this long before speaking")
-)
+var waitTime = flag.Duration("after", 0, "Wait this long before speaking")
 
 func main() {
 	flag.Parse()
@@ -29,13 +22,11 @@ func main() {
 		log.Fatal("You must provide a non-empty notification text")
 	}
 
-	conn, err := net.Dial("tcp", *serverAddr)
+	ctx, cli, err := notifier.Dial(context.Background())
 	if err != nil {
-		log.Fatalf("Dial %q: %v", *serverAddr, err)
+		log.Fatalf("Dial: %v", err)
 	}
-	cli := jrpc2.NewClient(channel.RawJSON(conn, conn), nil)
 	defer cli.Close()
-	ctx := context.Background()
 
 	if err := cli.Notify(ctx, "Notify.Say", &notifier.SayRequest{
 		Text:  strings.Join(flag.Args(), " "),
