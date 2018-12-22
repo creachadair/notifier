@@ -16,6 +16,8 @@ import (
 	"bitbucket.org/creachadair/notifier"
 )
 
+func init() { notifier.RegisterPlugin("User", new(input)) }
+
 type input struct {
 	cfg *notifier.Config
 }
