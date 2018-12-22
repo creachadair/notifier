@@ -1,12 +1,10 @@
 bitbucket.org/creachadair/cmdutil v0.0.1 h1:41poMoZney7MUOF6yteBqFkk9d4NUHmus2aQaWXyh5c=
 bitbucket.org/creachadair/cmdutil v0.0.1/go.mod h1:dFd8zkHh869mm4zi5g5oFzzyzmLKp1W6PWwX8zB4BO8=
 bitbucket.org/creachadair/getpass v0.0.1/go.mod h1:hWlcSkFHhwEFbrdg0BMZ60bUWwvtIBdYgcJhQldcdV0=
-bitbucket.org/creachadair/jrpc2 v0.0.31 h1:t4ovNPwelTzRv7gORMzKFZPLAmWrEdWJb4v0CBUbQLk=
-bitbucket.org/creachadair/jrpc2 v0.0.31/go.mod h1:tsN+sEB+evRDbKciGPCSTFddztL9iqFf3vMrJdQEr/c=
+bitbucket.org/creachadair/jrpc2 v0.0.32 h1:KwR/C6z8k0Y+v3Y17d7vlCqhhXZcNorjyDpVSgYr3p4=
+bitbucket.org/creachadair/jrpc2 v0.0.32/go.mod h1:M6Zp1yR6eoy01ACC/0j6xz5ma2lPxGY+vZx88yqL450=
 bitbucket.org/creachadair/keyfish v0.0.14 h1:WTRppWnHq1TGPZVAFbh717Pt/2VCapg+iRGgsMJV53w=
 bitbucket.org/creachadair/keyfish v0.0.14/go.mod h1:AHDUGX66xY/OkenT1eQhnkQpiFKQPqfFr/EoP2VARmU=
-bitbucket.org/creachadair/shell v0.0.2 h1:A3/jFzbE4lNhWajNYAEf1djB4Lk8R3QjH49XpU3QpWs=
-bitbucket.org/creachadair/shell v0.0.2/go.mod h1:ysdp8K5OqvK7lJI3ZNP0I7prXD4kWyDWxozmc04IFpE=
 bitbucket.org/creachadair/shell v0.0.4 h1:pQaJRbIWVEQKoNI7rGMRlLk1vu6RaPR6I5huNBoDEVw=
 bitbucket.org/creachadair/shell v0.0.4/go.mod h1:ysdp8K5OqvK7lJI3ZNP0I7prXD4kWyDWxozmc04IFpE=
 bitbucket.org/creachadair/stringset v0.0.3 h1:VmH2SQ+vEqTSgPHpiVZcGF/21spNbmJ86sSgkb8XMFU=
@@ -15,8 +13,8 @@ github.com/kylelemons/godebug v0.0.0-20170820004349-d65d576e9348 h1:MtvEpTB6LX3v
 github.com/kylelemons/godebug v0.0.0-20170820004349-d65d576e9348/go.mod h1:B69LEHPfb2qLo0BaaOLcbitczOKLWTsrBG9LczfCD4k=
 golang.org/x/crypto v0.0.0-20181203042331-505ab145d0a9 h1:mKdxBk7AujPs8kU4m80U72y/zjbZ3UcXC7dClwKbUI0=
 golang.org/x/crypto v0.0.0-20181203042331-505ab145d0a9/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
-golang.org/x/sync v0.0.0-20181108010431-42b317875d0f h1:Bl/8QSvNqXvPGPGXa2z5xUTmV7VDcZyvRZ+QQXkXTZQ=
-golang.org/x/sync v0.0.0-20181108010431-42b317875d0f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
+golang.org/x/sync v0.0.0-20181221193216-37e7f081c4d4 h1:YUO/7uOKsKeq9UokNS62b8FYywz3ker1l1vDZRCRefw=
+golang.org/x/sync v0.0.0-20181221193216-37e7f081c4d4/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sys v0.0.0-20181005133103-4497e2df6f9e/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
-golang.org/x/sys v0.0.0-20181218192612-074acd46bca6 h1:MXtOG7w2ND9qNCUZSDBGll/SpVIq7ftozR9I8/JGBHY=
-golang.org/x/sys v0.0.0-20181218192612-074acd46bca6/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
+golang.org/x/sys v0.0.0-20181221143128-b4a75ba826a6 h1:IcgEB62HYgAhX0Nd/QrVgZlxlcyxbGQHElLUhW2X4Fo=
+golang.org/x/sys v0.0.0-20181221143128-b4a75ba826a6/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
