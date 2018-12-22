@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"bitbucket.org/creachadair/jrpc2"
+	"bitbucket.org/creachadair/jrpc2/jctx"
 	"bitbucket.org/creachadair/jrpc2/metrics"
 	"bitbucket.org/creachadair/jrpc2/server"
 	"bitbucket.org/creachadair/notifier"
@@ -50,17 +51,20 @@ func main() {
 	} else if cfg.DebugLog {
 		lw = log.New(os.Stderr, "[noteserver] ", log.LstdFlags)
 	}
+	opts := &jrpc2.ServerOptions{
+		Logger:        lw,
+		Metrics:       metrics.New(),
+		StartTime:     time.Now().In(time.UTC),
+		DecodeContext: jctx.Decode,
+		CheckAuth:     cfg.Auth.CheckAuth,
+	}
 
 	lst, err := net.Listen("tcp", cfg.Address)
 	if err != nil {
 		log.Fatalf("Listen: %v", err)
 	}
 	if err := server.Loop(lst, notifier.PluginAssigner(&cfg), &server.LoopOptions{
-		ServerOptions: &jrpc2.ServerOptions{
-			Logger:    lw,
-			Metrics:   metrics.New(),
-			StartTime: time.Now().In(time.UTC),
-		},
+		ServerOptions: opts,
 	}); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
