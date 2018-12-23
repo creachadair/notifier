@@ -2,7 +2,6 @@ package notifier
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"os"
@@ -12,34 +11,35 @@ import (
 	"bitbucket.org/creachadair/jrpc2/jauth"
 	"bitbucket.org/creachadair/jrpc2/jctx"
 	"bitbucket.org/creachadair/shell"
+	yaml "gopkg.in/yaml.v2"
 )
 
 // Config stores settings for the various notifier services.
 type Config struct {
 	Address  string `json:"address"`
-	DebugLog bool   `json:"debugLog"`
+	DebugLog bool   `json:"debugLog" yaml:"debugLog"`
 
 	Auth AuthConfig `json:"auth,omitempty"`
 
 	// Settings for the clipboard service.
 	Clip struct {
-		SaveFile string `json:"saveFile"`
+		SaveFile string `json:"saveFile" yaml:"saveFile"`
 	} `json:"clip"`
 
 	// Settings for the editor service.
 	Edit struct {
 		Command  string `json:"command"`
-		TouchNew bool   `json:"touchNew"`
+		TouchNew bool   `json:"touchNew" yaml:"touchNew"`
 	} `json:"edit"`
 
 	// Settings for the notes service.
 	Notes struct {
-		NotesDir string `json:"notesDir"`
-	}
+		NotesDir string `json:"notesDir" yaml:"notesDir"`
+	} `json:"notes"`
 
 	// Settings for the key generation service.
 	Key struct {
-		ConfigFile string `json:"configFile"`
+		ConfigFile string `json:"configFile" yaml:"configFile"`
 	} `json:"key"`
 
 	// Settings for the notification service.
@@ -58,7 +58,7 @@ func LoadConfig(path string, cfg *Config) error {
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(data, cfg)
+	return yaml.UnmarshalStrict(data, cfg)
 }
 
 // EditFile edits a file using the editor specified by c.
