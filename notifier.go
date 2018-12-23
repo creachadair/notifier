@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"strings"
 	"time"
 
 	"bitbucket.org/creachadair/jrpc2"
@@ -18,9 +19,26 @@ import (
 
 var (
 	serverAddr = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
-	authUser   = flag.String("authuser", os.Getenv("NOTIFIER_USER"), "Username for authorization")
-	authKey    = os.Getenv("NOTIFIER_KEY")
+	authUser   = os.Getenv("USER")
+	authKey    string
 )
+
+// Check the environment NOTIFIER_AUTH for authorization state.
+// If the value has the form "user:key", the user and key are set from it.
+// If the value has the form "key", the user is $USER.
+// Otherwise authorization is not sent.
+func init() {
+	tok := os.Getenv("NOTIFIER_AUTH")
+	if tok != "" {
+		ukey := strings.SplitN(tok, ":", 2)
+		if len(ukey) == 2 {
+			authUser = ukey[0]
+			authKey = ukey[1]
+		} else {
+			authKey = ukey[0]
+		}
+	}
+}
 
 // Dial connects to the flag-selected JSON-RPC server and returns a context and
 // a client ready for use. The caller is responsible for closing the client.
@@ -32,9 +50,9 @@ func Dial(ctx context.Context) (context.Context, *jrpc2.Client, error) {
 	cli := jrpc2.NewClient(channel.RawJSON(conn, conn), &jrpc2.ClientOptions{
 		EncodeContext: jctx.Encode,
 	})
-	if *authUser != "" && authKey != "" {
+	if authUser != "" && authKey != "" {
 		ctx = jctx.WithAuthorizer(ctx, jauth.User{
-			Name: *authUser,
+			Name: authUser,
 			Key:  []byte(authKey),
 		}.Token)
 	}
