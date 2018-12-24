@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"bitbucket.org/creachadair/jrpc2/jauth"
 	"bitbucket.org/creachadair/jrpc2/jctx"
@@ -97,7 +98,7 @@ func (a ACL) checkMethod(method string) bool {
 
 // CheckAuth checks whether the specified request is authorized.
 func (a AuthConfig) CheckAuth(ctx context.Context, method string, params []byte) error {
-	if a == nil {
+	if a == nil || strings.HasPrefix(method, "rpc.") {
 		return nil
 	}
 	raw, ok := jctx.AuthToken(ctx)
