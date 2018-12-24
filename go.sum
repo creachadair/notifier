@@ -1,5 +1,5 @@
-bitbucket.org/creachadair/cmdutil v0.0.1 h1:41poMoZney7MUOF6yteBqFkk9d4NUHmus2aQaWXyh5c=
-bitbucket.org/creachadair/cmdutil v0.0.1/go.mod h1:dFd8zkHh869mm4zi5g5oFzzyzmLKp1W6PWwX8zB4BO8=
+bitbucket.org/creachadair/fileinput v0.0.1 h1:y773L//m7mfGOSQDR4RaiyIUuvQCHXyAxW9mFstP7xE=
+bitbucket.org/creachadair/fileinput v0.0.1/go.mod h1:vtoK0DX4p1rIVq3N9ixFs4mbSRycsoRr78iRyizbnus=
 bitbucket.org/creachadair/getpass v0.0.1/go.mod h1:hWlcSkFHhwEFbrdg0BMZ60bUWwvtIBdYgcJhQldcdV0=
 bitbucket.org/creachadair/jrpc2 v0.0.35 h1:PMPTVTGhwE4Ho+uisg6Vropl1q2jOUh8wENuIvovE54=
 bitbucket.org/creachadair/jrpc2 v0.0.35/go.mod h1:M6Zp1yR6eoy01ACC/0j6xz5ma2lPxGY+vZx88yqL450=

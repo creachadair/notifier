@@ -17,7 +17,7 @@ import (
 	"os"
 	"strings"
 
-	"bitbucket.org/creachadair/cmdutil/files"
+	"bitbucket.org/creachadair/fileinput"
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/jrpc2/caller"
 	"bitbucket.org/creachadair/notifier"
@@ -172,7 +172,7 @@ func main() {
 	if *doTee {
 		w = io.MultiWriter(&buf, os.Stdout)
 	}
-	in := files.CatOrFile(context.Background(), flag.Args(), os.Stdin)
+	in := fileinput.CatOrFile(context.Background(), flag.Args(), os.Stdin)
 	if _, err := io.Copy(w, in); err != nil {
 		log.Fatalf("Reading stdin: %v", err)
 	}

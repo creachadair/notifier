@@ -1,7 +1,7 @@
 module bitbucket.org/creachadair/notifier
 
 require (
-	bitbucket.org/creachadair/cmdutil v0.0.1
+	bitbucket.org/creachadair/fileinput v0.0.1
 	bitbucket.org/creachadair/jrpc2 v0.0.35
 	bitbucket.org/creachadair/keyfish v0.0.14
 	bitbucket.org/creachadair/shell v0.0.4
