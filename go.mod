@@ -2,7 +2,7 @@ module bitbucket.org/creachadair/notifier
 
 require (
 	bitbucket.org/creachadair/fileinput v0.0.1
-	bitbucket.org/creachadair/jrpc2 v0.0.35
+	bitbucket.org/creachadair/jrpc2 v0.0.36
 	bitbucket.org/creachadair/keyfish v0.0.14
 	bitbucket.org/creachadair/shell v0.0.4
 	bitbucket.org/creachadair/stringset v0.0.3
