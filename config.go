@@ -17,37 +17,37 @@ import (
 
 // Config stores settings for the various notifier services.
 type Config struct {
-	Address  string `json:"address"`
-	DebugLog bool   `json:"debugLog" yaml:"debugLog"`
+	Address  string
+	DebugLog bool   `yaml:"debugLog"`
 
-	Auth AuthConfig `json:"auth,omitempty"`
+	Auth AuthConfig `yaml:"auth,omitempty"`
 
 	// Settings for the clipboard service.
 	Clip struct {
-		SaveFile string `json:"saveFile" yaml:"saveFile"`
-	} `json:"clip"`
+		SaveFile string `yaml:"saveFile"`
+	}
 
 	// Settings for the editor service.
 	Edit struct {
-		Command  string `json:"command"`
-		TouchNew bool   `json:"touchNew" yaml:"touchNew"`
-	} `json:"edit"`
+		Command  string
+		TouchNew bool   `yaml:"touchNew"`
+	}
 
 	// Settings for the notes service.
 	Notes struct {
-		NotesDir string `json:"notesDir" yaml:"notesDir"`
-	} `json:"notes"`
+		NotesDir string `yaml:"notesDir"`
+	}
 
 	// Settings for the key generation service.
 	Key struct {
-		ConfigFile string `json:"configFile" yaml:"configFile"`
-	} `json:"key"`
+		ConfigFile string `yaml:"configFile"`
+	}
 
 	// Settings for the notification service.
 	Note struct {
-		Sound string `json:"sound"`
-		Voice string `json:"voice"`
-	} `json:"note"`
+		Sound string
+		Voice string
+	}
 }
 
 // LoadConfig loads a configuration from the file at path into *cfg.
