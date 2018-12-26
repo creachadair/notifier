@@ -50,6 +50,7 @@ func main() {
 		if err := cli.CallResult(ctx, "Notes.List", &notifier.ListNotesRequest{
 			Tag:      tag,
 			Category: *noteCategory,
+			Version:  *noteVersion,
 		}, &rsp); err != nil {
 			log.Fatalf("Error listing notes: %v", err)
 		}
