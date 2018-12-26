@@ -57,18 +57,12 @@ func (n *notes) List(ctx context.Context, req *notifier.ListNotesRequest) ([]*no
 	if cats == nil {
 		return nil, jrpc2.Errorf(code.InvalidParams, "invalid category: %q", req.Category)
 	}
-	var notes []*notifier.Note
-	for _, cat := range cats {
-		ns, err := n.listNotes(req.Tag, cat)
-		if err != nil {
-			return nil, err
-		}
-		notes = append(notes, ns...)
+	base, ext := splitExt(req.Tag)
+	ns, err := n.filterAndSort(base, req.Version, ext, cats)
+	if err != nil {
+		return nil, err
 	}
-	sort.Slice(notes, func(i, j int) bool {
-		return notifier.NoteLess(notes[j], notes[i])
-	})
-	return notes, nil
+	return ns, nil
 }
 
 func (n *notes) Read(ctx context.Context, req *notifier.EditNotesRequest) (string, error) {
@@ -163,9 +157,12 @@ func (n *notes) filterAndSort(tag, version, suffix string, cats []*notifier.Note
 			return nil, err
 		}
 		for _, note := range nc {
-			if version != "" && note.Version != version {
-				continue
-			} else if suffix != "" && note.Suffix != suffix {
+			if version != "" {
+				if ok, err := filepath.Match(version, note.Version); err == nil && !ok {
+					continue
+				}
+			}
+			if suffix != "" && note.Suffix != suffix {
 				continue
 			}
 			match = append(match, note)
