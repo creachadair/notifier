@@ -59,7 +59,7 @@ func main() {
 		})
 		tw := tabwriter.NewWriter(os.Stdout, 0, 8, 1, ' ', 0)
 		for _, note := range rsp {
-			fmt.Fprint(tw, note.Tag, "\t", note.Version, "\n")
+			fmt.Fprint(tw, note.Tag+note.Suffix, "\t", note.Version, "\n")
 		}
 		tw.Flush()
 
