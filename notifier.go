@@ -159,8 +159,12 @@ type ListNotesRequest struct {
 	// List files matching this name tag (match all, if empty)
 	Tag string `json:"tag,omitempty"`
 
-	// List files in this note category, e.g., "meetings".
+	// List files in this note category, e.g., "meetings".  If empty, list files
+	// in all categories.
 	Category string `json:"category,omitempty"`
+
+	// List files matching this version (globs OK, e.g., "2018-11-*").
+	Version string `json:"version,omitempty"`
 }
 
 // A Note describes an editable note.
