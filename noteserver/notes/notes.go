@@ -27,7 +27,7 @@ type notes struct {
 
 // Init implements part of notifier.Plugin.
 func (n *notes) Init(cfg *notifier.Config) error {
-	if cfg.Notes.NotesDir == "" {
+	if cfg.Notes.Default == nil && len(cfg.Notes.Categories) == 0 {
 		return notifier.ErrNotApplicable
 	}
 	n.cfg = cfg
@@ -53,10 +53,11 @@ func (n *notes) Edit(ctx context.Context, req *notifier.EditNotesRequest) error 
 }
 
 func (n *notes) List(ctx context.Context, req *notifier.ListNotesRequest) ([]*notifier.Note, error) {
-	if n.cfg.Notes.NotesDir == "" {
-		return nil, errors.New("no notes directory is defined")
+	cat := n.findCategory(req.Category)
+	if cat == nil {
+		return nil, jrpc2.Errorf(code.InvalidParams, "invalid category: %q", req.Category)
 	}
-	return n.listNotes(req.Tag, req.Category)
+	return n.listNotes(req.Tag, cat)
 }
 
 func (n *notes) Read(ctx context.Context, req *notifier.EditNotesRequest) (string, error) {
@@ -72,39 +73,24 @@ func (n *notes) Read(ctx context.Context, req *notifier.EditNotesRequest) (strin
 }
 
 func (n *notes) Categories(ctx context.Context) ([]string, error) {
-	if n.cfg.Notes.NotesDir == "" {
-		return nil, errors.New("no notes directory is defined")
+	var cats []string
+	for _, cat := range n.cfg.Notes.Categories {
+		cats = append(cats, cat.Name)
 	}
-	f, err := os.Open(os.ExpandEnv(n.cfg.Notes.NotesDir))
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-	info, err := f.Readdir(-1)
-	if err != nil {
-		return nil, err
-	}
-	var result []string
-	for _, fi := range info {
-		if fi.IsDir() {
-			result = append(result, fi.Name())
-		}
-	}
-	sort.Strings(result)
-	return result, nil
+	sort.Strings(cats)
+	return cats, nil
 }
 
 var noteName = regexp.MustCompile(`(.*)-([0-9]{4})([0-9]{2})([0-9]{2})\.\w+$`)
 
 func (n *notes) findNotePath(req *notifier.EditNotesRequest) (string, error) {
-	if n.cfg.Notes.NotesDir == "" {
-		return "", errors.New("no notes directory is defined")
+	cat := n.findCategory(req.Category)
+	if cat == nil {
+		return "", jrpc2.Errorf(code.InvalidParams, "invalid category: %q", req.Category)
 	} else if req.Tag == "" {
 		return "", jrpc2.Errorf(code.InvalidParams, "missing base note name")
 	} else if strings.Contains(req.Tag, "/") {
 		return "", jrpc2.Errorf(code.InvalidParams, "tag may not contain '/'")
-	} else if strings.Contains(req.Category, "/") {
-		return "", jrpc2.Errorf(code.InvalidParams, "category may not contain '/'")
 	}
 
 	var version string
@@ -114,7 +100,7 @@ func (n *notes) findNotePath(req *notifier.EditNotesRequest) (string, error) {
 	} else if req.Version == "" || req.Version == "latest" {
 		// If we found an existing version, override the specified tag so that we
 		// get the actual file extension.
-		old, err := n.latestNote(tag, req.Category)
+		old, err := n.latestNote(tag, cat)
 		if err != nil {
 			return "", err
 		}
@@ -127,17 +113,20 @@ func (n *notes) findNotePath(req *notifier.EditNotesRequest) (string, error) {
 	}
 
 	// Extract the file extension from the tag, e.g., base.txt, base.md.
-	// Default to .txt if no extension was included.
+	// Default to the config's extension or .txt if none was included.
 	base, ext := splitExt(tag)
 	if ext == "" {
-		ext = ".txt"
+		ext = cat.Suffix
+		if ext == "" {
+			ext = ".txt"
+		}
 	}
 	name := fmt.Sprintf("%s-%s%s", base, version, ext)
-	return filepath.Join(os.ExpandEnv(n.cfg.Notes.NotesDir), req.Category, name), nil
+	return filepath.Join(os.ExpandEnv(cat.Dir), name), nil
 }
 
-func (n *notes) latestNote(tag, category string) (*notifier.Note, error) {
-	old, err := n.listNotes(tag, category)
+func (n *notes) latestNote(tag string, cat *notifier.NoteCategory) (*notifier.Note, error) {
+	old, err := n.listNotes(tag, cat)
 	if err != nil {
 		return nil, err
 	} else if len(old) == 0 {
@@ -149,8 +138,23 @@ func (n *notes) latestNote(tag, category string) (*notifier.Note, error) {
 	return old[0], nil
 }
 
-func (n *notes) listNotes(tag, category string) ([]*notifier.Note, error) {
+func (n *notes) findCategory(name string) *notifier.NoteCategory {
+	if name == "" {
+		return n.cfg.Notes.Default
+	}
+	for _, cat := range n.cfg.Notes.Categories {
+		if cat.Name == name {
+			return cat
+		}
+	}
+	return nil
+}
+
+func (n *notes) listNotes(tag string, cat *notifier.NoteCategory) ([]*notifier.Note, error) {
 	base, ext := splitExt(tag)
+	if ext == "" {
+		ext = cat.Suffix
+	}
 	tglob := base + "-????????" + ext
 	if ext == "" {
 		tglob += ".*"
@@ -159,7 +163,7 @@ func (n *notes) listNotes(tag, category string) ([]*notifier.Note, error) {
 		tglob = "*" + tglob
 	}
 
-	pattern := filepath.Join(os.ExpandEnv(n.cfg.Notes.NotesDir), category, tglob)
+	pattern := filepath.Join(os.ExpandEnv(cat.Dir), tglob)
 	names, err := filepath.Glob(pattern)
 	if err != nil {
 		return nil, err
