@@ -27,7 +27,7 @@ type notes struct {
 
 // Init implements part of notifier.Plugin.
 func (n *notes) Init(cfg *notifier.Config) error {
-	if cfg.Notes.Default == nil && len(cfg.Notes.Categories) == 0 {
+	if len(cfg.Notes.Categories) == 0 {
 		return notifier.ErrNotApplicable
 	}
 	n.cfg = cfg
@@ -53,11 +53,22 @@ func (n *notes) Edit(ctx context.Context, req *notifier.EditNotesRequest) error 
 }
 
 func (n *notes) List(ctx context.Context, req *notifier.ListNotesRequest) ([]*notifier.Note, error) {
-	cat := n.findCategory(req.Category)
-	if cat == nil {
+	cats := n.findCategories(req.Category)
+	if cats == nil {
 		return nil, jrpc2.Errorf(code.InvalidParams, "invalid category: %q", req.Category)
 	}
-	return n.listNotes(req.Tag, cat)
+	var notes []*notifier.Note
+	for _, cat := range cats {
+		ns, err := n.listNotes(req.Tag, cat)
+		if err != nil {
+			return nil, err
+		}
+		notes = append(notes, ns...)
+	}
+	sort.Slice(notes, func(i, j int) bool {
+		return notifier.NoteLess(notes[j], notes[i])
+	})
+	return notes, nil
 }
 
 func (n *notes) Read(ctx context.Context, req *notifier.EditNotesRequest) (string, error) {
@@ -84,8 +95,8 @@ func (n *notes) Categories(ctx context.Context) ([]string, error) {
 var noteName = regexp.MustCompile(`(.*)-([0-9]{4})([0-9]{2})([0-9]{2})\.\w+$`)
 
 func (n *notes) findNotePath(req *notifier.EditNotesRequest) (string, error) {
-	cat := n.findCategory(req.Category)
-	if cat == nil {
+	cats := n.findCategories(req.Category)
+	if cats == nil {
 		return "", jrpc2.Errorf(code.InvalidParams, "invalid category: %q", req.Category)
 	} else if req.Tag == "" {
 		return "", jrpc2.Errorf(code.InvalidParams, "missing base note name")
@@ -93,58 +104,86 @@ func (n *notes) findNotePath(req *notifier.EditNotesRequest) (string, error) {
 		return "", jrpc2.Errorf(code.InvalidParams, "tag may not contain '/'")
 	}
 
-	var version string
-	tag := req.Tag
+	base, ext := splitExt(req.Tag)
+
+	// Case 1: Finding the path for a new note.  In this case, the category must
+	// be uniquely specified.
 	if req.Version == "new" {
-		version = time.Now().Format("20060102")
-	} else if req.Version == "" || req.Version == "latest" {
-		// If we found an existing version, override the specified tag so that we
-		// get the actual file extension.
-		old, err := n.latestNote(tag, cat)
-		if err != nil {
-			return "", err
+		if len(cats) != 1 {
+			return "", errors.New("no category specified for new note")
 		}
-		tag = old.Tag
-		version = strings.Replace(old.Version, "-", "", -1)
-	} else if t, err := time.Parse("2006-01-02", req.Version); err != nil {
-		return "", jrpc2.Errorf(code.InvalidParams, "invalid version: %v", err)
-	} else {
-		version = t.Format("20060102")
+		if ext == "" {
+			ext = cats[0].Suffix
+		}
+		name := fmt.Sprintf("%s-%s%s", base, time.Now().Format("20060102"), ext)
+		return filepath.Join(os.ExpandEnv(cats[0].Dir), name), nil
 	}
 
-	// Extract the file extension from the tag, e.g., base.txt, base.md.
-	// Default to the config's extension or .txt if none was included.
-	base, ext := splitExt(tag)
-	if ext == "" {
-		ext = cat.Suffix
-		if ext == "" {
-			ext = ".txt"
+	// Case 2: Finding the path for the latest version. We can search all
+	// categories if there isn't one specified.
+	if req.Version == "" || req.Version == "latest" {
+		ns, err := n.filterAndSort(base, "", ext, cats)
+		if err != nil {
+			return "", err
+		} else if len(ns) == 0 {
+			return "", fmt.Errorf("no notes matching %q", req.Tag)
 		}
+		latest := ns[len(ns)-1]
+		cat := n.findCategories(latest.Category)[0]
+		version := strings.Replace(latest.Version, "-", "", -1)
+		name := fmt.Sprintf("%s-%s%s", latest.Tag, version, latest.Suffix)
+		return filepath.Join(os.ExpandEnv(cat.Dir), name), nil
 	}
-	name := fmt.Sprintf("%s-%s%s", base, version, ext)
+
+	// Case 3: Finding the path for a specific version.
+	t, err := time.Parse("2006-01-02", req.Version)
+	if err != nil {
+		return "", jrpc2.Errorf(code.InvalidParams, "invalid version: %v", err)
+	}
+	ns, err := n.filterAndSort(base, req.Version, ext, cats)
+	if err != nil {
+		return "", err
+	} else if len(ns) == 0 {
+		return "", fmt.Errorf("no notes matching version %s of %q", req.Version, req.Tag)
+	} else if len(ns) > 1 {
+		return "", fmt.Errorf("multiple notes (%d) matching version %s of %q",
+			len(ns), req.Version, req.Tag)
+	}
+	latest := ns[len(ns)-1]
+	cat := n.findCategories(latest.Category)[0]
+	name := fmt.Sprintf("%s-%s%s", latest.Tag, t.Format("20060102"), latest.Suffix)
 	return filepath.Join(os.ExpandEnv(cat.Dir), name), nil
 }
 
-func (n *notes) latestNote(tag string, cat *notifier.NoteCategory) (*notifier.Note, error) {
-	old, err := n.listNotes(tag, cat)
-	if err != nil {
-		return nil, err
-	} else if len(old) == 0 {
-		return nil, fmt.Errorf("no notes matching %q", tag)
+func (n *notes) filterAndSort(tag, version, suffix string, cats []*notifier.NoteCategory) ([]*notifier.Note, error) {
+	var match []*notifier.Note
+	for _, cat := range cats {
+		nc, err := n.listNotes(tag, cat)
+		if err != nil {
+			return nil, err
+		}
+		for _, note := range nc {
+			if version != "" && note.Version != version {
+				continue
+			} else if suffix != "" && note.Suffix != suffix {
+				continue
+			}
+			match = append(match, note)
+		}
 	}
-	sort.Slice(old, func(i, j int) bool {
-		return notifier.NoteLess(old[j], old[i])
+	sort.Slice(match, func(i, j int) bool {
+		return notifier.NoteLess(match[i], match[j])
 	})
-	return old[0], nil
+	return match, nil
 }
 
-func (n *notes) findCategory(name string) *notifier.NoteCategory {
+func (n *notes) findCategories(name string) []*notifier.NoteCategory {
 	if name == "" {
-		return n.cfg.Notes.Default
+		return n.cfg.Notes.Categories
 	}
 	for _, cat := range n.cfg.Notes.Categories {
 		if cat.Name == name {
-			return cat
+			return []*notifier.NoteCategory{cat}
 		}
 	}
 	return nil
@@ -152,9 +191,6 @@ func (n *notes) findCategory(name string) *notifier.NoteCategory {
 
 func (n *notes) listNotes(tag string, cat *notifier.NoteCategory) ([]*notifier.Note, error) {
 	base, ext := splitExt(tag)
-	if ext == "" {
-		ext = cat.Suffix
-	}
 	tglob := base + "-????????" + ext
 	if ext == "" {
 		tglob += ".*"
@@ -168,19 +204,18 @@ func (n *notes) listNotes(tag string, cat *notifier.NoteCategory) ([]*notifier.N
 	if err != nil {
 		return nil, err
 	}
+
 	var rsp []*notifier.Note
 	for _, name := range names {
 		m := noteName.FindStringSubmatch(filepath.Base(name))
 		if m == nil {
 			continue
 		}
-		tag := m[1]
-		if ext := filepath.Ext(name); ext != ".txt" {
-			tag += ext
-		}
 		rsp = append(rsp, &notifier.Note{
-			Tag:     tag,
-			Version: fmt.Sprintf("%s-%s-%s", m[2], m[3], m[4]),
+			Tag:      m[1],
+			Version:  fmt.Sprintf("%s-%s-%s", m[2], m[3], m[4]),
+			Suffix:   filepath.Ext(name),
+			Category: cat.Name,
 		})
 	}
 	return rsp, nil
@@ -188,6 +223,5 @@ func (n *notes) listNotes(tag string, cat *notifier.NoteCategory) ([]*notifier.N
 
 func splitExt(name string) (base, ext string) {
 	ext = filepath.Ext(name)
-	base = strings.TrimSuffix(name, ext)
-	return
+	return strings.TrimSuffix(name, ext), ext
 }
