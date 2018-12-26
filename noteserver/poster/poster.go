@@ -44,7 +44,7 @@ func (p *poster) Post(ctx context.Context, req *notifier.PostRequest) (bool, err
 		program = append(program, fmt.Sprintf("subtitle %q", t))
 	}
 	if req.Audible {
-		program = append(program, fmt.Sprintf("sound name %q", p.cfg.Note.Sound))
+		program = append(program, fmt.Sprintf("sound name %q", p.cfg.Notify.Sound))
 	}
 	cmd := exec.CommandContext(ctx, "osascript")
 	cmd.Stdin = strings.NewReader(strings.Join(program, " "))
@@ -64,7 +64,7 @@ func (p *poster) Say(ctx context.Context, req *notifier.SayRequest) (bool, error
 	if req.Text == "" {
 		return false, jrpc2.Errorf(code.InvalidParams, "empty text")
 	} else if req.Voice == "" {
-		req.Voice = p.cfg.Note.Voice
+		req.Voice = p.cfg.Notify.Voice
 	}
 	if wait := req.After; wait > 0 {
 		select {

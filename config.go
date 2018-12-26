@@ -44,7 +44,7 @@ type Config struct {
 	}
 
 	// Settings for the notification service.
-	Note struct {
+	Notify struct {
 		Sound string
 		Voice string
 	}
