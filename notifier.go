@@ -165,14 +165,19 @@ type ListNotesRequest struct {
 
 // A Note describes an editable note.
 type Note struct {
-	Tag     string `json:"tag,omitempty"`
-	Version string `json:"version,omitempty"`
+	Tag      string `json:"tag,omitempty"`
+	Version  string `json:"version,omitempty"`
+	Suffix   string `json:"suffix,omitempty"`
+	Category string `json:"category,omitempty"`
 }
 
 // NoteLess reports whether a should be ordered prior to b, first by tag and
 // then by version.
 func NoteLess(a, b *Note) bool {
 	if a.Tag == b.Tag {
+		if a.Version == b.Version {
+			return a.Category < b.Category
+		}
 		return a.Version < b.Version
 	}
 	return a.Tag < b.Tag
