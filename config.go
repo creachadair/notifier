@@ -15,10 +15,11 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
+// A NoteCategory describes the configuration settings for a notes category.
 type NoteCategory struct {
-	Name   string
-	Dir    string
-	Suffix string
+	Name   string // the name of the category
+	Dir    string // the direcory where notes are stored
+	Suffix string // the default file suffix for this category
 }
 
 // Config stores settings for the various notifier services.
@@ -41,7 +42,6 @@ type Config struct {
 
 	// Settings for the notes service.
 	Notes struct {
-		Default    *NoteCategory
 		Categories []*NoteCategory
 	}
 
