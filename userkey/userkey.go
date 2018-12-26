@@ -26,6 +26,7 @@ var (
 	doShow  = flag.Bool("show", false, "Show the configuration for a site")
 	doFull  = flag.Bool("full", false, "Show the full configuration for a site (implies -show)")
 	doLax   = flag.Bool("lax", false, "Accept site names that do not match known configurations")
+	doRaw   = flag.Bool("raw", false, "Print results as raw JSON")
 
 	generateKey = caller.New("Key.Generate", caller.Options{
 		Params: (*notifier.KeyGenRequest)(nil),
@@ -89,7 +90,13 @@ func main() {
 	} else if err != nil {
 		log.Fatal(err)
 	}
-	if pw.Key == "" {
+	if *doRaw {
+		bits, err := json.Marshal(pw)
+		if err != nil {
+			log.Fatalf("Marshaling response: %v", err)
+		}
+		fmt.Println(string(bits))
+	} else if pw.Key == "" {
 		fmt.Print(pw.Label, "\t", pw.Hash, "\n")
 	} else {
 		fmt.Println(pw.Key)
