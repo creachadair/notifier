@@ -15,10 +15,16 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
+type NoteCategory struct {
+	Name   string
+	Dir    string
+	Suffix string
+}
+
 // Config stores settings for the various notifier services.
 type Config struct {
 	Address  string
-	DebugLog bool   `yaml:"debugLog"`
+	DebugLog bool `yaml:"debugLog"`
 
 	Auth AuthConfig `yaml:"auth,omitempty"`
 
@@ -30,12 +36,13 @@ type Config struct {
 	// Settings for the editor service.
 	Edit struct {
 		Command  string
-		TouchNew bool   `yaml:"touchNew"`
+		TouchNew bool `yaml:"touchNew"`
 	}
 
 	// Settings for the notes service.
 	Notes struct {
-		NotesDir string `yaml:"notesDir"`
+		Default    *NoteCategory
+		Categories []*NoteCategory
 	}
 
 	// Settings for the key generation service.
