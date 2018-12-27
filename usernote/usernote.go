@@ -74,9 +74,10 @@ func main() {
 	} else if *doRead {
 		var text string
 		if err := cli.CallResult(ctx, "Notes.Read", &notifier.EditNotesRequest{
-			Tag:      flag.Arg(0),
-			Category: *noteCategory,
-			Version:  *noteVersion,
+			Tag:        flag.Arg(0),
+			Category:   *noteCategory,
+			Version:    *noteVersion,
+			Background: true,
 		}, &text); err != nil {
 			log.Fatalf("Error reading note: %v", err)
 		}
