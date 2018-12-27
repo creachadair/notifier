@@ -152,6 +152,10 @@ type EditNotesRequest struct {
 	// matching version for this base name is edited.  Otherwise, this must be
 	// a date in YYYY-MM-DD format.
 	Version string `json:"version,omitempty"`
+
+	// If true, return as soon as the editor starts rather than waiting for it
+	// to terminate.
+	Background bool `json:"background,omitempty"`
 }
 
 // A ListNotesRequest is a request to list the available notes.
