@@ -74,16 +74,16 @@ func main() {
 		})
 
 	} else if *doRead {
-		var text string
+		var note notifier.NoteWithText
 		if err := cli.CallResult(ctx, "Notes.Read", &notifier.EditNotesRequest{
 			Tag:        flag.Arg(0),
 			Category:   *noteCategory,
 			Version:    *noteVersion,
 			Background: true,
-		}, &text); err != nil {
+		}, &note); err != nil {
 			log.Fatalf("Error reading note: %v", err)
 		}
-		fmt.Println(text)
+		fmt.Println(string(note.Text))
 
 	} else if _, err := cli.Call(ctx, "Notes.Edit", &notifier.EditNotesRequest{
 		Tag:      flag.Arg(0),
