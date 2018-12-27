@@ -3,6 +3,7 @@ package notifier
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -20,6 +21,16 @@ type NoteCategory struct {
 	Name   string `json:"name"`             // the name of the category
 	Dir    string `json:"dir"`              // the direcory where notes are stored
 	Suffix string `json:"suffix,omitempty"` // the default file suffix for this category
+}
+
+// FilePath constructs a filepath for the specified base, version, and
+// extension relative to the directory of the specified category.
+func (c *NoteCategory) FilePath(base, version, ext string) string {
+	if ext == "" {
+		ext = c.Suffix
+	}
+	name := fmt.Sprintf("%s-%s%s", base, version, ext)
+	return filepath.Join(os.ExpandEnv(c.Dir), name)
 }
 
 // Config stores settings for the various notifier services.
