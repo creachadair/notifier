@@ -13,7 +13,6 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
-	"strings"
 	"text/tabwriter"
 
 	"bitbucket.org/creachadair/notifier"
@@ -64,11 +63,13 @@ func main() {
 		tw.Flush()
 
 	} else if *doCategories {
-		var cats []string
+		var cats []*notifier.NoteCategory
 		if err := cli.CallResult(ctx, "Notes.Categories", nil, &cats); err != nil {
 			log.Fatalf("Error listing categories: %v", err)
 		}
-		fmt.Println(strings.Join(cats, "\n"))
+		for _, cat := range cats {
+			fmt.Printf("%s\t%s\n", cat.Name, cat.Dir)
+		}
 
 	} else if *doRead {
 		var text string

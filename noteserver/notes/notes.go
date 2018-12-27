@@ -77,13 +77,8 @@ func (n *notes) Read(ctx context.Context, req *notifier.EditNotesRequest) (strin
 	return string(data), nil
 }
 
-func (n *notes) Categories(ctx context.Context) ([]string, error) {
-	var cats []string
-	for _, cat := range n.cfg.Notes.Categories {
-		cats = append(cats, cat.Name)
-	}
-	sort.Strings(cats)
-	return cats, nil
+func (n *notes) Categories(ctx context.Context) ([]*notifier.NoteCategory, error) {
+	return n.cfg.Notes.Categories, nil
 }
 
 var noteName = regexp.MustCompile(`(.*)-([0-9]{4})([0-9]{2})([0-9]{2})\.\w+$`)
