@@ -48,8 +48,25 @@ func (n *notes) Edit(ctx context.Context, req *notifier.EditNotesRequest) error 
 	if err != nil {
 		return err
 	}
-	log.Printf("Editing notes file %q...", path)
-	return n.cfg.EditFile(ctx, path)
+
+	// N.B. Call the editor with a background context, so that it does not
+	// terminate when this request returns.
+	cmd, err := n.cfg.EditFileCmd(context.Background(), path)
+	if err != nil {
+		return err
+	} else if err := cmd.Start(); err != nil {
+		return err
+	}
+	log.Printf("[pid=%d] Editing notes file %q...", cmd.Process.Pid, path)
+	if req.Background {
+		go func() {
+			log.Printf("[pid=%d] Editor (async) exited: %v", cmd.Process.Pid, cmd.Wait())
+		}()
+		return nil
+	}
+	err = cmd.Wait()
+	log.Printf("[pid=%d] Editor (sync) exited: %v", cmd.Process.Pid, err)
+	return err
 }
 
 func (n *notes) List(ctx context.Context, req *notifier.ListNotesRequest) ([]*notifier.Note, error) {
