@@ -118,11 +118,7 @@ func (n *notes) findNotePath(req *notifier.EditNotesRequest) (string, error) {
 		if len(cats) != 1 {
 			return "", errors.New("no category specified for new note")
 		}
-		if ext == "" {
-			ext = cats[0].Suffix
-		}
-		name := fmt.Sprintf("%s-%s%s", base, time.Now().Format("20060102"), ext)
-		return filepath.Join(os.ExpandEnv(cats[0].Dir), name), nil
+		return cats[0].FilePath(base, time.Now().Format("20060102"), ext), nil
 	}
 
 	// Case 2: Finding the path for the latest version. We can search all
@@ -135,15 +131,11 @@ func (n *notes) findNotePath(req *notifier.EditNotesRequest) (string, error) {
 			return "", fmt.Errorf("no notes matching %q", req.Tag)
 		}
 		latest := ns[len(ns)-1]
-		cat := n.findCategories(latest.Category)[0]
-		version := strings.Replace(latest.Version, "-", "", -1)
-		name := fmt.Sprintf("%s-%s%s", latest.Tag, version, latest.Suffix)
-		return filepath.Join(os.ExpandEnv(cat.Dir), name), nil
+		return latest.Path, nil
 	}
 
 	// Case 3: Finding the path for a specific version.
-	t, err := time.Parse("2006-01-02", req.Version)
-	if err != nil {
+	if _, err := time.Parse("2006-01-02", req.Version); err != nil {
 		return "", jrpc2.Errorf(code.InvalidParams, "invalid version: %v", err)
 	}
 	ns, err := n.filterAndSort(base, req.Version, ext, cats)
@@ -156,9 +148,7 @@ func (n *notes) findNotePath(req *notifier.EditNotesRequest) (string, error) {
 			len(ns), req.Version, req.Tag)
 	}
 	latest := ns[len(ns)-1]
-	cat := n.findCategories(latest.Category)[0]
-	name := fmt.Sprintf("%s-%s%s", latest.Tag, t.Format("20060102"), latest.Suffix)
-	return filepath.Join(os.ExpandEnv(cat.Dir), name), nil
+	return latest.Path, nil
 }
 
 func (n *notes) filterAndSort(tag, version, suffix string, cats []*notifier.NoteCategory) ([]*notifier.Note, error) {
@@ -225,6 +215,7 @@ func (n *notes) listNotes(tag string, cat *notifier.NoteCategory) ([]*notifier.N
 			Version:  fmt.Sprintf("%s-%s-%s", m[2], m[3], m[4]),
 			Suffix:   filepath.Ext(name),
 			Category: cat.Name,
+			Path:     name,
 		})
 	}
 	return rsp, nil
