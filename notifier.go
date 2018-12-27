@@ -5,9 +5,11 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io"
 	"net"
 	"os"
 	"strings"
+	"text/tabwriter"
 	"time"
 
 	"bitbucket.org/creachadair/jrpc2"
@@ -190,4 +192,12 @@ func NoteLess(a, b *Note) bool {
 		return a.Version < b.Version
 	}
 	return a.Tag < b.Tag
+}
+
+// Columns calls write with a tabwriter directed to w, and flushes its output
+// when write returns.
+func Columns(w io.Writer, write func(io.Writer)) {
+	tw := tabwriter.NewWriter(w, 0, 8, 1, ' ', 0)
+	defer tw.Flush()
+	write(tw)
 }
