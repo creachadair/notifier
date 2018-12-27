@@ -182,6 +182,12 @@ type Note struct {
 	Path     string `json:"path,omitempty"`
 }
 
+// A NoteWithText reports a note and its content.
+type NoteWithText struct {
+	*Note
+	Text []byte `json:"text"`
+}
+
 // NoteLess reports whether a should be ordered prior to b, first by tag and
 // then by version.
 func NoteLess(a, b *Note) bool {
