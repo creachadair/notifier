@@ -82,16 +82,19 @@ func (n *notes) List(ctx context.Context, req *notifier.ListNotesRequest) ([]*no
 	return ns, nil
 }
 
-func (n *notes) Read(ctx context.Context, req *notifier.EditNotesRequest) (string, error) {
-	path, err := n.findNotePath(req)
+func (n *notes) Read(ctx context.Context, req *notifier.EditNotesRequest) (*notifier.NoteWithText, error) {
+	note, err := n.findNote(req)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	data, err := ioutil.ReadFile(path)
+	data, err := ioutil.ReadFile(note.Path)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return string(data), nil
+	return &notifier.NoteWithText{
+		Note: note,
+		Text: data,
+	}, nil
 }
 
 func (n *notes) Categories(ctx context.Context) ([]*notifier.NoteCategory, error) {
@@ -101,13 +104,21 @@ func (n *notes) Categories(ctx context.Context) ([]*notifier.NoteCategory, error
 var noteName = regexp.MustCompile(`(.*)-([0-9]{4})([0-9]{2})([0-9]{2})\.\w+$`)
 
 func (n *notes) findNotePath(req *notifier.EditNotesRequest) (string, error) {
+	note, err := n.findNote(req)
+	if err != nil {
+		return "", err
+	}
+	return note.Path, nil
+}
+
+func (n *notes) findNote(req *notifier.EditNotesRequest) (*notifier.Note, error) {
 	cats := n.findCategories(req.Category)
 	if cats == nil {
-		return "", jrpc2.Errorf(code.InvalidParams, "invalid category: %q", req.Category)
+		return nil, jrpc2.Errorf(code.InvalidParams, "invalid category: %q", req.Category)
 	} else if req.Tag == "" {
-		return "", jrpc2.Errorf(code.InvalidParams, "missing base note name")
+		return nil, jrpc2.Errorf(code.InvalidParams, "missing base note name")
 	} else if strings.Contains(req.Tag, "/") {
-		return "", jrpc2.Errorf(code.InvalidParams, "tag may not contain '/'")
+		return nil, jrpc2.Errorf(code.InvalidParams, "tag may not contain '/'")
 	}
 
 	base, ext := splitExt(req.Tag)
@@ -116,9 +127,17 @@ func (n *notes) findNotePath(req *notifier.EditNotesRequest) (string, error) {
 	// be uniquely specified.
 	if req.Version == "new" {
 		if len(cats) != 1 {
-			return "", errors.New("no category specified for new note")
+			return nil, errors.New("no category specified for new note")
 		}
-		return cats[0].FilePath(base, time.Now().Format("20060102"), ext), nil
+		version := time.Now().Format("20060102")
+		path := cats[0].FilePath(base, version, ext)
+		return &notifier.Note{
+			Tag:      base,
+			Version:  version,
+			Suffix:   filepath.Ext(path),
+			Category: cats[0].Name,
+			Path:     path,
+		}, nil
 	}
 
 	// Case 2: Finding the path for the latest version. We can search all
@@ -126,29 +145,27 @@ func (n *notes) findNotePath(req *notifier.EditNotesRequest) (string, error) {
 	if req.Version == "" || req.Version == "latest" {
 		ns, err := n.filterAndSort(base, "", ext, cats)
 		if err != nil {
-			return "", err
+			return nil, err
 		} else if len(ns) == 0 {
-			return "", fmt.Errorf("no notes matching %q", req.Tag)
+			return nil, fmt.Errorf("no notes matching %q", req.Tag)
 		}
-		latest := ns[len(ns)-1]
-		return latest.Path, nil
+		return ns[len(ns)-1], nil
 	}
 
 	// Case 3: Finding the path for a specific version.
 	if _, err := time.Parse("2006-01-02", req.Version); err != nil {
-		return "", jrpc2.Errorf(code.InvalidParams, "invalid version: %v", err)
+		return nil, jrpc2.Errorf(code.InvalidParams, "invalid version: %v", err)
 	}
 	ns, err := n.filterAndSort(base, req.Version, ext, cats)
 	if err != nil {
-		return "", err
+		return nil, err
 	} else if len(ns) == 0 {
-		return "", fmt.Errorf("no notes matching version %s of %q", req.Version, req.Tag)
+		return nil, fmt.Errorf("no notes matching version %s of %q", req.Version, req.Tag)
 	} else if len(ns) > 1 {
-		return "", fmt.Errorf("multiple notes (%d) matching version %s of %q",
+		return nil, fmt.Errorf("multiple notes (%d) matching version %s of %q",
 			len(ns), req.Version, req.Tag)
 	}
-	latest := ns[len(ns)-1]
-	return latest.Path, nil
+	return ns[len(ns)-1], nil
 }
 
 func (n *notes) filterAndSort(tag, version, suffix string, cats []*notifier.NoteCategory) ([]*notifier.Note, error) {
