@@ -17,9 +17,9 @@ import (
 
 // A NoteCategory describes the configuration settings for a notes category.
 type NoteCategory struct {
-	Name   string // the name of the category
-	Dir    string // the direcory where notes are stored
-	Suffix string // the default file suffix for this category
+	Name   string `json:"name"`             // the name of the category
+	Dir    string `json:"dir"`              // the direcory where notes are stored
+	Suffix string `json:"suffix,omitempty"` // the default file suffix for this category
 }
 
 // Config stores settings for the various notifier services.
