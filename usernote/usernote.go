@@ -82,7 +82,7 @@ func main() {
 		}
 		fmt.Println(text)
 
-	} else if err := cli.Notify(ctx, "Notes.Edit", &notifier.EditNotesRequest{
+	} else if _, err := cli.Call(ctx, "Notes.Edit", &notifier.EditNotesRequest{
 		Tag:      flag.Arg(0),
 		Category: *noteCategory,
 		Version:  *noteVersion,
