@@ -9,11 +9,11 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
 	"sort"
-	"text/tabwriter"
 
 	"bitbucket.org/creachadair/notifier"
 )
@@ -56,20 +56,22 @@ func main() {
 		sort.Slice(rsp, func(i, j int) bool {
 			return notifier.NoteLess(rsp[i], rsp[j])
 		})
-		tw := tabwriter.NewWriter(os.Stdout, 0, 8, 1, ' ', 0)
-		for _, note := range rsp {
-			fmt.Fprint(tw, note.Tag+note.Suffix, "\t", note.Version, "\n")
-		}
-		tw.Flush()
+		notifier.Columns(os.Stdout, func(w io.Writer) {
+			for _, note := range rsp {
+				fmt.Fprint(w, note.Tag+note.Suffix, "\t", note.Version, "\n")
+			}
+		})
 
 	} else if *doCategories {
 		var cats []*notifier.NoteCategory
 		if err := cli.CallResult(ctx, "Notes.Categories", nil, &cats); err != nil {
 			log.Fatalf("Error listing categories: %v", err)
 		}
-		for _, cat := range cats {
-			fmt.Printf("%s\t%s\n", cat.Name, cat.Dir)
-		}
+		notifier.Columns(os.Stdout, func(w io.Writer) {
+			for _, cat := range cats {
+				fmt.Fprintf(w, "%s\t%s\n", cat.Name, cat.Dir)
+			}
+		})
 
 	} else if *doRead {
 		var text string
