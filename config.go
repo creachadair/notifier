@@ -71,16 +71,26 @@ func LoadConfig(path string, cfg *Config) error {
 
 // EditFile edits a file using the editor specified by c.
 func (c *Config) EditFile(ctx context.Context, path string) error {
+	cmd, err := c.EditFileCmd(ctx, path)
+	if err != nil {
+		return err
+	}
+	return cmd.Run()
+}
+
+// EditFileCmd returns a command to edit the specified file using the editor
+// specified by c. The caller must run or start the command.
+func (c *Config) EditFileCmd(ctx context.Context, path string) (*exec.Cmd, error) {
 	if _, err := os.Stat(path); os.IsNotExist(err) && c.Edit.TouchNew {
 		f, err := os.Create(path)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		f.Close()
 	}
 	args, _ := shell.Split(c.Edit.Command)
 	bin, rest := args[0], args[1:]
-	return exec.CommandContext(ctx, bin, append(rest, path)...).Run()
+	return exec.CommandContext(ctx, bin, append(rest, path)...), nil
 }
 
 // AuthConfig specifies a mapping of usernames to authorization rules.
