@@ -177,6 +177,7 @@ type Note struct {
 	Version  string `json:"version,omitempty"`
 	Suffix   string `json:"suffix,omitempty"`
 	Category string `json:"category,omitempty"`
+	Path     string `json:"path,omitempty"`
 }
 
 // NoteLess reports whether a should be ordered prior to b, first by tag and
