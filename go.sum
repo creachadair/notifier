@@ -3,8 +3,8 @@ bitbucket.org/creachadair/fileinput v0.0.1/go.mod h1:vtoK0DX4p1rIVq3N9ixFs4mbSRy
 bitbucket.org/creachadair/getpass v0.0.2/go.mod h1:/MCNdfWnl5p3BYJdgmDRcevHiOCovCWNefh6EaN6LpY=
 bitbucket.org/creachadair/jrpc2 v0.0.37 h1:fop9NAhy//md+O5gPG7QA3UzQT8dmOR86f1WbhfwSfU=
 bitbucket.org/creachadair/jrpc2 v0.0.37/go.mod h1:M6Zp1yR6eoy01ACC/0j6xz5ma2lPxGY+vZx88yqL450=
-bitbucket.org/creachadair/keyfish v0.0.17 h1:5VHFx7ovSm3wBnoCD6DMlUC3L+FMt2klK/ijz4rRf/g=
-bitbucket.org/creachadair/keyfish v0.0.17/go.mod h1:ChR7rTJDRlYa4VfS1sHkzyn8ssjzAVNUlyw/y3sTYr0=
+bitbucket.org/creachadair/keyfish v0.0.18 h1:1RYVezsKScekyAy8NBKttLIM7SYXJyH49pRJud6nprw=
+bitbucket.org/creachadair/keyfish v0.0.18/go.mod h1://NKkGKtORsoBcS/lCwLeg41GY+WUZIHKvQxKI5zZDY=
 bitbucket.org/creachadair/shell v0.0.4 h1:pQaJRbIWVEQKoNI7rGMRlLk1vu6RaPR6I5huNBoDEVw=
 bitbucket.org/creachadair/shell v0.0.4/go.mod h1:ysdp8K5OqvK7lJI3ZNP0I7prXD4kWyDWxozmc04IFpE=
 bitbucket.org/creachadair/stringset v0.0.3 h1:VmH2SQ+vEqTSgPHpiVZcGF/21spNbmJ86sSgkb8XMFU=
@@ -22,6 +22,8 @@ golang.org/x/sync v0.0.0-20181221193216-37e7f081c4d4 h1:YUO/7uOKsKeq9UokNS62b8FY
 golang.org/x/sync v0.0.0-20181221193216-37e7f081c4d4/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sys v0.0.0-20181221143128-b4a75ba826a6 h1:IcgEB62HYgAhX0Nd/QrVgZlxlcyxbGQHElLUhW2X4Fo=
 golang.org/x/sys v0.0.0-20181221143128-b4a75ba826a6/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
+golang.org/x/sys v0.0.0-20181228144115-9a3f9b0469bb h1:pf3XwC90UUdNPYWZdFjhGBE7DUFuK3Ct1zWmZ65QN30=
+golang.org/x/sys v0.0.0-20181228144115-9a3f9b0469bb/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 h1:qIbj1fsPNlZgppZ+VLlY7N33q108Sa+fhmuc+sWQYwY=
 gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
