@@ -94,7 +94,7 @@ func PromptForText(ctx context.Context, req *TextRequest) (string, error) {
 	}
 
 	// Ask osascript to send error text to stdout to simplify error plumbing.
-	cmd := exec.Command("osascript", "-s", "ho")
+	cmd := exec.CommandContext(ctx, "osascript", "-s", "ho")
 	cmd.Stdin = strings.NewReader(fmt.Sprintf(`display dialog %q default answer %q hidden answer %v`,
 		req.Prompt, req.Default, req.Hide))
 	raw, err := cmd.Output()
