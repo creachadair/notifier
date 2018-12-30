@@ -20,10 +20,16 @@ import (
 )
 
 var (
-	serverAddr = flag.String("server", os.Getenv("NOTIFIER_ADDR"), "Server address")
+	serverAddr = os.Getenv("NOTIFIER_ADDR") // see RegisterFlags
 	authUser   = os.Getenv("USER")
 	authKey    string
 )
+
+// RegisterFlags installs a standard -server flag in the default flagset.
+// This function should be called during init in a client main package.
+func RegisterFlags() {
+	flag.StringVar(&serverAddr, "server", serverAddr, "Server address")
+}
 
 // Check the environment NOTIFIER_AUTH for authorization state.
 // If the value has the form "user:key", the user and key are set from it.
