@@ -18,6 +18,8 @@ import (
 	"bitbucket.org/creachadair/notifier"
 )
 
+func init() { notifier.RegisterFlags() }
+
 func main() {
 	flag.Parse()
 	if flag.NArg() != 1 {

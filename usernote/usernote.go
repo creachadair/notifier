@@ -1,7 +1,7 @@
 // Program usernote requests editing of a notes file.
 //
 // Usage:
-//    usernotes -server :8080 <tag>
+//    usernote -server :8080 <tag>
 //
 package main
 
@@ -25,6 +25,8 @@ var (
 	doRead       = flag.Bool("read", false, "Read the specified note text")
 	doCategories = flag.Bool("cats", false, "List known categories")
 )
+
+func init() { notifier.RegisterFlags() }
 
 func main() {
 	flag.Parse()

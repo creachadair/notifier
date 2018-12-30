@@ -54,14 +54,7 @@ var (
 	}).(func(context.Context, *jrpc2.Client, *notifier.ClipClearRequest) (bool, error))
 )
 
-func count(bs ...bool) (n int) {
-	for _, b := range bs {
-		if b {
-			n++
-		}
-	}
-	return
-}
+func init() { notifier.RegisterFlags() }
 
 func main() {
 	flag.Parse()
@@ -203,4 +196,13 @@ func loadOrder(m map[string][]byte) []string {
 		return append(keys, "active")
 	}
 	return keys
+}
+
+func count(bs ...bool) (n int) {
+	for _, b := range bs {
+		if b {
+			n++
+		}
+	}
+	return
 }

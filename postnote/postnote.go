@@ -21,6 +21,8 @@ var (
 	waitTime     = flag.Duration("after", 0, "Wait this long before posting")
 )
 
+func init() { notifier.RegisterFlags() }
+
 func main() {
 	flag.Parse()
 	var title, body string

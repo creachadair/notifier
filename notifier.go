@@ -51,9 +51,9 @@ func init() {
 // Dial connects to the flag-selected JSON-RPC server and returns a context and
 // a client ready for use. The caller is responsible for closing the client.
 func Dial(ctx context.Context) (context.Context, *jrpc2.Client, error) {
-	conn, err := net.Dial("tcp", *serverAddr)
+	conn, err := net.Dial("tcp", serverAddr)
 	if err != nil {
-		return ctx, nil, fmt.Errorf("address %q: %v", *serverAddr, err)
+		return ctx, nil, fmt.Errorf("address %q: %v", serverAddr, err)
 	}
 	cli := jrpc2.NewClient(channel.RawJSON(conn, conn), &jrpc2.ClientOptions{
 		EncodeContext: jctx.Encode,

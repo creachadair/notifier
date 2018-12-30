@@ -42,6 +42,8 @@ var (
 	}).(func(context.Context, *jrpc2.Client, *notifier.SiteRequest) (*config.Site, error))
 )
 
+func init() { notifier.RegisterFlags() }
+
 func main() {
 	flag.Parse()
 	if flag.NArg() == 0 && !*doList {

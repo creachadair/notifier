@@ -16,6 +16,8 @@ import (
 
 var waitTime = flag.Duration("after", 0, "Wait this long before speaking")
 
+func init() { notifier.RegisterFlags() }
+
 func main() {
 	flag.Parse()
 	if flag.NArg() == 0 {

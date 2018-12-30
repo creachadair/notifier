@@ -22,6 +22,8 @@ var (
 	hiddenText  = flag.Bool("hidden", false, "Request hidden text entry")
 )
 
+func init() { notifier.RegisterFlags() }
+
 func main() {
 	flag.Parse()
 	ctx, cli, err := notifier.Dial(context.Background())
