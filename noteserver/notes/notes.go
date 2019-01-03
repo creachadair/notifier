@@ -30,6 +30,11 @@ func (n *notes) Init(cfg *notifier.Config) error {
 	if len(cfg.Notes.Categories) == 0 {
 		return notifier.ErrNotApplicable
 	}
+	for _, cat := range cfg.Notes.Categories {
+		if cat.Suffix == "" {
+			cat.Suffix = ".txt"
+		}
+	}
 	n.cfg = cfg
 	return nil
 }
