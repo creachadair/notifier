@@ -67,8 +67,9 @@ func main() {
 	site, salt := parseHost(flag.Arg(0))
 	if *doShow || *doFull {
 		site, err := showSite(ctx, cli, &notifier.SiteRequest{
-			Host: site,
-			Full: *doFull,
+			Host:   site,
+			Full:   *doFull,
+			Strict: !*doLax,
 		})
 		if err != nil {
 			log.Fatal(err)
