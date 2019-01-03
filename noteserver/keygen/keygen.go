@@ -134,7 +134,7 @@ func (k *keygen) Site(ctx context.Context, req *notifier.SiteRequest) (*config.S
 		return nil, jrpc2.Errorf(code.InvalidParams, "missing host name")
 	}
 	site, ok := k.site(req.Host)
-	if !ok {
+	if !ok && req.Strict {
 		return nil, jrpc2.Errorf(notifier.ResourceNotFound, "no config for %q", req.Host)
 	}
 	if !req.Full {

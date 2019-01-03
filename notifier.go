@@ -134,8 +134,9 @@ type KeyGenReply struct {
 
 // A SiteRequest is a request for site data.
 type SiteRequest struct {
-	Host string `json:"host,omitempty"`
-	Full bool   `json:"full,omitempty"`
+	Host   string `json:"host,omitempty"`
+	Strict bool   `json:"strict,omitempty"`
+	Full   bool   `json:"full,omitempty"`
 }
 
 // An EditRequest is a request to edit the contents of a file.
