@@ -21,6 +21,7 @@ import (
 var (
 	noteCategory = flag.String("c", "", "Category label (optional)")
 	noteVersion  = flag.String("v", "", `Version to edit ("", "latest", "new", "2006-01-02")`)
+	noteTag      = flag.String("t", "", "Tag to edit")
 	doList       = flag.Bool("list", false, "List matching notes")
 	doPath       = flag.Bool("path", false, "Print the path of the specified note")
 	doRead       = flag.Bool("read", false, "Read the specified note text")
@@ -31,7 +32,11 @@ func init() { notifier.RegisterFlags() }
 
 func main() {
 	flag.Parse()
-	if flag.NArg() != 1 && !*doList && !*doCategories {
+	if *noteTag == "" && flag.NArg() != 0 {
+		*noteTag = flag.Arg(0)
+	}
+
+	if *noteTag == "" && !*doList && !*doCategories {
 		log.Fatalf("Usage: %s <tag>", filepath.Base(os.Args[0]))
 	} else if *doList && *doCategories {
 		log.Fatal("You may not specify both -list and -categories")
@@ -45,12 +50,9 @@ func main() {
 
 	if *doList {
 		var rsp []*notifier.Note
-		var tag string
-		if flag.NArg() != 0 {
-			tag = flag.Arg(0)
-		}
+
 		if err := cli.CallResult(ctx, "Notes.List", &notifier.ListNotesRequest{
-			Tag:      tag,
+			Tag:      *noteTag,
 			Category: *noteCategory,
 			Version:  *noteVersion,
 		}, &rsp); err != nil {
@@ -79,7 +81,7 @@ func main() {
 	} else if *doRead || *doPath {
 		var note notifier.NoteWithText
 		if err := cli.CallResult(ctx, "Notes.Read", &notifier.EditNotesRequest{
-			Tag:        flag.Arg(0),
+			Tag:        *noteTag,
 			Category:   *noteCategory,
 			Version:    *noteVersion,
 			Background: true,
@@ -94,7 +96,7 @@ func main() {
 		}
 
 	} else if _, err := cli.Call(ctx, "Notes.Edit", &notifier.EditNotesRequest{
-		Tag:      flag.Arg(0),
+		Tag:      *noteTag,
 		Category: *noteCategory,
 		Version:  *noteVersion,
 	}); err != nil {
