@@ -108,11 +108,7 @@ func (c *clipper) Set(ctx context.Context, req *notifier.ClipSetRequest) (bool, 
 	// The systemClip tag is a special case for the system clipboard.
 	c.Lock()
 	if req.Tag != "" && req.Tag != systemClip {
-		if len(req.Data) == 0 {
-			delete(c.saved, req.Tag)
-		} else {
-			c.saved[req.Tag] = req.Data
-		}
+		c.saved[req.Tag] = req.Data
 	}
 	if req.Save != "" {
 		c.saved[req.Save] = saved
