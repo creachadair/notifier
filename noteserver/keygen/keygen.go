@@ -10,6 +10,7 @@ import (
 
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/jrpc2/code"
+	"bitbucket.org/creachadair/jrpc2/handler"
 	"bitbucket.org/creachadair/keyfish/config"
 	"bitbucket.org/creachadair/keyfish/wordhash"
 	"bitbucket.org/creachadair/notifier"
@@ -51,7 +52,7 @@ func (k *keygen) Update() error {
 }
 
 // Assigner implements a method of notifier.Plugin.
-func (k *keygen) Assigner() jrpc2.Assigner { return jrpc2.NewService(k) }
+func (k *keygen) Assigner() jrpc2.Assigner { return handler.NewService(k) }
 
 func (k *keygen) site(host string) (config.Site, bool) {
 	k.μ.Lock()

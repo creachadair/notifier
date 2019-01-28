@@ -10,6 +10,7 @@ import (
 
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/jrpc2/code"
+	"bitbucket.org/creachadair/jrpc2/handler"
 	"bitbucket.org/creachadair/notifier"
 )
 
@@ -29,7 +30,7 @@ func (p *poster) Init(cfg *notifier.Config) error {
 func (*poster) Update() error { return nil }
 
 // Assigner implements part of notifier.Plugin.
-func (p *poster) Assigner() jrpc2.Assigner { return jrpc2.NewService(p) }
+func (p *poster) Assigner() jrpc2.Assigner { return handler.NewService(p) }
 
 // Post posts a textual notification to the user.
 func (p *poster) Post(ctx context.Context, req *notifier.PostRequest) (bool, error) {

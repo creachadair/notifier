@@ -13,6 +13,7 @@ import (
 
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/jrpc2/code"
+	"bitbucket.org/creachadair/jrpc2/handler"
 	"bitbucket.org/creachadair/notifier"
 	"bitbucket.org/creachadair/stringset"
 )
@@ -45,7 +46,7 @@ func (c *clipper) Init(cfg *notifier.Config) error {
 func (*clipper) Update() error { return nil }
 
 // Assigner implements part of notifier.Plugin.
-func (c *clipper) Assigner() jrpc2.Assigner { return jrpc2.NewService(c) }
+func (c *clipper) Assigner() jrpc2.Assigner { return handler.NewService(c) }
 
 // saveToFile writes the contents of c.saved to the output file, if one is set.
 // The caller must hold the lock on c.

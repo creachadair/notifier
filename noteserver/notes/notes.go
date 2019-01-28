@@ -16,6 +16,7 @@ import (
 
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/jrpc2/code"
+	"bitbucket.org/creachadair/jrpc2/handler"
 	"bitbucket.org/creachadair/notifier"
 )
 
@@ -43,7 +44,7 @@ func (n *notes) Init(cfg *notifier.Config) error {
 func (*notes) Update() error { return nil }
 
 // Assigner implements part of notifier.Plugin.
-func (n *notes) Assigner() jrpc2.Assigner { return jrpc2.NewService(n) }
+func (n *notes) Assigner() jrpc2.Assigner { return handler.NewService(n) }
 
 func (n *notes) Edit(ctx context.Context, req *notifier.EditNotesRequest) error {
 	if n.cfg.Edit.Command == "" {

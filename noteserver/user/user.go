@@ -13,6 +13,7 @@ import (
 
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/jrpc2/code"
+	"bitbucket.org/creachadair/jrpc2/handler"
 	"bitbucket.org/creachadair/notifier"
 )
 
@@ -32,7 +33,7 @@ func (u *input) Init(cfg *notifier.Config) error {
 func (*input) Update() error { return nil }
 
 // Assigner implements part of notifier.Plugin.
-func (u *input) Assigner() jrpc2.Assigner { return jrpc2.NewService(u) }
+func (u *input) Assigner() jrpc2.Assigner { return handler.NewService(u) }
 
 // Text prompts the user for textual input.
 func (u *input) Text(ctx context.Context, req *notifier.TextRequest) (string, error) {

@@ -15,6 +15,7 @@ import (
 
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/jrpc2/code"
+	"bitbucket.org/creachadair/jrpc2/handler"
 )
 
 // ResourceNotFound is returned when a requested resource is not found.
@@ -55,7 +56,7 @@ func RegisterPlugin(name string, p Plugin) {
 // PluginAssigner returns a jrpc2.Assigner that exports the methods of all the
 // registered plugins.
 func PluginAssigner(cfg *Config) jrpc2.Assigner {
-	svc := make(jrpc2.ServiceMapper)
+	svc := make(handler.ServiceMap)
 	for name, plug := range plugins {
 		if err := plug.Init(cfg); err == ErrNotApplicable {
 			log.Printf("Skipping inapplicable plugin %q", name)
