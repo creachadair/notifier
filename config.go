@@ -116,9 +116,10 @@ type ACL struct {
 
 func (a ACL) checkMethod(method string) bool {
 	for _, rule := range a.Rules {
-		ok, err := filepath.Match(rule, method)
+		t := strings.TrimPrefix(rule, "-")
+		ok, err := filepath.Match(t, method)
 		if err == nil && ok {
-			return true
+			return t == rule
 		}
 	}
 	return len(a.Rules) == 0
