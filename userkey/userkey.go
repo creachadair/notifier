@@ -15,7 +15,6 @@ import (
 	"strings"
 
 	"bitbucket.org/creachadair/jrpc2"
-	"bitbucket.org/creachadair/jrpc2/caller"
 	"bitbucket.org/creachadair/keyfish/config"
 	"bitbucket.org/creachadair/notifier"
 )
@@ -27,20 +26,22 @@ var (
 	doFull  = flag.Bool("full", false, "Show the full configuration for a site (implies -show)")
 	doLax   = flag.Bool("lax", false, "Accept site names that do not match known configurations")
 	doRaw   = flag.Bool("raw", false, "Print results as raw JSON")
-
-	generateKey = caller.New("Key.Generate", caller.Options{
-		Params: (*notifier.KeyGenRequest)(nil),
-		Result: (*notifier.KeyGenReply)(nil),
-	}).(func(context.Context, *jrpc2.Client, *notifier.KeyGenRequest) (*notifier.KeyGenReply, error))
-	listSites = caller.New("Key.List", caller.Options{
-		Params: nil,
-		Result: []string(nil),
-	}).(func(context.Context, *jrpc2.Client) ([]string, error))
-	showSite = caller.New("Key.Site", caller.Options{
-		Params: (*notifier.SiteRequest)(nil),
-		Result: (*config.Site)(nil),
-	}).(func(context.Context, *jrpc2.Client, *notifier.SiteRequest) (*config.Site, error))
 )
+
+func generateKey(ctx context.Context, cli *jrpc2.Client, req *notifier.KeyGenRequest) (result *notifier.KeyGenReply, err error) {
+	err = cli.CallResult(ctx, "Key.Generate", req, &result)
+	return
+}
+
+func listSites(ctx context.Context, cli *jrpc2.Client) (result []string, err error) {
+	err = cli.CallResult(ctx, "Key.List", nil, &result)
+	return
+}
+
+func showSite(ctx context.Context, cli *jrpc2.Client, req *notifier.SiteRequest) (result *config.Site, err error) {
+	err = cli.CallResult(ctx, "Key.Site", req, &result)
+	return
+}
 
 func init() { notifier.RegisterFlags() }
 

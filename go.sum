@@ -3,6 +3,8 @@ bitbucket.org/creachadair/fileinput v0.0.1/go.mod h1:vtoK0DX4p1rIVq3N9ixFs4mbSRy
 bitbucket.org/creachadair/getpass v0.0.2/go.mod h1:/MCNdfWnl5p3BYJdgmDRcevHiOCovCWNefh6EaN6LpY=
 bitbucket.org/creachadair/jrpc2 v0.0.46 h1:iek4eb8EpUXWsK/WGyAUg0zGkGrjYdK3yWRZCBvY6qU=
 bitbucket.org/creachadair/jrpc2 v0.0.46/go.mod h1:XkZWAVGxrfJ4iHCLdF/rr+bHzrQWCH7PnUKHuPVBttc=
+bitbucket.org/creachadair/jrpc2 v0.0.49 h1:gxTVgMC2/G6kO6ZzEHH/TN6QQ6ZPofIZJ4K5Yo3wNew=
+bitbucket.org/creachadair/jrpc2 v0.0.49/go.mod h1:XkZWAVGxrfJ4iHCLdF/rr+bHzrQWCH7PnUKHuPVBttc=
 bitbucket.org/creachadair/keyfish v0.0.19 h1:uWoAhG5rXhNcmoKj1Vs0Xv4+VnkCkVEtM1JnqwoQPj8=
 bitbucket.org/creachadair/keyfish v0.0.19/go.mod h1://NKkGKtORsoBcS/lCwLeg41GY+WUZIHKvQxKI5zZDY=
 bitbucket.org/creachadair/shell v0.0.4 h1:pQaJRbIWVEQKoNI7rGMRlLk1vu6RaPR6I5huNBoDEVw=
