@@ -63,7 +63,7 @@ func main() {
 		})
 		notifier.Columns(os.Stdout, func(w io.Writer) {
 			for _, note := range rsp {
-				fmt.Fprint(w, note.Category, "\t", note.Tag+note.Suffix, "\t", note.Version, "\n")
+				fmt.Fprint(w, note.Tag+note.Suffix, "\t", note.Category, "\t", note.Version, "\n")
 			}
 		})
 
