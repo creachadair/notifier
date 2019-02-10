@@ -5,6 +5,8 @@ bitbucket.org/creachadair/jrpc2 v0.0.46 h1:iek4eb8EpUXWsK/WGyAUg0zGkGrjYdK3yWRZC
 bitbucket.org/creachadair/jrpc2 v0.0.46/go.mod h1:XkZWAVGxrfJ4iHCLdF/rr+bHzrQWCH7PnUKHuPVBttc=
 bitbucket.org/creachadair/jrpc2 v0.0.49 h1:gxTVgMC2/G6kO6ZzEHH/TN6QQ6ZPofIZJ4K5Yo3wNew=
 bitbucket.org/creachadair/jrpc2 v0.0.49/go.mod h1:XkZWAVGxrfJ4iHCLdF/rr+bHzrQWCH7PnUKHuPVBttc=
+bitbucket.org/creachadair/jrpc2 v0.0.50 h1:Tbi9j5VyJf6urNDQJNpvK78ZB3wc4R1aOjDSiC193S0=
+bitbucket.org/creachadair/jrpc2 v0.0.50/go.mod h1:XkZWAVGxrfJ4iHCLdF/rr+bHzrQWCH7PnUKHuPVBttc=
 bitbucket.org/creachadair/keyfish v0.0.19 h1:uWoAhG5rXhNcmoKj1Vs0Xv4+VnkCkVEtM1JnqwoQPj8=
 bitbucket.org/creachadair/keyfish v0.0.19/go.mod h1://NKkGKtORsoBcS/lCwLeg41GY+WUZIHKvQxKI5zZDY=
 bitbucket.org/creachadair/shell v0.0.4 h1:pQaJRbIWVEQKoNI7rGMRlLk1vu6RaPR6I5huNBoDEVw=

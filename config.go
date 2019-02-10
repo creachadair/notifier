@@ -2,6 +2,7 @@ package notifier
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -10,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/jrpc2/jauth"
 	"bitbucket.org/creachadair/jrpc2/jctx"
 	"bitbucket.org/creachadair/shell"
@@ -126,7 +128,8 @@ func (a ACL) checkMethod(method string) bool {
 }
 
 // CheckAuth checks whether the specified request is authorized.
-func (a AuthConfig) CheckAuth(ctx context.Context, method string, params []byte) error {
+func (a AuthConfig) CheckAuth(ctx context.Context, req *jrpc2.Request) error {
+	method := req.Method()
 	if a == nil || strings.HasPrefix(method, "rpc.") {
 		return nil
 	}
@@ -144,7 +147,8 @@ func (a AuthConfig) CheckAuth(ctx context.Context, method string, params []byte)
 	} else if !acl.checkMethod(method) {
 		return errors.New("method not allowed")
 	}
-
+	var params json.RawMessage
+	req.UnmarshalParams(&params)
 	return jauth.User{
 		Name: tok.User,
 		Key:  []byte(acl.Key),
