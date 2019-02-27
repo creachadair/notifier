@@ -6,6 +6,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"flag"
@@ -78,6 +79,11 @@ func main() {
 		bits, err := json.Marshal(site)
 		if err != nil {
 			log.Fatalf("Marshaling JSON: %v", err)
+		}
+		if *doFull {
+			var buf bytes.Buffer
+			json.Indent(&buf, bits, "", "  ")
+			bits = buf.Bytes()
 		}
 		fmt.Println(string(bits))
 		return
