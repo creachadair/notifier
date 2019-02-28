@@ -59,7 +59,7 @@ func main() {
 			Metrics:       metrics.New(),
 			StartTime:     time.Now().In(time.UTC),
 			DecodeContext: jctx.Decode,
-			CheckAuth:     cfg.Auth.CheckAuth,
+			CheckRequest:  cfg.Auth.CheckAuth,
 		},
 	}); err != nil {
 		log.Fatalf("Server failed: %v", err)
