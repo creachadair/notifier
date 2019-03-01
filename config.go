@@ -12,8 +12,8 @@ import (
 	"strings"
 
 	"bitbucket.org/creachadair/jrpc2"
-	"bitbucket.org/creachadair/jrpc2/jauth"
 	"bitbucket.org/creachadair/jrpc2/jctx"
+	"bitbucket.org/creachadair/notifier/noteserver/jauth"
 	"bitbucket.org/creachadair/shell"
 	yaml "gopkg.in/yaml.v2"
 )
