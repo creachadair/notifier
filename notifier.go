@@ -16,7 +16,7 @@ import (
 	"bitbucket.org/creachadair/jrpc2/channel"
 	"bitbucket.org/creachadair/jrpc2/code"
 	"bitbucket.org/creachadair/jrpc2/jctx"
-	"bitbucket.org/creachadair/notifier/noteserver/jauth"
+	"bitbucket.org/creachadair/notifier/jauth"
 )
 
 var (
