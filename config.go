@@ -2,18 +2,12 @@ package notifier
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 
-	"bitbucket.org/creachadair/jrpc2"
-	"bitbucket.org/creachadair/jrpc2/jctx"
-	"bitbucket.org/creachadair/notifier/jauth"
 	"bitbucket.org/creachadair/shell"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -39,8 +33,6 @@ func (c *NoteCategory) FilePath(base, version, ext string) string {
 type Config struct {
 	Address  string
 	DebugLog bool `yaml:"debugLog"`
-
-	Auth AuthConfig `yaml:"auth,omitempty"`
 
 	// Settings for the clipboard service.
 	Clip struct {
@@ -104,53 +96,4 @@ func (c *Config) EditFileCmd(ctx context.Context, path string) (*exec.Cmd, error
 	args, _ := shell.Split(c.Edit.Command)
 	bin, rest := args[0], args[1:]
 	return exec.CommandContext(ctx, bin, append(rest, path)...), nil
-}
-
-// AuthConfig specifies a mapping of usernames to authorization rules.
-type AuthConfig map[string]ACL
-
-// An ACL represents a set of access rights protected by a key.  If the list of
-// rules is empty, all methods are accessible.
-type ACL struct {
-	Key   string   `json:"key"`
-	Rules []string `json:"acl,omitempty"`
-}
-
-func (a ACL) checkMethod(method string) bool {
-	for _, rule := range a.Rules {
-		t := strings.TrimPrefix(rule, "-")
-		ok, err := filepath.Match(t, method)
-		if err == nil && ok {
-			return t == rule
-		}
-	}
-	return len(a.Rules) == 0
-}
-
-// CheckAuth checks whether the specified request is authorized.
-func (a AuthConfig) CheckAuth(ctx context.Context, req *jrpc2.Request) error {
-	method := req.Method()
-	if a == nil || strings.HasPrefix(method, "rpc.") {
-		return nil
-	}
-	raw, ok := jctx.AuthToken(ctx)
-	if !ok {
-		return errors.New("no authorization token")
-	}
-	tok, err := jauth.ParseToken(raw)
-	if err != nil {
-		return jauth.ErrInvalidToken
-	}
-	acl, ok := a[tok.User]
-	if !ok {
-		return errors.New("unknown user")
-	} else if !acl.checkMethod(method) {
-		return errors.New("method not allowed")
-	}
-	var params json.RawMessage
-	req.UnmarshalParams(&params)
-	return jauth.User{
-		Name: tok.User,
-		Key:  []byte(acl.Key),
-	}.VerifyParsed(tok, method, params)
 }

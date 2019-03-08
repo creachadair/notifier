@@ -8,7 +8,6 @@ import (
 	"io"
 	"net"
 	"os"
-	"strings"
 	"text/tabwriter"
 	"time"
 
@@ -16,36 +15,17 @@ import (
 	"bitbucket.org/creachadair/jrpc2/channel"
 	"bitbucket.org/creachadair/jrpc2/code"
 	"bitbucket.org/creachadair/jrpc2/jctx"
-	"bitbucket.org/creachadair/notifier/jauth"
 )
 
 var (
 	serverAddr = os.Getenv("NOTIFIER_ADDR") // see RegisterFlags
 	authUser   = os.Getenv("USER")
-	authKey    string
 )
 
 // RegisterFlags installs a standard -server flag in the default flagset.
 // This function should be called during init in a client main package.
 func RegisterFlags() {
 	flag.StringVar(&serverAddr, "server", serverAddr, "Server address")
-}
-
-// Check the environment NOTIFIER_AUTH for authorization state.
-// If the value has the form "user:key", the user and key are set from it.
-// If the value has the form "key", the user is $USER.
-// Otherwise authorization is not sent.
-func init() {
-	tok := os.Getenv("NOTIFIER_AUTH")
-	if tok != "" {
-		ukey := strings.SplitN(tok, ":", 2)
-		if len(ukey) == 2 {
-			authUser = ukey[0]
-			authKey = ukey[1]
-		} else {
-			authKey = ukey[0]
-		}
-	}
 }
 
 // Dial connects to the flag-selected JSON-RPC server and returns a context and
@@ -58,12 +38,6 @@ func Dial(ctx context.Context) (context.Context, *jrpc2.Client, error) {
 	cli := jrpc2.NewClient(channel.RawJSON(conn, conn), &jrpc2.ClientOptions{
 		EncodeContext: jctx.Encode,
 	})
-	if authUser != "" && authKey != "" {
-		ctx = jctx.WithAuthorizer(ctx, jauth.User{
-			Name: authUser,
-			Key:  []byte(authKey),
-		}.Token)
-	}
 	return ctx, cli, nil
 }
 
