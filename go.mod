@@ -5,7 +5,7 @@ require (
 	bitbucket.org/creachadair/jrpc2 v0.0.55
 	bitbucket.org/creachadair/keyfish v0.0.19
 	bitbucket.org/creachadair/shell v0.0.4
-	bitbucket.org/creachadair/stringset v0.0.3
+	bitbucket.org/creachadair/stringset v0.0.4
 	github.com/kr/pretty v0.1.0 // indirect
 	golang.org/x/crypto v0.0.0-20190211182817-74369b46fc67
 	golang.org/x/sync v0.0.0-20190227155943-e225da77a7e6 // indirect
