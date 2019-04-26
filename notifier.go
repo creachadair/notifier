@@ -17,10 +17,7 @@ import (
 	"bitbucket.org/creachadair/jrpc2/jctx"
 )
 
-var (
-	serverAddr = os.Getenv("NOTIFIER_ADDR") // see RegisterFlags
-	authUser   = os.Getenv("USER")
-)
+var serverAddr = os.Getenv("NOTIFIER_ADDR") // see RegisterFlags
 
 // RegisterFlags installs a standard -server flag in the default flagset.
 // This function should be called during init in a client main package.

@@ -22,9 +22,8 @@ func init() { notifier.RegisterPlugin("Key", new(keygen)) }
 type keygen struct {
 	noteconf *notifier.Config
 
-	μ      sync.Mutex
-	cfg    *config.Config
-	secret string
+	μ   sync.Mutex
+	cfg *config.Config
 }
 
 // Init implements a method of notifier.Plugin.
