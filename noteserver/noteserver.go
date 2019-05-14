@@ -10,6 +10,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"strings"
 	"time"
 
 	"bitbucket.org/creachadair/jrpc2"
@@ -49,7 +50,12 @@ func main() {
 		lw = log.New(os.Stderr, "[noteserver] ", log.LstdFlags)
 	}
 
-	lst, err := net.Listen("tcp", cfg.Address)
+	atype := "tcp"
+	if !strings.Contains(cfg.Address, ":") {
+		atype = "unix"
+		os.Remove(cfg.Address) // unlink a stale socket
+	}
+	lst, err := net.Listen(atype, cfg.Address)
 	if err != nil {
 		log.Fatalf("Listen: %v", err)
 	}
