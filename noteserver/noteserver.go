@@ -53,7 +53,11 @@ func main() {
 	atype := "tcp"
 	if !strings.Contains(cfg.Address, ":") {
 		atype = "unix"
-		os.Remove(cfg.Address) // unlink a stale socket
+
+		// Expand variables in a socket path, and unlink a stale socket in case
+		// one was left behind by a previous run.
+		cfg.Address = os.ExpandEnv(cfg.Address)
+		_ = os.Remove(cfg.Address) // it's fine if this fails
 	}
 	lst, err := net.Listen(atype, cfg.Address)
 	if err != nil {
