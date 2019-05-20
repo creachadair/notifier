@@ -139,6 +139,7 @@ func (k *keygen) Site(ctx context.Context, req *notifier.SiteRequest) (*config.S
 	}
 	if !req.Full {
 		site.Hints = nil
+		site.OTP = nil
 	}
 	return &site, nil
 }
