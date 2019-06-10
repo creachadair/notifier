@@ -1,5 +1,3 @@
-bitbucket.org/creachadair/fileinput v0.0.1 h1:y773L//m7mfGOSQDR4RaiyIUuvQCHXyAxW9mFstP7xE=
-bitbucket.org/creachadair/fileinput v0.0.1/go.mod h1:vtoK0DX4p1rIVq3N9ixFs4mbSRycsoRr78iRyizbnus=
 bitbucket.org/creachadair/getpass v0.0.2 h1:0sv0P7lFb1KK/Vg6/PKRy5/mEDP4+DawsP8qM2hTJ6c=
 bitbucket.org/creachadair/getpass v0.0.2/go.mod h1:/MCNdfWnl5p3BYJdgmDRcevHiOCovCWNefh6EaN6LpY=
 bitbucket.org/creachadair/jrpc2 v0.0.66 h1:yGCvB1i5cTWtjW4IQWMyYBOPDGbpuQNULJfq8TUmy2s=
@@ -14,6 +12,8 @@ bitbucket.org/creachadair/stringset v0.0.5/go.mod h1:Sh09n+mAanyIbrkX0MICAEZcqXV
 bitbucket.org/creachadair/stringset v0.0.6 h1:3VD1WC7Bgyc2aqu9FhPqXmnrDLVgQEW+0yoVLR40Xw0=
 bitbucket.org/creachadair/stringset v0.0.6/go.mod h1:YVtlFe1DN6gD8ODwUjcP0SV6ZgeNhPDrRf9O+jdB/h8=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
+github.com/creachadair/fileinput v0.0.2 h1:VJH3tAfaI7WPH+phQUS/7DlGGmjh6TUNiNgt+wvV668=
+github.com/creachadair/fileinput v0.0.2/go.mod h1:p0gRgcsdi/KSB7Ulhw4c7PgbNNLE9gCIkyP32AqCBmk=
 github.com/creachadair/keyfish v0.0.24 h1:Y0tWDQdXURrdwBPtgpAxvsHPUP6KUD2DBLTWTYzY4nw=
 github.com/creachadair/keyfish v0.0.24/go.mod h1:8sJk6NrcZEv7wOJ+hHWaA42X+eHh6uGYHEpPNjJjYmk=
 github.com/google/go-cmp v0.3.0 h1:crn/baboCvb5fXaQ0IJ1SGTsTVrWpDsCWC8EGETZijY=
