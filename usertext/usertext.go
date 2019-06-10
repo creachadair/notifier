@@ -14,7 +14,7 @@ import (
 	"strings"
 
 	"bitbucket.org/creachadair/jrpc2"
-	"bitbucket.org/creachadair/notifier"
+	"github.com/creachadair/notifier"
 )
 
 var (

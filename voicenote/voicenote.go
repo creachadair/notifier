@@ -11,7 +11,7 @@ import (
 	"log"
 	"strings"
 
-	"bitbucket.org/creachadair/notifier"
+	"github.com/creachadair/notifier"
 )
 
 var waitTime = flag.Duration("after", 0, "Wait this long before speaking")

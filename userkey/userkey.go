@@ -17,7 +17,7 @@ import (
 
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/keyfish/config"
-	"bitbucket.org/creachadair/notifier"
+	"github.com/creachadair/notifier"
 )
 
 var (

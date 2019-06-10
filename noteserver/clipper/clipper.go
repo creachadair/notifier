@@ -14,8 +14,8 @@ import (
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/jrpc2/code"
 	"bitbucket.org/creachadair/jrpc2/handler"
-	"bitbucket.org/creachadair/notifier"
 	"bitbucket.org/creachadair/stringset"
+	"github.com/creachadair/notifier"
 )
 
 func init() { notifier.RegisterPlugin("Clip", new(clipper)) }

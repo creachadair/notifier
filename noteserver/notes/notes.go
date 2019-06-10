@@ -17,7 +17,7 @@ import (
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/jrpc2/code"
 	"bitbucket.org/creachadair/jrpc2/handler"
-	"bitbucket.org/creachadair/notifier"
+	"github.com/creachadair/notifier"
 )
 
 func init() { notifier.RegisterPlugin("Notes", new(notes)) }

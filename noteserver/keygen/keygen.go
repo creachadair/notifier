@@ -13,8 +13,8 @@ import (
 	"bitbucket.org/creachadair/jrpc2/handler"
 	"bitbucket.org/creachadair/keyfish/config"
 	"bitbucket.org/creachadair/keyfish/wordhash"
-	"bitbucket.org/creachadair/notifier"
 	"bitbucket.org/creachadair/stringset"
+	"github.com/creachadair/notifier"
 )
 
 func init() { notifier.RegisterPlugin("Key", new(keygen)) }

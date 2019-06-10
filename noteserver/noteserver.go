@@ -17,14 +17,14 @@ import (
 	"bitbucket.org/creachadair/jrpc2/jctx"
 	"bitbucket.org/creachadair/jrpc2/metrics"
 	"bitbucket.org/creachadair/jrpc2/server"
-	"bitbucket.org/creachadair/notifier"
+	"github.com/creachadair/notifier"
 
 	// Install service plugins.
-	_ "bitbucket.org/creachadair/notifier/noteserver/clipper"
-	_ "bitbucket.org/creachadair/notifier/noteserver/keygen"
-	_ "bitbucket.org/creachadair/notifier/noteserver/notes"
-	_ "bitbucket.org/creachadair/notifier/noteserver/poster"
-	_ "bitbucket.org/creachadair/notifier/noteserver/user"
+	_ "github.com/creachadair/notifier/noteserver/clipper"
+	_ "github.com/creachadair/notifier/noteserver/keygen"
+	_ "github.com/creachadair/notifier/noteserver/notes"
+	_ "github.com/creachadair/notifier/noteserver/poster"
+	_ "github.com/creachadair/notifier/noteserver/user"
 )
 
 var (

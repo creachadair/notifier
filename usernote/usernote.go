@@ -15,7 +15,7 @@ import (
 	"path/filepath"
 	"sort"
 
-	"bitbucket.org/creachadair/notifier"
+	"github.com/creachadair/notifier"
 )
 
 var (

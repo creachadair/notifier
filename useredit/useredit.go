@@ -15,7 +15,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"bitbucket.org/creachadair/notifier"
+	"github.com/creachadair/notifier"
 )
 
 func init() { notifier.RegisterFlags() }

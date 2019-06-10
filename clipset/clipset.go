@@ -19,7 +19,7 @@ import (
 
 	"bitbucket.org/creachadair/fileinput"
 	"bitbucket.org/creachadair/jrpc2"
-	"bitbucket.org/creachadair/notifier"
+	"github.com/creachadair/notifier"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
