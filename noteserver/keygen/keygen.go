@@ -11,9 +11,9 @@ import (
 	"bitbucket.org/creachadair/jrpc2"
 	"bitbucket.org/creachadair/jrpc2/code"
 	"bitbucket.org/creachadair/jrpc2/handler"
-	"bitbucket.org/creachadair/keyfish/config"
-	"bitbucket.org/creachadair/keyfish/wordhash"
 	"bitbucket.org/creachadair/stringset"
+	"github.com/creachadair/keyfish/config"
+	"github.com/creachadair/keyfish/wordhash"
 	"github.com/creachadair/notifier"
 )
 
