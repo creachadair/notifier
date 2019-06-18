@@ -12,10 +12,10 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"bitbucket.org/creachadair/jrpc2"
-	"bitbucket.org/creachadair/jrpc2/channel"
-	"bitbucket.org/creachadair/jrpc2/code"
-	"bitbucket.org/creachadair/jrpc2/jctx"
+	"github.com/creachadair/jrpc2"
+	"github.com/creachadair/jrpc2/channel"
+	"github.com/creachadair/jrpc2/code"
+	"github.com/creachadair/jrpc2/jctx"
 )
 
 var serverAddr = os.Getenv("NOTIFIER_ADDR") // see RegisterFlags

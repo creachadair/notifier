@@ -17,8 +17,8 @@ import (
 	"os"
 	"strings"
 
-	"bitbucket.org/creachadair/jrpc2"
 	"github.com/creachadair/fileinput"
+	"github.com/creachadair/jrpc2"
 	"github.com/creachadair/notifier"
 	"golang.org/x/crypto/ssh/terminal"
 )

@@ -11,10 +11,10 @@ import (
 	"os/exec"
 	"sync"
 
-	"bitbucket.org/creachadair/jrpc2"
-	"bitbucket.org/creachadair/jrpc2/code"
-	"bitbucket.org/creachadair/jrpc2/handler"
 	"bitbucket.org/creachadair/stringset"
+	"github.com/creachadair/jrpc2"
+	"github.com/creachadair/jrpc2/code"
+	"github.com/creachadair/jrpc2/handler"
 	"github.com/creachadair/notifier"
 )
 

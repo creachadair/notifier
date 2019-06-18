@@ -11,9 +11,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"bitbucket.org/creachadair/jrpc2"
-	"bitbucket.org/creachadair/jrpc2/code"
-	"bitbucket.org/creachadair/jrpc2/handler"
+	"github.com/creachadair/jrpc2"
+	"github.com/creachadair/jrpc2/code"
+	"github.com/creachadair/jrpc2/handler"
 	"github.com/creachadair/notifier"
 )
 

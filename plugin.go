@@ -13,9 +13,9 @@ import (
 	"sync"
 	"syscall"
 
-	"bitbucket.org/creachadair/jrpc2"
-	"bitbucket.org/creachadair/jrpc2/code"
-	"bitbucket.org/creachadair/jrpc2/handler"
+	"github.com/creachadair/jrpc2"
+	"github.com/creachadair/jrpc2/code"
+	"github.com/creachadair/jrpc2/handler"
 )
 
 // ResourceNotFound is returned when a requested resource is not found.

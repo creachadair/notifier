@@ -15,7 +15,7 @@ import (
 	"os"
 	"strings"
 
-	"bitbucket.org/creachadair/jrpc2"
+	"github.com/creachadair/jrpc2"
 	"github.com/creachadair/keyfish/config"
 	"github.com/creachadair/notifier"
 )

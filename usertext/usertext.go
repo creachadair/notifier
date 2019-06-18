@@ -13,7 +13,7 @@ import (
 	"os"
 	"strings"
 
-	"bitbucket.org/creachadair/jrpc2"
+	"github.com/creachadair/jrpc2"
 	"github.com/creachadair/notifier"
 )
 

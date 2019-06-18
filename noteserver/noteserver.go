@@ -13,10 +13,10 @@ import (
 	"strings"
 	"time"
 
-	"bitbucket.org/creachadair/jrpc2"
-	"bitbucket.org/creachadair/jrpc2/jctx"
-	"bitbucket.org/creachadair/jrpc2/metrics"
-	"bitbucket.org/creachadair/jrpc2/server"
+	"github.com/creachadair/jrpc2"
+	"github.com/creachadair/jrpc2/jctx"
+	"github.com/creachadair/jrpc2/metrics"
+	"github.com/creachadair/jrpc2/server"
 	"github.com/creachadair/notifier"
 
 	// Install service plugins.
