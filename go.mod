@@ -6,7 +6,7 @@ require (
 	bitbucket.org/creachadair/shell v0.0.6
 	bitbucket.org/creachadair/stringset v0.0.7
 	github.com/creachadair/fileinput v0.0.2
-	github.com/creachadair/jrpc2 v0.1.0
+	github.com/creachadair/jrpc2 v0.1.2
 	github.com/creachadair/keyfish v0.0.25
 	github.com/kr/pretty v0.1.0 // indirect
 	golang.org/x/crypto v0.0.0-20190618222545-ea8f1a30c443
