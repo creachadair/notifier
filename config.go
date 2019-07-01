@@ -9,8 +9,19 @@ import (
 	"path/filepath"
 
 	"bitbucket.org/creachadair/shell"
+	"github.com/creachadair/jrpc2"
+	"github.com/creachadair/jrpc2/code"
+	"github.com/creachadair/jrpc2/jctx"
 	yaml "gopkg.in/yaml.v2"
 )
+
+// NotAuthorized is an error code returned for unauthorized requests.
+var NotAuthorized = code.Register(-29997, "request not authorized")
+
+// Auth is used to encode an authorization token.
+type Auth struct {
+	Token string `json:"token"`
+}
 
 // A NoteCategory describes the configuration settings for a notes category.
 type NoteCategory struct {
@@ -33,6 +44,7 @@ func (c *NoteCategory) FilePath(base, version, ext string) string {
 type Config struct {
 	Address  string
 	DebugLog bool `yaml:"debugLog"`
+	Token    string
 
 	// Settings for the clipboard service.
 	Clip struct {
@@ -96,4 +108,18 @@ func (c *Config) EditFileCmd(ctx context.Context, path string) (*exec.Cmd, error
 	args, _ := shell.Split(c.Edit.Command)
 	bin, rest := args[0], args[1:]
 	return exec.CommandContext(ctx, bin, append(rest, path)...), nil
+}
+
+// CheckRequest verifies that the specified request is authorized.  If no token
+// is set, all requests are accepted.
+func (c *Config) CheckRequest(ctx context.Context, req *jrpc2.Request) error {
+	if c == nil || c.Token == "" {
+		return nil // accept
+	}
+	var auth Auth
+	err := jctx.UnmarshalMetadata(ctx, &auth)
+	if err != nil || auth.Token != c.Token {
+		return NotAuthorized.Err()
+	}
+	return nil
 }

@@ -69,6 +69,7 @@ func main() {
 			Metrics:       metrics.New(),
 			StartTime:     time.Now().In(time.UTC),
 			DecodeContext: jctx.Decode,
+			CheckRequest:  cfg.CheckRequest,
 		},
 	}); err != nil {
 		log.Fatalf("Server failed: %v", err)
