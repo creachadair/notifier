@@ -18,7 +18,10 @@ import (
 	"github.com/creachadair/jrpc2/jctx"
 )
 
-var serverAddr = os.Getenv("NOTIFIER_ADDR") // see RegisterFlags
+var (
+	serverAddr = os.Getenv("NOTIFIER_ADDR") // see RegisterFlags
+	authToken  = os.Getenv("NOTIFIER_TOKEN")
+)
 
 // RegisterFlags installs a standard -server flag in the default flagset.
 // This function should be called during init in a client main package.
@@ -29,6 +32,16 @@ func RegisterFlags() {
 // Dial connects to the flag-selected JSON-RPC server and returns a context and
 // a client ready for use. The caller is responsible for closing the client.
 func Dial(ctx context.Context) (context.Context, *jrpc2.Client, error) {
+	// If an auth token is available, attach it to the context.
+	if authToken != "" {
+		var err error
+		ctx, err = jctx.WithMetadata(ctx, Auth{Token: authToken})
+		if err != nil {
+			return ctx, nil, err
+		}
+	}
+
+	// Dial the server: host:port is tcp, otherwise a Unix socket.
 	addr := serverAddr
 	atype := "tcp"
 	if !strings.Contains(addr, ":") {
@@ -39,6 +52,7 @@ func Dial(ctx context.Context) (context.Context, *jrpc2.Client, error) {
 	if err != nil {
 		return ctx, nil, fmt.Errorf("address %q: %v", addr, err)
 	}
+
 	cli := jrpc2.NewClient(channel.RawJSON(conn, conn), &jrpc2.ClientOptions{
 		EncodeContext: jctx.Encode,
 	})
