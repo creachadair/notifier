@@ -10,7 +10,6 @@ import (
 	"log"
 	"net"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/creachadair/jrpc2"
@@ -50,10 +49,8 @@ func main() {
 		lw = log.New(os.Stderr, "[noteserver] ", log.LstdFlags)
 	}
 
-	atype := "tcp"
-	if !strings.Contains(cfg.Address, ":") {
-		atype = "unix"
-
+	atype := jrpc2.Network(cfg.Address)
+	if atype == "unix" {
 		// Expand variables in a socket path, and unlink a stale socket in case
 		// one was left behind by a previous run.
 		cfg.Address = os.ExpandEnv(cfg.Address)

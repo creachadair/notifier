@@ -8,7 +8,6 @@ import (
 	"io"
 	"net"
 	"os"
-	"strings"
 	"text/tabwriter"
 	"time"
 
@@ -42,10 +41,8 @@ func Dial(ctx context.Context) (context.Context, *jrpc2.Client, error) {
 	}
 
 	// Dial the server: host:port is tcp, otherwise a Unix socket.
-	addr := serverAddr
-	atype := "tcp"
-	if !strings.Contains(addr, ":") {
-		atype = "unix"
+	addr, atype := serverAddr, jrpc2.Network(serverAddr)
+	if atype == "unix" {
 		addr = os.ExpandEnv(addr)
 	}
 	conn, err := net.Dial(atype, addr)
