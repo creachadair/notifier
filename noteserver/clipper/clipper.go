@@ -12,6 +12,7 @@ import (
 	"sync"
 
 	"bitbucket.org/creachadair/stringset"
+	"github.com/creachadair/atomicfile"
 	"github.com/creachadair/jrpc2"
 	"github.com/creachadair/jrpc2/code"
 	"github.com/creachadair/jrpc2/handler"
@@ -58,7 +59,7 @@ func (c *clipper) saveToFile() error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(c.store, out, 0644)
+	return atomicfile.WriteData(c.store, out, 0600)
 }
 
 // loadFromFile loads the contents of c.saved and merges it with the current data.
