@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"os"
 	"text/tabwriter"
@@ -20,7 +21,16 @@ import (
 var (
 	serverAddr = os.Getenv("NOTIFIER_ADDR") // see RegisterFlags
 	authToken  = os.Getenv("NOTIFIER_TOKEN")
+
+	debug *log.Logger
 )
+
+func init() {
+	switch os.Getenv("NOTIFIER_DEBUG") {
+	case "1", "t", "true", "yes", "on":
+		debug = log.New(os.Stderr, "[client:debug] ", log.Lmicroseconds)
+	}
+}
 
 // RegisterFlags installs a standard -server flag in the default flagset.
 // This function should be called during init in a client main package.
@@ -52,6 +62,7 @@ func Dial(ctx context.Context) (context.Context, *jrpc2.Client, error) {
 
 	cli := jrpc2.NewClient(channel.RawJSON(conn, conn), &jrpc2.ClientOptions{
 		EncodeContext: jctx.Encode,
+		Logger:        debug,
 	})
 	return ctx, cli, nil
 }
