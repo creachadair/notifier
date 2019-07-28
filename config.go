@@ -3,7 +3,6 @@ package notifier
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -12,7 +11,7 @@ import (
 	"github.com/creachadair/jrpc2"
 	"github.com/creachadair/jrpc2/code"
 	"github.com/creachadair/jrpc2/jctx"
-	yaml "gopkg.in/yaml.v2"
+	yaml "gopkg.in/yaml.v3"
 )
 
 // NotAuthorized is an error code returned for unauthorized requests.
@@ -79,11 +78,14 @@ func LoadConfig(path string, cfg *Config) error {
 	if path == "" {
 		return nil
 	}
-	data, err := ioutil.ReadFile(path)
+	f, err := os.Open(path)
 	if err != nil {
 		return err
 	}
-	return yaml.UnmarshalStrict(data, cfg)
+	defer f.Close()
+	dec := yaml.NewDecoder(f)
+	dec.KnownFields(true)
+	return dec.Decode(cfg)
 }
 
 // EditFile edits a file using the editor specified by c.
