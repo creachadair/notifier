@@ -60,7 +60,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Listen: %v", err)
 	}
-	if err := server.Loop(lst, notifier.PluginAssigner(&cfg), &server.LoopOptions{
+	service := server.NewStatic(notifier.PluginAssigner(&cfg))
+	if err := server.Loop(lst, service, &server.LoopOptions{
 		ServerOptions: &jrpc2.ServerOptions{
 			Logger:        lw,
 			Metrics:       metrics.New(),

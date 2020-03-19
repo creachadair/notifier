@@ -8,8 +8,8 @@ github.com/creachadair/atomicfile v0.2.0/go.mod h1:Tvr/wsb3lQY4dj+9utcmJ7Gp6wi3L
 github.com/creachadair/fileinput v0.0.2 h1:VJH3tAfaI7WPH+phQUS/7DlGGmjh6TUNiNgt+wvV668=
 github.com/creachadair/fileinput v0.0.2/go.mod h1:p0gRgcsdi/KSB7Ulhw4c7PgbNNLE9gCIkyP32AqCBmk=
 github.com/creachadair/getpass v0.1.0/go.mod h1:Wup04NkmcX+Af5Z2pt3FJFySTC7bs9PcsqS2zC2Ar7M=
-github.com/creachadair/jrpc2 v0.6.1 h1:mHdlHxDB52MA4tTzrdNstxFjScXSlW7Jze8OrfVz8Pk=
-github.com/creachadair/jrpc2 v0.6.1/go.mod h1:yMFI6NwXGITWoWDEEdmZESIHp13SAuSkGCTBz9bSGBg=
+github.com/creachadair/jrpc2 v0.7.0 h1:y6RIGw69axGeWI3JBaNPFWTFJ3sAoUgkVH5Gr4ND47Q=
+github.com/creachadair/jrpc2 v0.7.0/go.mod h1:yMFI6NwXGITWoWDEEdmZESIHp13SAuSkGCTBz9bSGBg=
 github.com/creachadair/keyfish v0.0.29 h1:/mzpLO520XdomXpM29PEGumsPsgpxeXk6MQkqFyoOV4=
 github.com/creachadair/keyfish v0.0.29/go.mod h1:B96gPE3XTriF8l1yYZj9glm0qb56Otvp8RURr6LvgLA=
 github.com/creachadair/otp v0.1.0/go.mod h1:vPuEqgSogZ1vtpF8OeUg28ke/PK2FIo85GZHJz74d0M=
@@ -31,6 +31,8 @@ golang.org/x/crypto v0.0.0-20190907121410-71b5226ff739/go.mod h1:yigFU9vqHzYiE8U
 golang.org/x/net v0.0.0-20190404232315-eb5bcb51f2a3/go.mod h1:t9HGtf8HONx5eT2rtn7q6eTqICYqUVnKs3thJo3Qplg=
 golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e h1:vcxGaoTs7kV8m5Np9uUNQin4BrLOthgV7252N8V+FwY=
 golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
+golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a h1:WXEvlFVvvGxCJLG6REjsT03iWnKLEWinaScsxF2Vm2o=
+golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20190412213103-97732733099d/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20190610081024-1e42afee0f76 h1:QSmW7Q3mFdAGjtAd0byXmFJ55inUydyZ4WQmiuItAIQ=
@@ -45,5 +47,5 @@ gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 h1:YR8cESwS4TdDjEe65xsg0ogRM/Nc3DYOhEAlW+xobZo=
 gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
-gopkg.in/yaml.v3 v3.0.0-20200121175148-a6ecf24a6d71 h1:Xe2gvTZUJpsvOWUnvmL/tmhVBZUmHSvLbMjRj6NUUKo=
-gopkg.in/yaml.v3 v3.0.0-20200121175148-a6ecf24a6d71/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
+gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c h1:dUUwHk2QECo/6vqA44rthZ8ie2QXMNeKRTHCNY2nXvo=
+gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
