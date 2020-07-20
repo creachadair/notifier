@@ -7,7 +7,7 @@ require (
 	bitbucket.org/creachadair/stringset v0.0.8
 	github.com/creachadair/atomicfile v0.2.0
 	github.com/creachadair/fileinput v0.0.2
-	github.com/creachadair/jrpc2 v0.9.0
+	github.com/creachadair/jrpc2 v0.10.0
 	github.com/creachadair/keyfish v0.0.29
 	github.com/google/go-cmp v0.5.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
