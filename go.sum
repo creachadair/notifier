@@ -8,8 +8,8 @@ github.com/creachadair/atomicfile v0.2.1/go.mod h1:Tvr/wsb3lQY4dj+9utcmJ7Gp6wi3L
 github.com/creachadair/fileinput v0.0.2 h1:VJH3tAfaI7WPH+phQUS/7DlGGmjh6TUNiNgt+wvV668=
 github.com/creachadair/fileinput v0.0.2/go.mod h1:p0gRgcsdi/KSB7Ulhw4c7PgbNNLE9gCIkyP32AqCBmk=
 github.com/creachadair/getpass v0.1.0/go.mod h1:Wup04NkmcX+Af5Z2pt3FJFySTC7bs9PcsqS2zC2Ar7M=
-github.com/creachadair/jrpc2 v0.10.1 h1:GmBOaRxj7sQVh+4fY/P2hU8B8hcCKerz1PgWQyj3RDc=
-github.com/creachadair/jrpc2 v0.10.1/go.mod h1:KTNid8rP+oTJ1UH4DRqgkz1E7/HvOJMrwzHjEIDgI4E=
+github.com/creachadair/jrpc2 v0.10.2 h1:/oUs3J1nR6yB2q7Qd97nuiKFrxdI64VB3oQe/77KqbI=
+github.com/creachadair/jrpc2 v0.10.2/go.mod h1:KTNid8rP+oTJ1UH4DRqgkz1E7/HvOJMrwzHjEIDgI4E=
 github.com/creachadair/keyfish v0.0.29 h1:/mzpLO520XdomXpM29PEGumsPsgpxeXk6MQkqFyoOV4=
 github.com/creachadair/keyfish v0.0.29/go.mod h1:B96gPE3XTriF8l1yYZj9glm0qb56Otvp8RURr6LvgLA=
 github.com/creachadair/otp v0.1.0/go.mod h1:vPuEqgSogZ1vtpF8OeUg28ke/PK2FIo85GZHJz74d0M=
