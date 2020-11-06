@@ -10,8 +10,8 @@ github.com/creachadair/atomicfile v0.2.1/go.mod h1:Tvr/wsb3lQY4dj+9utcmJ7Gp6wi3L
 github.com/creachadair/fileinput v0.0.2 h1:VJH3tAfaI7WPH+phQUS/7DlGGmjh6TUNiNgt+wvV668=
 github.com/creachadair/fileinput v0.0.2/go.mod h1:p0gRgcsdi/KSB7Ulhw4c7PgbNNLE9gCIkyP32AqCBmk=
 github.com/creachadair/getpass v0.1.0/go.mod h1:Wup04NkmcX+Af5Z2pt3FJFySTC7bs9PcsqS2zC2Ar7M=
-github.com/creachadair/jrpc2 v0.10.3 h1:lSNkDMdPe/fnqvFnqzx7HDwoqOvcbgKKuwlZWHkoPmA=
-github.com/creachadair/jrpc2 v0.10.3/go.mod h1:nqChISpSPLx6JvoPKl+ihTJqqOqp9fgT2jnNrC6oXs4=
+github.com/creachadair/jrpc2 v0.10.4 h1:2FtF5zt39Eee0tHFojhu14eAhzNOt5Z47n6IlQBJmgQ=
+github.com/creachadair/jrpc2 v0.10.4/go.mod h1:3bmpl8Re0jezHL05J9v1Jt++37WMVcNXfnCE3hdqNzY=
 github.com/creachadair/keyfish v0.0.33 h1:xtziRcNWJXpClQROfKMpoUO7MySHPBAukikxUmt7PtA=
 github.com/creachadair/keyfish v0.0.33/go.mod h1:BswbbBpQF6/E1hAp3LuHy2La1AG6DPOoosJaNAG3FWc=
 github.com/creachadair/otp v0.1.1 h1:SMeGZefF9eP+QjDGCRbW5a5mptIaP+HkMvzV+OhsukA=
@@ -34,8 +34,6 @@ golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACk
 golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897 h1:pLI5jrR7OSLijeIDcmRxNmw2api+jEfxLoykJVice/E=
 golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=
 golang.org/x/net v0.0.0-20190404232315-eb5bcb51f2a3/go.mod h1:t9HGtf8HONx5eT2rtn7q6eTqICYqUVnKs3thJo3Qplg=
-golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208 h1:qwRHBd0NqMbJxfbotnDhm2ByMI1Shq4Y6oRJo21SGJA=
-golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9 h1:SQFwaSi55rU7vdNs9Yr0Z324VNlrF+0wMqRXT4St8ck=
 golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
