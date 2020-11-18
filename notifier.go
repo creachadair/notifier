@@ -76,6 +76,8 @@ type PostRequest struct {
 	After    time.Duration `json:"after,omitempty"`
 }
 
+func (PostRequest) DisallowUnknownFields() {}
+
 // A ClipSetRequest is sent to update the contents of the clipboard.
 type ClipSetRequest struct {
 	Data       []byte `json:"data"`           // the data to be stored
@@ -84,6 +86,8 @@ type ClipSetRequest struct {
 	AllowEmpty bool   `json:"allowEmpty"`     // allow data to be empty
 }
 
+func (ClipSetRequest) DisallowUnknownFields() {}
+
 // A ClipGetRequest is sent to query the contents of the clipboard.
 type ClipGetRequest struct {
 	Tag      string `json:"tag,omitempty"`      // the tag to assign the data
@@ -91,10 +95,14 @@ type ClipGetRequest struct {
 	Activate bool   `json:"activate,omitempty"` // make this clip active
 }
 
+func (ClipGetRequest) DisallowUnknownFields() {}
+
 // A ClipClearRequest is sent to clear the contents of the clipboard.
 type ClipClearRequest struct {
 	Tag string `json:"tag,omitempty"` // the tag to clear or remove
 }
+
+func (ClipClearRequest) DisallowUnknownFields() {}
 
 // A SayRequest is a request to speak a notification to the user.
 type SayRequest struct {
@@ -103,12 +111,16 @@ type SayRequest struct {
 	After time.Duration `json:"after,omitempty"`
 }
 
+func (SayRequest) DisallowUnknownFields() {}
+
 // A TextRequest is a request to read a string from the user.
 type TextRequest struct {
 	Prompt  string `json:"prompt,omitempty"`
 	Default string `json:"default,omitempty"`
 	Hide    bool   `json:"hide,omitempty"`
 }
+
+func (TextRequest) DisallowUnknownFields() {}
 
 // UserCancelled is the code returned when a user cancels a text request.
 var UserCancelled = code.Register(-29999, "user cancelled request")
@@ -124,6 +136,8 @@ type KeyGenRequest struct {
 	Salt   *string `json:"salt,omitempty"`   // salt for passphrase generation
 }
 
+func (KeyGenRequest) DisallowUnknownFields() {}
+
 // A KeyGenReply is the response from the key generator.
 type KeyGenReply struct {
 	// If the key was copied, the "key" field will be omitted.
@@ -132,12 +146,16 @@ type KeyGenReply struct {
 	Label string `json:"label"`
 }
 
+func (KeyGenReply) DisallowUnknownFields() {}
+
 // A SiteRequest is a request for site data.
 type SiteRequest struct {
 	Host   string `json:"host,omitempty"`
 	Strict bool   `json:"strict,omitempty"`
 	Full   bool   `json:"full,omitempty"`
 }
+
+func (SiteRequest) DisallowUnknownFields() {}
 
 // An EditRequest is a request to edit the contents of a file.
 type EditRequest struct {
@@ -147,6 +165,8 @@ type EditRequest struct {
 	// The current contents of the file.
 	Content []byte `json:"content,omitempty"`
 }
+
+func (EditRequest) DisallowUnknownFields() {}
 
 // An EditNotesRequest is a request to edit the contents of a notes file.
 type EditNotesRequest struct {
@@ -167,6 +187,8 @@ type EditNotesRequest struct {
 	Background bool `json:"background,omitempty"`
 }
 
+func (EditNotesRequest) DisallowUnknownFields() {}
+
 // A ListNotesRequest is a request to list the available notes.
 type ListNotesRequest struct {
 	// List files matching this name tag (match all, if empty)
@@ -179,6 +201,8 @@ type ListNotesRequest struct {
 	// List files matching this version (globs OK, e.g., "2018-11-*").
 	Version string `json:"version,omitempty"`
 }
+
+func (ListNotesRequest) DisallowUnknownFields() {}
 
 // A Note describes an editable note.
 type Note struct {
@@ -194,6 +218,8 @@ type NoteWithText struct {
 	*Note
 	Text []byte `json:"text"`
 }
+
+func (NoteWithText) DisallowUnknownFields() {}
 
 // NoteLess reports whether a should be ordered prior to b, first by tag and
 // then by version.
