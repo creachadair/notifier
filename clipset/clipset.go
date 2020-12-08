@@ -20,7 +20,7 @@ import (
 	"github.com/creachadair/fileinput"
 	"github.com/creachadair/jrpc2"
 	"github.com/creachadair/notifier"
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 )
 
 var (
@@ -147,7 +147,7 @@ func main() {
 		os.Stdout.Write(data)
 
 		// When printing to a terminal, ensure the output ends with a newline.
-		if terminal.IsTerminal(int(os.Stdout.Fd())) && len(data) != 0 && !bytes.HasSuffix(data, []byte("\n")) {
+		if term.IsTerminal(int(os.Stdout.Fd())) && len(data) != 0 && !bytes.HasSuffix(data, []byte("\n")) {
 			os.Stdout.Write([]byte("\n"))
 		}
 	}
