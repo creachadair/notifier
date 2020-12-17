@@ -10,7 +10,6 @@ import (
 	"log"
 	"net"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/creachadair/jrpc2"
@@ -62,7 +61,7 @@ func main() {
 		log.Fatalf("Listen: %v", err)
 	}
 	m := metrics.New()
-	m.SetLabel("serverPID", strconv.Itoa(os.Getpid()))
+	m.SetLabel("serverPID", os.Getpid())
 	service := server.NewStatic(notifier.PluginAssigner(&cfg))
 	if err := server.Loop(lst, service, &server.LoopOptions{
 		ServerOptions: &jrpc2.ServerOptions{
