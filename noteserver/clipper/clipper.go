@@ -31,6 +31,7 @@ type clipper struct {
 
 	sync.Mutex
 	saved map[string][]byte
+	svc   jrpc2.Assigner
 }
 
 // Init implements part of notifier.Plugin.
@@ -47,7 +48,17 @@ func (c *clipper) Init(cfg *notifier.Config) error {
 func (*clipper) Update() error { return nil }
 
 // Assigner implements part of notifier.Plugin.
-func (c *clipper) Assigner() jrpc2.Assigner { return handler.NewService(c) }
+func (c *clipper) Assigner() jrpc2.Assigner {
+	if c.svc == nil {
+		c.svc = handler.Map{
+			"Get":   handler.New(c.Get),
+			"Set":   handler.New(c.Set),
+			"List":  handler.New(c.List),
+			"Clear": handler.New(c.Clear),
+		}
+	}
+	return c.svc
+}
 
 // saveToFile writes the contents of c.saved to the output file, if one is set.
 // The caller must hold the lock on c.

@@ -51,7 +51,13 @@ func (k *keygen) Update() error {
 }
 
 // Assigner implements a method of notifier.Plugin.
-func (k *keygen) Assigner() jrpc2.Assigner { return handler.NewService(k) }
+func (k *keygen) Assigner() jrpc2.Assigner {
+	return handler.Map{
+		"Generate": handler.New(k.Generate),
+		"List":     handler.New(k.List),
+		"Site":     handler.New(k.Site),
+	}
+}
 
 func (k *keygen) site(host string) (config.Site, bool) {
 	k.μ.Lock()

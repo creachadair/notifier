@@ -33,7 +33,12 @@ func (u *input) Init(cfg *notifier.Config) error {
 func (*input) Update() error { return nil }
 
 // Assigner implements part of notifier.Plugin.
-func (u *input) Assigner() jrpc2.Assigner { return handler.NewService(u) }
+func (u *input) Assigner() jrpc2.Assigner {
+	return handler.Map{
+		"Text": handler.New(u.Text),
+		"Edit": handler.New(u.Edit),
+	}
+}
 
 // Text prompts the user for textual input.
 func (u *input) Text(ctx context.Context, req *notifier.TextRequest) (string, error) {
