@@ -61,7 +61,7 @@ func main() {
 	}
 	m := metrics.New()
 	m.SetLabel("serverPID", os.Getpid())
-	service := server.NewStatic(notifier.PluginAssigner(&cfg))
+	service := server.Static(notifier.PluginAssigner(&cfg))
 	if err := server.Loop(lst, service, &server.LoopOptions{
 		ServerOptions: &jrpc2.ServerOptions{
 			Logger:        lw,
