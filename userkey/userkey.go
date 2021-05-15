@@ -16,6 +16,7 @@ import (
 	"strings"
 
 	"github.com/creachadair/jrpc2"
+	"github.com/creachadair/jrpc2/code"
 	"github.com/creachadair/keyfish/config"
 	"github.com/creachadair/notifier"
 )
@@ -95,7 +96,7 @@ func main() {
 		Copy:   !*doPrint,
 		Strict: !*doLax,
 	})
-	if e, ok := err.(*jrpc2.Error); ok && e.Code() == notifier.UserCancelled {
+	if code.FromError(err) == notifier.UserCancelled {
 		os.Exit(2)
 	} else if err != nil {
 		log.Fatal(err)
