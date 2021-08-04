@@ -48,14 +48,14 @@ func main() {
 		lw = log.New(os.Stderr, "[noteserver] ", log.LstdFlags)
 	}
 
-	atype := jrpc2.Network(cfg.Address)
+	atype, addr := jrpc2.Network(cfg.Address)
 	if atype == "unix" {
 		// Expand variables in a socket path, and unlink a stale socket in case
 		// one was left behind by a previous run.
 		cfg.Address = os.ExpandEnv(cfg.Address)
 		_ = os.Remove(cfg.Address) // it's fine if this fails
 	}
-	lst, err := net.Listen(atype, cfg.Address)
+	lst, err := net.Listen(atype, addr)
 	if err != nil {
 		log.Fatalf("Listen: %v", err)
 	}
