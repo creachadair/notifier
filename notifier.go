@@ -51,7 +51,7 @@ func Dial(ctx context.Context) (context.Context, *jrpc2.Client, error) {
 	}
 
 	// Dial the server: host:port is tcp, otherwise a Unix socket.
-	addr, atype := jrpc2.Network(serverAddr)
+	atype, addr := jrpc2.Network(serverAddr)
 	if atype == "unix" {
 		addr = os.ExpandEnv(addr)
 	}
