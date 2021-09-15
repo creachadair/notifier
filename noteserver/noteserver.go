@@ -60,7 +60,7 @@ func main() {
 		log.Fatalf("Listen: %v", err)
 	}
 	m := metrics.New()
-	m.SetLabel("serverPID", os.Getpid())
+	m.SetLabel("noteserver.pid", os.Getpid())
 	service := server.Static(notifier.PluginAssigner(&cfg))
 	if err := server.Loop(lst, service, &server.LoopOptions{
 		ServerOptions: &jrpc2.ServerOptions{
