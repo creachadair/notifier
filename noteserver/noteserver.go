@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/creachadair/jrpc2"
+	"github.com/creachadair/jrpc2/channel"
 	"github.com/creachadair/jrpc2/jctx"
 	"github.com/creachadair/jrpc2/metrics"
 	"github.com/creachadair/jrpc2/server"
@@ -61,8 +62,9 @@ func main() {
 	}
 	m := metrics.New()
 	m.SetLabel("noteserver.pid", os.Getpid())
+	acc := server.NetAccepter(lst, channel.Line)
 	service := server.Static(notifier.PluginAssigner(&cfg))
-	if err := server.Loop(lst, service, &server.LoopOptions{
+	if err := server.Loop(acc, service, &server.LoopOptions{
 		ServerOptions: &jrpc2.ServerOptions{
 			Logger:        lw,
 			Metrics:       m,

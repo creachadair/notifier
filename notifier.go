@@ -60,7 +60,7 @@ func Dial(ctx context.Context) (context.Context, *jrpc2.Client, error) {
 		return ctx, nil, fmt.Errorf("address %q: %v", addr, err)
 	}
 
-	cli := jrpc2.NewClient(channel.RawJSON(conn, conn), &jrpc2.ClientOptions{
+	cli := jrpc2.NewClient(channel.Line(conn, conn), &jrpc2.ClientOptions{
 		EncodeContext: jctx.Encode,
 		Logger:        debug,
 	})
