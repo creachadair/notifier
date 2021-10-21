@@ -6,7 +6,7 @@ require (
 	bitbucket.org/creachadair/shell v0.0.6
 	bitbucket.org/creachadair/stringset v0.0.9
 	github.com/creachadair/atomicfile v0.2.2
-	github.com/creachadair/fileinput v0.0.2
+	github.com/creachadair/fileinput v0.1.0
 	github.com/creachadair/jrpc2 v0.27.0
 	github.com/creachadair/keyfish v0.0.34
 	github.com/creachadair/otp v0.2.5 // indirect

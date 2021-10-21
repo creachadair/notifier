@@ -6,8 +6,8 @@ bitbucket.org/creachadair/stringset v0.0.9/go.mod h1:t+4WcQ4+PXTa8aQdNKe40ZP6iwe
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/creachadair/atomicfile v0.2.2 h1:/qnts+ZoRBH9CSxWO7VWrWlUw4J7c4/cAvAU8/h/eo0=
 github.com/creachadair/atomicfile v0.2.2/go.mod h1:BRq8Une6ckFneYXZQ+kO7p1ZZP3I2fzVzf28JxrIkBc=
-github.com/creachadair/fileinput v0.0.2 h1:VJH3tAfaI7WPH+phQUS/7DlGGmjh6TUNiNgt+wvV668=
-github.com/creachadair/fileinput v0.0.2/go.mod h1:p0gRgcsdi/KSB7Ulhw4c7PgbNNLE9gCIkyP32AqCBmk=
+github.com/creachadair/fileinput v0.1.0 h1:QxTw0B9EZaREc/LWKeQ0YQA8Gnd5m6AiGZ/aPbSFbtg=
+github.com/creachadair/fileinput v0.1.0/go.mod h1:8l7ZfBxBk7zOstxT+hvDR8XWc3LOLeFk1KWaQYHNmTY=
 github.com/creachadair/getpass v0.1.1/go.mod h1:amWqqvJdxnT/Tk6PPgpFWX5Ik2RH4dnvfXequlcSXSc=
 github.com/creachadair/jrpc2 v0.27.0 h1:QzDp+Zrq+JKM21qQblLudnxevzQZ0FrcPDIVQzcgErs=
 github.com/creachadair/jrpc2 v0.27.0/go.mod h1:w+GXZGc+NwsH0xsUOgeLBIIRM0jBOSTXhv28KaWGRZU=

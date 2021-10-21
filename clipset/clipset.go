@@ -167,7 +167,10 @@ func main() {
 	if *doTee {
 		w = io.MultiWriter(&buf, os.Stdout)
 	}
-	in := fileinput.CatOrFile(context.Background(), flag.Args(), os.Stdin)
+	var in io.ReadCloser = os.Stdin
+	if flag.NArg() != 0 {
+		in = fileinput.Cat(flag.Args())
+	}
 	if _, err := io.Copy(w, in); err != nil {
 		log.Fatalf("Reading stdin: %v", err)
 	}
