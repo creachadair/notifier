@@ -22,13 +22,13 @@ var (
 	serverAddr = os.Getenv("NOTIFIER_ADDR") // see RegisterFlags
 	authToken  = os.Getenv("NOTIFIER_TOKEN")
 
-	debug *log.Logger
+	debug jrpc2.Logger
 )
 
 func init() {
 	switch os.Getenv("NOTIFIER_DEBUG") {
 	case "1", "t", "true", "yes", "on":
-		debug = log.New(os.Stderr, "[client:debug] ", log.Lmicroseconds)
+		debug = jrpc2.StdLogger(log.New(os.Stderr, "[client:debug] ", log.Lmicroseconds))
 	}
 }
 

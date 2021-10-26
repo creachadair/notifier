@@ -28,7 +28,7 @@ import (
 
 var (
 	cfg notifier.Config
-	lw  *log.Logger
+	lw  jrpc2.Logger
 
 	configPath = flag.String("config", "", "Configuration file path")
 	serverAddr = flag.String("address", "", "Server address (overrides config)")
@@ -46,7 +46,7 @@ func main() {
 		cfg.Address = *serverAddr
 	}
 	if cfg.DebugLog || *debugLog {
-		lw = log.New(os.Stderr, "[noteserver] ", log.LstdFlags)
+		lw = jrpc2.StdLogger(log.New(os.Stderr, "[noteserver] ", log.LstdFlags))
 	}
 
 	atype, addr := jrpc2.Network(cfg.Address)
