@@ -6,7 +6,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"sync"
@@ -79,7 +78,7 @@ func (c *clipper) loadFromFile() error {
 	if c.store == "" {
 		return nil
 	}
-	bits, err := ioutil.ReadFile(c.store)
+	bits, err := os.ReadFile(c.store)
 	if os.IsNotExist(err) {
 		return nil
 	} else if err != nil {

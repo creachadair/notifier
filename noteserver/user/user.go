@@ -5,7 +5,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -78,16 +77,16 @@ func (u *input) Edit(ctx context.Context, req *notifier.EditRequest) ([]byte, er
 	// Store the file in a temporary directory so we have a place to point the
 	// editor that will not conflict with other invocations. Use the name given
 	// by the caller so the editor will display the "correct" name.
-	tmp, err := ioutil.TempDir("", "User.Edit.")
+	tmp, err := os.MkdirTemp("", "User.Edit.")
 	if err != nil {
 		return nil, err
 	}
 	defer os.RemoveAll(tmp) // attempt to clean up
 	path := filepath.Join(tmp, req.Name)
-	if err := ioutil.WriteFile(path, req.Content, 0644); err != nil {
+	if err := os.WriteFile(path, req.Content, 0644); err != nil {
 		return nil, err
 	} else if err := u.cfg.EditFile(ctx, path); err != nil {
 		return nil, err
 	}
-	return ioutil.ReadFile(path)
+	return os.ReadFile(path)
 }

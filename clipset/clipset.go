@@ -12,7 +12,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -111,7 +110,7 @@ func main() {
 
 	// Handle loading clips from a JSON dump.
 	if *loadClips != "" {
-		saved, err := ioutil.ReadFile(*loadClips)
+		saved, err := os.ReadFile(*loadClips)
 		if err != nil {
 			log.Fatalf("Opening tag dump: %v", err)
 		}

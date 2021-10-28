@@ -10,7 +10,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -26,7 +25,7 @@ func main() {
 		log.Fatalf("Usage: %s <filename>", filepath.Base(os.Args[0]))
 	}
 	path := flag.Arg(0)
-	input, err := ioutil.ReadFile(path)
+	input, err := os.ReadFile(path)
 	if os.IsNotExist(err) {
 		fmt.Fprintf(os.Stderr, "Editing new file %q\n", path)
 	} else if err != nil {
@@ -47,7 +46,7 @@ func main() {
 		log.Fatalf("Error editing: %v", err)
 	} else if bytes.Equal(input, output) {
 		fmt.Fprintln(os.Stderr, "(unchanged)")
-	} else if err := ioutil.WriteFile(path, output, 0644); err != nil {
+	} else if err := os.WriteFile(path, output, 0644); err != nil {
 		log.Fatalf("Writing output: %v", err)
 	}
 }
