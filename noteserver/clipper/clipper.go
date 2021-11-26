@@ -30,7 +30,7 @@ type clipper struct {
 
 	sync.Mutex
 	saved map[string][]byte
-	svc   jrpc2.Assigner
+	svc   handler.Map
 }
 
 // Init implements part of notifier.Plugin.
@@ -47,7 +47,7 @@ func (c *clipper) Init(cfg *notifier.Config) error {
 func (*clipper) Update() error { return nil }
 
 // Assigner implements part of notifier.Plugin.
-func (c *clipper) Assigner() jrpc2.Assigner {
+func (c *clipper) Assigner() handler.Map {
 	if c.svc == nil {
 		c.svc = handler.Map{
 			"Get":   handler.New(c.Get),

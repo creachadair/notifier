@@ -36,7 +36,7 @@ type Plugin interface {
 	Update() error
 
 	// Assigner returns an assigner for handlers.
-	Assigner() jrpc2.Assigner
+	Assigner() handler.Map
 }
 
 var plugins = make(map[string]Plugin)
@@ -63,7 +63,7 @@ func PluginAssigner(cfg *Config) jrpc2.Assigner {
 		} else if err != nil {
 			log.Panicf("Initializing plugin %q: %v", name, err)
 		} else {
-			svc[name] = plug.Assigner()
+			svc[name] = addAuthCheck(cfg, plug.Assigner())
 		}
 	}
 
@@ -86,6 +86,20 @@ func PluginAssigner(cfg *Config) jrpc2.Assigner {
 		}()
 	})
 	return svc
+}
+
+func addAuthCheck(cfg *Config, m handler.Map) handler.Map {
+	out := make(handler.Map)
+	for name, h := range m {
+		h := h
+		out[name] = handler.Func(func(ctx context.Context, req *jrpc2.Request) (interface{}, error) {
+			if err := cfg.CheckAuth(ctx, req); err != nil {
+				return nil, err
+			}
+			return h.Handle(ctx, req)
+		})
+	}
+	return out
 }
 
 // PromptForText requests a string of text from the user.

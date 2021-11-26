@@ -51,7 +51,7 @@ func (k *keygen) Update() error {
 }
 
 // Assigner implements a method of notifier.Plugin.
-func (k *keygen) Assigner() jrpc2.Assigner {
+func (k *keygen) Assigner() handler.Map {
 	return handler.Map{
 		"Generate": handler.New(k.Generate),
 		"List":     handler.New(k.List),

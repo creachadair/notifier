@@ -32,7 +32,7 @@ func (u *input) Init(cfg *notifier.Config) error {
 func (*input) Update() error { return nil }
 
 // Assigner implements part of notifier.Plugin.
-func (u *input) Assigner() jrpc2.Assigner {
+func (u *input) Assigner() handler.Map {
 	return handler.Map{
 		"Text": handler.New(u.Text),
 		"Edit": handler.New(u.Edit),

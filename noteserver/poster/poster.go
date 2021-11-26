@@ -30,7 +30,7 @@ func (p *poster) Init(cfg *notifier.Config) error {
 func (*poster) Update() error { return nil }
 
 // Assigner implements part of notifier.Plugin.
-func (p *poster) Assigner() jrpc2.Assigner {
+func (p *poster) Assigner() handler.Map {
 	return handler.Map{
 		"Post": handler.New(p.Post),
 		"Say":  handler.New(p.Say),

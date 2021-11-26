@@ -112,9 +112,9 @@ func (c *Config) EditFileCmd(ctx context.Context, path string) (*exec.Cmd, error
 	return exec.CommandContext(ctx, bin, append(rest, path)...), nil
 }
 
-// CheckRequest verifies that the specified request is authorized.  If no token
-// is set, all requests are accepted.
-func (c *Config) CheckRequest(ctx context.Context, req *jrpc2.Request) error {
+// CheckAuth verifies that the specified request is authorized.  If no token is
+// set, all requests are accepted.
+func (c *Config) CheckAuth(ctx context.Context, req *jrpc2.Request) error {
 	if c == nil || c.Token == "" || req.Method() == "rpc.serverInfo" {
 		return nil // accept
 	}
