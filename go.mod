@@ -7,12 +7,12 @@ require (
 	bitbucket.org/creachadair/stringset v0.0.10
 	github.com/creachadair/atomicfile v0.2.2
 	github.com/creachadair/fileinput v0.1.0
-	github.com/creachadair/jrpc2 v0.32.1
+	github.com/creachadair/jrpc2 v0.33.0
 	github.com/creachadair/keyfish v0.0.35
 	github.com/creachadair/otp v0.2.5 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
-	golang.org/x/sys v0.0.0-20211124211545-fe61309f8881 // indirect
+	golang.org/x/sys v0.0.0-20211204120058-94396e421777 // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
