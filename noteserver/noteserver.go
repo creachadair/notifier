@@ -6,6 +6,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"net"
@@ -62,9 +63,11 @@ func main() {
 	}
 	m := metrics.New()
 	m.SetLabel("noteserver.pid", os.Getpid())
+
+	ctx := context.Background()
 	acc := server.NetAccepter(lst, channel.Line)
 	service := server.Static(notifier.PluginAssigner(&cfg))
-	if err := server.Loop(acc, service, &server.LoopOptions{
+	if err := server.Loop(ctx, acc, service, &server.LoopOptions{
 		ServerOptions: &jrpc2.ServerOptions{
 			Logger:        lw,
 			Metrics:       m,
