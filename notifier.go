@@ -125,38 +125,6 @@ func (TextRequest) DisallowUnknownFields() {}
 // UserCancelled is the code returned when a user cancels a text request.
 var UserCancelled = code.Register(-29999, "user cancelled request")
 
-// A KeyGenRequest is a request to generate a password.
-type KeyGenRequest struct {
-	Host   string  `json:"host,omitempty"`   // host or site label
-	Strict bool    `json:"strict,omitempty"` // report error if label is not known
-	Copy   bool    `json:"copy,omitempty"`   // copy to clipboard
-	Format *string `json:"format,omitempty"` // render using this format
-	Length *int    `json:"length,omitempty"` // generated passphrase length
-	Punct  *bool   `json:"punct,omitempty"`  // use punctuation in passphrases
-	Salt   *string `json:"salt,omitempty"`   // salt for passphrase generation
-}
-
-func (KeyGenRequest) DisallowUnknownFields() {}
-
-// A KeyGenReply is the response from the key generator.
-type KeyGenReply struct {
-	// If the key was copied, the "key" field will be omitted.
-	Key   string `json:"key,omitempty"`
-	Hash  string `json:"hash"`
-	Label string `json:"label"`
-}
-
-func (KeyGenReply) DisallowUnknownFields() {}
-
-// A SiteRequest is a request for site data.
-type SiteRequest struct {
-	Host   string `json:"host,omitempty"`
-	Strict bool   `json:"strict,omitempty"`
-	Full   bool   `json:"full,omitempty"`
-}
-
-func (SiteRequest) DisallowUnknownFields() {}
-
 // An EditRequest is a request to edit the contents of a file.
 type EditRequest struct {
 	// The base name of the file to edit.

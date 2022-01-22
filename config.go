@@ -61,11 +61,6 @@ type Config struct {
 		Categories []*NoteCategory
 	}
 
-	// Settings for the key generation service.
-	Key struct {
-		ConfigFile string `yaml:"configFile"`
-	}
-
 	// Settings for the notification service.
 	Notify struct {
 		Sound string

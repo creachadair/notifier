@@ -22,7 +22,6 @@ import (
 
 	// Install service plugins.
 	_ "github.com/creachadair/notifier/noteserver/clipper"
-	_ "github.com/creachadair/notifier/noteserver/keygen"
 	_ "github.com/creachadair/notifier/noteserver/poster"
 	_ "github.com/creachadair/notifier/noteserver/user"
 )
