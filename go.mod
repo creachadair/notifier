@@ -8,8 +8,6 @@ require (
 	github.com/creachadair/atomicfile v0.2.2
 	github.com/creachadair/fileinput v0.1.0
 	github.com/creachadair/jrpc2 v0.35.3
-	github.com/creachadair/keyfish v0.0.37
-	github.com/creachadair/otp v0.2.5 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
