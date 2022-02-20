@@ -7,8 +7,8 @@ github.com/creachadair/atomicfile v0.2.4 h1:GRjpQLmz/78I4+nBQpGMFrRa9yrL157AUTrA
 github.com/creachadair/atomicfile v0.2.4/go.mod h1:BRq8Une6ckFneYXZQ+kO7p1ZZP3I2fzVzf28JxrIkBc=
 github.com/creachadair/fileinput v0.1.0 h1:QxTw0B9EZaREc/LWKeQ0YQA8Gnd5m6AiGZ/aPbSFbtg=
 github.com/creachadair/fileinput v0.1.0/go.mod h1:8l7ZfBxBk7zOstxT+hvDR8XWc3LOLeFk1KWaQYHNmTY=
-github.com/creachadair/jrpc2 v0.35.5 h1:V4WaRUSHhMglmKgRXcmGEWQMo2oA9tBFHl94qXP4wmw=
-github.com/creachadair/jrpc2 v0.35.5/go.mod h1:a53Cer/NMD1y8P9UB2XbuOLRELKRLDf8u7bRi4v1qsE=
+github.com/creachadair/jrpc2 v0.36.0 h1:GMcMrn+U4LCy8luGjbcb5+PtD75EFG8ejPdFul7Q3jw=
+github.com/creachadair/jrpc2 v0.36.0/go.mod h1:a53Cer/NMD1y8P9UB2XbuOLRELKRLDf8u7bRi4v1qsE=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/fortytw2/leaktest v1.3.0 h1:u8491cBMTQ8ft8aeV+adlcytMZylmA5nnwwkRZjI8vw=
 github.com/fortytw2/leaktest v1.3.0/go.mod h1:jDsjWgpAGjm2CA7WthBh/CdZYEPF31XHquHwclZch5g=
