@@ -15,7 +15,6 @@ import (
 
 	"github.com/creachadair/jrpc2"
 	"github.com/creachadair/jrpc2/channel"
-	"github.com/creachadair/jrpc2/jctx"
 	"github.com/creachadair/jrpc2/metrics"
 	"github.com/creachadair/jrpc2/server"
 	"github.com/creachadair/notifier"
@@ -68,10 +67,9 @@ func main() {
 	service := server.Static(notifier.PluginAssigner(&cfg))
 	if err := server.Loop(ctx, acc, service, &server.LoopOptions{
 		ServerOptions: &jrpc2.ServerOptions{
-			Logger:        lw,
-			Metrics:       m,
-			StartTime:     time.Now().In(time.UTC),
-			DecodeContext: jctx.Decode,
+			Logger:    lw,
+			Metrics:   m,
+			StartTime: time.Now().In(time.UTC),
 		},
 	}); err != nil {
 		log.Fatalf("Server failed: %v", err)

@@ -2,48 +2,17 @@ package notifier
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 
 	"bitbucket.org/creachadair/shell"
-	"github.com/creachadair/jrpc2"
-	"github.com/creachadair/jrpc2/code"
-	"github.com/creachadair/jrpc2/jctx"
 	yaml "gopkg.in/yaml.v3"
 )
-
-// NotAuthorized is an error code returned for unauthorized requests.
-var NotAuthorized = code.Register(-29997, "request not authorized")
-
-// Auth is used to encode an authorization token.
-type Auth struct {
-	Token string `json:"token"`
-}
-
-// A NoteCategory describes the configuration settings for a notes category.
-type NoteCategory struct {
-	Name   string `json:"name"`             // the name of the category
-	Dir    string `json:"dir"`              // the direcory where notes are stored
-	Suffix string `json:"suffix,omitempty"` // the default file suffix for this category
-}
-
-// FilePath constructs a filepath for the specified base, version, and
-// extension relative to the directory of the specified category.
-func (c *NoteCategory) FilePath(base, version, ext string) string {
-	if ext == "" {
-		ext = c.Suffix
-	}
-	name := fmt.Sprintf("%s-%s%s", base, version, ext)
-	return filepath.Join(os.ExpandEnv(c.Dir), name)
-}
 
 // Config stores settings for the various notifier services.
 type Config struct {
 	Address  string
 	DebugLog bool `yaml:"debugLog"`
-	Token    string
 
 	// Settings for the clipboard service.
 	Clip struct {
@@ -54,11 +23,6 @@ type Config struct {
 	Edit struct {
 		Command  string
 		TouchNew bool `yaml:"touchNew"`
-	}
-
-	// Settings for the notes service.
-	Notes struct {
-		Categories []*NoteCategory
 	}
 
 	// Settings for the notification service.
@@ -105,18 +69,4 @@ func (c *Config) EditFileCmd(ctx context.Context, path string) (*exec.Cmd, error
 	args, _ := shell.Split(c.Edit.Command)
 	bin, rest := args[0], args[1:]
 	return exec.CommandContext(ctx, bin, append(rest, path)...), nil
-}
-
-// CheckAuth verifies that the specified request is authorized.  If no token is
-// set, all requests are accepted.
-func (c *Config) CheckAuth(ctx context.Context, req *jrpc2.Request) error {
-	if c == nil || c.Token == "" || req.Method() == "rpc.serverInfo" {
-		return nil // accept
-	}
-	var auth Auth
-	err := jctx.UnmarshalMetadata(ctx, &auth)
-	if err != nil || auth.Token != c.Token {
-		return NotAuthorized.Err()
-	}
-	return nil
 }

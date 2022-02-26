@@ -15,12 +15,10 @@ import (
 	"github.com/creachadair/jrpc2"
 	"github.com/creachadair/jrpc2/channel"
 	"github.com/creachadair/jrpc2/code"
-	"github.com/creachadair/jrpc2/jctx"
 )
 
 var (
 	serverAddr = os.Getenv("NOTIFIER_ADDR") // see RegisterFlags
-	authToken  = os.Getenv("NOTIFIER_TOKEN")
 
 	debug jrpc2.Logger
 )
@@ -41,15 +39,6 @@ func RegisterFlags() {
 // Dial connects to the flag-selected JSON-RPC server and returns a context and
 // a client ready for use. The caller is responsible for closing the client.
 func Dial(ctx context.Context) (context.Context, *jrpc2.Client, error) {
-	// If an auth token is available, attach it to the context.
-	if authToken != "" {
-		var err error
-		ctx, err = jctx.WithMetadata(ctx, Auth{Token: authToken})
-		if err != nil {
-			return ctx, nil, err
-		}
-	}
-
 	// Dial the server: host:port is tcp, otherwise a Unix socket.
 	atype, addr := jrpc2.Network(serverAddr)
 	if atype == "unix" {
@@ -61,8 +50,7 @@ func Dial(ctx context.Context) (context.Context, *jrpc2.Client, error) {
 	}
 
 	cli := jrpc2.NewClient(channel.Line(conn, conn), &jrpc2.ClientOptions{
-		EncodeContext: jctx.Encode,
-		Logger:        debug,
+		Logger: debug,
 	})
 	return ctx, cli, nil
 }
