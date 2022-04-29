@@ -1,6 +1,6 @@
 module github.com/creachadair/notifier
 
-go 1.17
+go 1.18
 
 require (
 	bitbucket.org/creachadair/shell v0.0.7
@@ -17,5 +17,3 @@ require (
 )
 
 require golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-
-replace github.com/creachadair/jrpc2 => ../jrpc2
