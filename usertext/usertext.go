@@ -1,8 +1,8 @@
 // Program usertext requests text from the user.
 //
 // Usage:
-//    usertext -server :8080
 //
+//	usertext -server :8080
 package main
 
 import (

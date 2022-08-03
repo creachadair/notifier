@@ -1,8 +1,8 @@
 // Program clipset sends a clipboard set request to a noteserver.
 //
 // Usage:
-//    echo "message" | clipset -server :8080
 //
+//	echo "message" | clipset -server :8080
 package main
 
 import (

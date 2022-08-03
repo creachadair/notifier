@@ -1,8 +1,8 @@
 // Program noteserver implements a server for posting notifications.
 //
 // Usage:
-//    noteserver -address :8080
 //
+//	noteserver -address :8080
 package main
 
 import (

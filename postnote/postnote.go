@@ -1,8 +1,8 @@
 // Program postnote sends a notification request to a noteserver.
 //
 // Usage:
-//    postnote -server :8080 This is the notification
 //
+//	postnote -server :8080 This is the notification
 package main
 
 import (

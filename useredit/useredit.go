@@ -1,8 +1,8 @@
 // Program useredit requests editing of a file.
 //
 // Usage:
-//    useredit -server :8080 filename
 //
+//	useredit -server :8080 filename
 package main
 
 import (
