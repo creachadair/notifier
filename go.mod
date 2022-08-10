@@ -7,7 +7,7 @@ require (
 	bitbucket.org/creachadair/stringset v0.0.10
 	github.com/creachadair/atomicfile v0.2.7
 	github.com/creachadair/fileinput v0.1.0
-	github.com/creachadair/jrpc2 v0.41.0
+	github.com/creachadair/jrpc2 v0.41.1
 	github.com/kr/text v0.2.0 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	golang.org/x/sys v0.0.0-20220808155132-1c4a2a72c664 // indirect
