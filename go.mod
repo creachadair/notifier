@@ -10,10 +10,10 @@ require (
 	github.com/creachadair/jrpc2 v0.41.2
 	github.com/kr/text v0.2.0 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
-	golang.org/x/sys v0.0.0-20221010170243-090e33056c14 // indirect
-	golang.org/x/term v0.0.0-20220919170432-7a66f970e087
+	golang.org/x/sys v0.1.0 // indirect
+	golang.org/x/term v0.0.0-20221017184919-83659145692c
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/yaml.v3 v3.0.1
 )
 
-require golang.org/x/sync v0.0.0-20220929204114-8fcdb60fdcc0 // indirect
+require golang.org/x/sync v0.1.0 // indirect
