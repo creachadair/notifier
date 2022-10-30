@@ -7,6 +7,7 @@ package main
 
 import (
 	"context"
+	"expvar"
 	"flag"
 	"log"
 	"net"
@@ -15,7 +16,6 @@ import (
 
 	"github.com/creachadair/jrpc2"
 	"github.com/creachadair/jrpc2/channel"
-	"github.com/creachadair/jrpc2/metrics"
 	"github.com/creachadair/jrpc2/server"
 	"github.com/creachadair/notifier"
 
@@ -32,6 +32,8 @@ var (
 	configPath = flag.String("config", "", "Configuration file path")
 	serverAddr = flag.String("address", "", "Server address (overrides config)")
 	debugLog   = flag.Bool("debuglog", false, "Enable debug logging (overrides config)")
+
+	processID = new(expvar.Int)
 )
 
 func main() {
@@ -59,8 +61,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("Listen: %v", err)
 	}
-	m := metrics.New()
-	m.SetLabel("noteserver.pid", os.Getpid())
+
+	processID.Set(int64(os.Getpid()))
+	jrpc2.ServerMetrics().Set("noteserver_pid", processID)
 
 	ctx := context.Background()
 	acc := server.NetAccepter(lst, channel.Line)
@@ -68,7 +71,6 @@ func main() {
 	if err := server.Loop(ctx, acc, service, &server.LoopOptions{
 		ServerOptions: &jrpc2.ServerOptions{
 			Logger:    lw,
-			Metrics:   m,
 			StartTime: time.Now().In(time.UTC),
 		},
 	}); err != nil {
