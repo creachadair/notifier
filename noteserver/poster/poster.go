@@ -4,6 +4,7 @@ package poster
 import (
 	"context"
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 	"time"
@@ -81,6 +82,7 @@ func (p *poster) Say(ctx context.Context, req *notifier.SayRequest) (bool, error
 	}
 	cmd := exec.CommandContext(ctx, "say", "-v", req.Voice)
 	cmd.Stdin = strings.NewReader(req.Text)
+	cmd.Stderr = os.Stderr
 	err := cmd.Run()
 	return err == nil, err
 }
