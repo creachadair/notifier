@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	bitbucket.org/creachadair/shell v0.0.7
-	bitbucket.org/creachadair/stringset v0.0.10
+	bitbucket.org/creachadair/stringset v0.0.11
 	github.com/creachadair/atomicfile v0.2.7
 	github.com/creachadair/fileinput v0.1.0
 	github.com/creachadair/jrpc2 v0.43.0
