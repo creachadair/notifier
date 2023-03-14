@@ -7,7 +7,7 @@ require (
 	bitbucket.org/creachadair/stringset v0.0.11
 	github.com/creachadair/atomicfile v0.2.8
 	github.com/creachadair/fileinput v0.1.0
-	github.com/creachadair/jrpc2 v0.44.0
+	github.com/creachadair/jrpc2 v0.45.0
 	github.com/kr/text v0.2.0 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	golang.org/x/sys v0.6.0 // indirect
@@ -16,4 +16,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 )
 
-require golang.org/x/sync v0.1.0 // indirect
+require (
+	github.com/creachadair/mds v0.0.0-20230313153906-9788b6f60568 // indirect
+	golang.org/x/sync v0.1.0 // indirect
+)

@@ -111,7 +111,7 @@ type TextRequest struct {
 func (TextRequest) DisallowUnknownFields() {}
 
 // UserCancelled is the code returned when a user cancels a text request.
-var UserCancelled = code.Register(-29999, "user cancelled request")
+const UserCancelled = code.Code(-29999)
 
 // An EditRequest is a request to edit the contents of a file.
 type EditRequest struct {

@@ -19,7 +19,7 @@ import (
 )
 
 // ResourceNotFound is returned when a requested resource is not found.
-var ResourceNotFound = code.Register(-29998, "resource not found")
+var ResourceNotFound = code.Code(-29998)
 
 // ErrNotApplicable is returned by a plugin's Init function if the plugin
 // cannot be used with the given configuration.
