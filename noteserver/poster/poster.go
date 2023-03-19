@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/creachadair/jrpc2"
-	"github.com/creachadair/jrpc2/code"
 	"github.com/creachadair/jrpc2/handler"
 	"github.com/creachadair/notifier"
 )
@@ -41,7 +40,7 @@ func (p *poster) Assigner() handler.Map {
 // Post posts a textual notification to the user.
 func (p *poster) Post(ctx context.Context, req *notifier.PostRequest) (bool, error) {
 	if req.Body == "" && req.Title == "" {
-		return false, jrpc2.Errorf(code.InvalidParams, "missing notification body and title")
+		return false, jrpc2.Errorf(jrpc2.InvalidParams, "missing notification body and title")
 	}
 	program := []string{
 		fmt.Sprintf("display notification %q", req.Body),
@@ -69,7 +68,7 @@ func (p *poster) Post(ctx context.Context, req *notifier.PostRequest) (bool, err
 // Say delivers a voice notification to the user.
 func (p *poster) Say(ctx context.Context, req *notifier.SayRequest) (bool, error) {
 	if req.Text == "" {
-		return false, jrpc2.Errorf(code.InvalidParams, "empty text")
+		return false, jrpc2.Errorf(jrpc2.InvalidParams, "empty text")
 	} else if req.Voice == "" {
 		req.Voice = p.cfg.Notify.Voice
 	}

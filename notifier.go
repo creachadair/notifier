@@ -14,7 +14,6 @@ import (
 
 	"github.com/creachadair/jrpc2"
 	"github.com/creachadair/jrpc2/channel"
-	"github.com/creachadair/jrpc2/code"
 )
 
 var (
@@ -111,7 +110,7 @@ type TextRequest struct {
 func (TextRequest) DisallowUnknownFields() {}
 
 // UserCancelled is the code returned when a user cancels a text request.
-const UserCancelled = code.Code(-29999)
+const UserCancelled = jrpc2.Code(-29999)
 
 // An EditRequest is a request to edit the contents of a file.
 type EditRequest struct {

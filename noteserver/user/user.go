@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/creachadair/jrpc2"
-	"github.com/creachadair/jrpc2/code"
 	"github.com/creachadair/jrpc2/handler"
 	"github.com/creachadair/notifier"
 )
@@ -42,7 +41,7 @@ func (u *input) Assigner() handler.Map {
 // Text prompts the user for textual input.
 func (u *input) Text(ctx context.Context, req *notifier.TextRequest) (string, error) {
 	if req.Prompt == "" {
-		return "", jrpc2.Errorf(code.InvalidParams, "missing prompt string")
+		return "", jrpc2.Errorf(jrpc2.InvalidParams, "missing prompt string")
 	}
 
 	// Ask osascript to send error text to stdout to simplify error plumbing.
@@ -63,7 +62,7 @@ func (u *input) Text(ctx context.Context, req *notifier.TextRequest) (string, er
 	if i := strings.Index(out, needle); i >= 0 {
 		return out[i+len(needle):], nil
 	}
-	return "", jrpc2.Errorf(code.InternalError, "missing user input")
+	return "", jrpc2.Errorf(jrpc2.InternalError, "missing user input")
 }
 
 // Edit opens the designated editor for a file.
@@ -71,7 +70,7 @@ func (u *input) Edit(ctx context.Context, req *notifier.EditRequest) ([]byte, er
 	if u.cfg.Edit.Command == "" {
 		return nil, errors.New("no editor is defined")
 	} else if req.Name == "" {
-		return nil, jrpc2.Errorf(code.InvalidParams, "missing file name")
+		return nil, jrpc2.Errorf(jrpc2.InvalidParams, "missing file name")
 	}
 
 	// Store the file in a temporary directory so we have a place to point the

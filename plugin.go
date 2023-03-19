@@ -14,12 +14,11 @@ import (
 	"syscall"
 
 	"github.com/creachadair/jrpc2"
-	"github.com/creachadair/jrpc2/code"
 	"github.com/creachadair/jrpc2/handler"
 )
 
 // ResourceNotFound is returned when a requested resource is not found.
-var ResourceNotFound = code.Code(-29998)
+var ResourceNotFound = jrpc2.Code(-29998)
 
 // ErrNotApplicable is returned by a plugin's Init function if the plugin
 // cannot be used with the given configuration.
@@ -91,7 +90,7 @@ func PluginAssigner(cfg *Config) jrpc2.Assigner {
 // PromptForText requests a string of text from the user.
 func PromptForText(ctx context.Context, req *TextRequest) (string, error) {
 	if req.Prompt == "" {
-		return "", jrpc2.Errorf(code.InvalidParams, "missing prompt string")
+		return "", jrpc2.Errorf(jrpc2.InvalidParams, "missing prompt string")
 	}
 
 	// Ask osascript to send error text to stdout to simplify error plumbing.
@@ -112,7 +111,7 @@ func PromptForText(ctx context.Context, req *TextRequest) (string, error) {
 	if i := strings.Index(out, needle); i >= 0 {
 		return out[i+len(needle):], nil
 	}
-	return "", jrpc2.Errorf(code.InternalError, "missing user input")
+	return "", jrpc2.Errorf(jrpc2.InternalError, "missing user input")
 }
 
 // SetSystemClipboard sets the contents of the system clipboard to data.

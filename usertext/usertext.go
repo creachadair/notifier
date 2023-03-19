@@ -13,7 +13,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/creachadair/jrpc2/code"
+	"github.com/creachadair/jrpc2"
 	"github.com/creachadair/notifier"
 )
 
@@ -39,7 +39,7 @@ func main() {
 		Hide:    *hiddenText,
 	}, &text); err == nil {
 		fmt.Println(text)
-	} else if code.FromError(err) == notifier.UserCancelled {
+	} else if jrpc2.ErrorCode(err) == notifier.UserCancelled {
 		os.Exit(2)
 	} else {
 		log.Fatal(err)

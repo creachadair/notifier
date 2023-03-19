@@ -13,7 +13,6 @@ import (
 	"bitbucket.org/creachadair/stringset"
 	"github.com/creachadair/atomicfile"
 	"github.com/creachadair/jrpc2"
-	"github.com/creachadair/jrpc2/code"
 	"github.com/creachadair/jrpc2/handler"
 	"github.com/creachadair/notifier"
 )
@@ -96,9 +95,9 @@ func (c *clipper) loadFromFile() error {
 
 func (c *clipper) Set(ctx context.Context, req *notifier.ClipSetRequest) (bool, error) {
 	if len(req.Data) == 0 && !req.AllowEmpty {
-		return false, jrpc2.Errorf(code.InvalidParams, "empty clip data")
+		return false, jrpc2.Errorf(jrpc2.InvalidParams, "empty clip data")
 	} else if req.Tag != "" && req.Save == req.Tag {
-		return false, jrpc2.Errorf(code.InvalidParams, "tag and save are equal")
+		return false, jrpc2.Errorf(jrpc2.InvalidParams, "tag and save are equal")
 	}
 
 	// If we were requested to save the existing clip, extract its data.
@@ -134,7 +133,7 @@ func (c *clipper) Get(ctx context.Context, req *notifier.ClipGetRequest) ([]byte
 	if req.Tag == "" || req.Tag == systemClip {
 		return getClip(ctx)
 	} else if req.Activate && req.Tag == req.Save {
-		return nil, jrpc2.Errorf(code.InvalidParams, "tag and save are equal")
+		return nil, jrpc2.Errorf(jrpc2.InvalidParams, "tag and save are equal")
 	}
 	c.Lock()
 	defer c.Unlock()
