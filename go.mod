@@ -1,13 +1,15 @@
 module github.com/creachadair/notifier
 
-go 1.20
+go 1.21
+
+toolchain go1.21.0
 
 require (
 	bitbucket.org/creachadair/shell v0.0.7
 	bitbucket.org/creachadair/stringset v0.0.11
-	github.com/creachadair/atomicfile v0.3.1
+	github.com/creachadair/atomicfile v0.3.2
 	github.com/creachadair/fileinput v0.1.0
-	github.com/creachadair/jrpc2 v1.1.0
+	github.com/creachadair/jrpc2 v1.1.1
 	github.com/kr/text v0.2.0 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	golang.org/x/sys v0.11.0 // indirect
@@ -17,6 +19,6 @@ require (
 )
 
 require (
-	github.com/creachadair/mds v0.1.0 // indirect
+	github.com/creachadair/mds v0.2.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
 )
