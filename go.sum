@@ -6,8 +6,8 @@ github.com/creachadair/atomicfile v0.3.2 h1:f8haU8NcZ1NABfhHafpJIG+atR7481lqnx04
 github.com/creachadair/atomicfile v0.3.2/go.mod h1:3ZSR9ApQoZLvVNI5eRhzpU0a2Efu88TgNBIm0jRXCgA=
 github.com/creachadair/fileinput v0.1.0 h1:QxTw0B9EZaREc/LWKeQ0YQA8Gnd5m6AiGZ/aPbSFbtg=
 github.com/creachadair/fileinput v0.1.0/go.mod h1:8l7ZfBxBk7zOstxT+hvDR8XWc3LOLeFk1KWaQYHNmTY=
-github.com/creachadair/jrpc2 v1.1.1 h1:xa7p3C5eSvwn/dFwCCmksp+RyQ/ytFY0NYzY7npsoI0=
-github.com/creachadair/jrpc2 v1.1.1/go.mod h1:KajsO5dx7yfcwmuRJb5SHXsCVTzBoq7EsPzu5wxnsc0=
+github.com/creachadair/jrpc2 v1.1.2 h1:UOYMipEFYlwd5qmcvs9GZBurn3oXt1UDIX5JLjWWFzo=
+github.com/creachadair/jrpc2 v1.1.2/go.mod h1:JcCe2Eny3lIvVwZLm92WXyU+tNUgTBWFCLMsfNkjEGk=
 github.com/creachadair/mds v0.3.0 h1:uKbCKVtd3iOKVv3uviOm13fFNfe9qoCXJh1Vo7y3Kr0=
 github.com/creachadair/mds v0.3.0/go.mod h1:4vrFYUzTXMJpMBU+OA292I6IUxKWCCfZkgXg+/kBZMo=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
