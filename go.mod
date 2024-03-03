@@ -6,7 +6,7 @@ toolchain go1.21.0
 
 require (
 	bitbucket.org/creachadair/shell v0.0.8
-	bitbucket.org/creachadair/stringset v0.0.12
+	bitbucket.org/creachadair/stringset v0.0.14
 	github.com/creachadair/atomicfile v0.3.3
 	github.com/creachadair/fileinput v0.1.0
 	github.com/creachadair/jrpc2 v1.1.2
@@ -19,6 +19,6 @@ require (
 )
 
 require (
-	github.com/creachadair/mds v0.9.0 // indirect
+	github.com/creachadair/mds v0.11.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
 )
