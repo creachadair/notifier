@@ -16,7 +16,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/creachadair/fileinput"
 	"github.com/creachadair/jrpc2"
 	"github.com/creachadair/notifier"
 	"golang.org/x/term"
@@ -168,7 +167,7 @@ func main() {
 	}
 	var in io.ReadCloser = os.Stdin
 	if flag.NArg() != 0 {
-		in = fileinput.Cat(flag.Args())
+		in = cat(flag.Args())
 	}
 	if _, err := io.Copy(w, in); err != nil {
 		log.Fatalf("Reading stdin: %v", err)
