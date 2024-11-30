@@ -2,12 +2,12 @@ bitbucket.org/creachadair/shell v0.0.8 h1:3yM6JcAfaGWzjzcCamTblzSIWXm/YSs0PFGIzB
 bitbucket.org/creachadair/shell v0.0.8/go.mod h1:vINzudofoUXZSJ5tREgpy+Etyjsag3ait5WOWImEVZ0=
 bitbucket.org/creachadair/stringset v0.0.14 h1:t1ejQyf8utS4GZV/4fM+1gvYucggZkfhb+tMobDxYOE=
 bitbucket.org/creachadair/stringset v0.0.14/go.mod h1:Ej8fsr6rQvmeMDf6CCWMWGb14H9mz8kmDgPPTdiVT0w=
-github.com/creachadair/atomicfile v0.3.5 h1:i93bxeaH/rQR6XfJslola3XkOM1nEP3eIexuk9SWcSc=
-github.com/creachadair/atomicfile v0.3.5/go.mod h1:m7kIY2OUMygtETnMYe141rubsG4b+EusFLinlxxdHYM=
+github.com/creachadair/atomicfile v0.3.6 h1:BcXSDRq7waImZhKflqnTJjf+02CLi0W2Exlb2lyZ2yE=
+github.com/creachadair/atomicfile v0.3.6/go.mod h1:iaBMVDkRBQTIGzbYGCTS+gXeZPidWAeVbthIxSbEphE=
 github.com/creachadair/jrpc2 v1.3.0 h1:CALlqNxD3u16U+gzNGoSQMYAr9uLCxjrB3D6Yu9+e/4=
 github.com/creachadair/jrpc2 v1.3.0/go.mod h1:rOu1u3LG86IEhMlG/N6FaHuP/leA5PjyuTQvDjE/G9k=
-github.com/creachadair/mds v0.21.4 h1:osKuLbjkV7YswBnhuTJh1lCDkqZMQnNfFVn0j8wLpz8=
-github.com/creachadair/mds v0.21.4/go.mod h1:1ltMWZd9yXhaHEoZwBialMaviWVUpRPvMwVP7saFAzM=
+github.com/creachadair/mds v0.22.0 h1:IRm4fWRKF9Pi4k3DEfgdlhMMYVxyef9FFall4r0GP4A=
+github.com/creachadair/mds v0.22.0/go.mod h1:ArfS0vPHoLV/SzuIzoqTEZfoYmac7n9Cj8XPANHocvw=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/fortytw2/leaktest v1.3.0 h1:u8491cBMTQ8ft8aeV+adlcytMZylmA5nnwwkRZjI8vw=
 github.com/fortytw2/leaktest v1.3.0/go.mod h1:jDsjWgpAGjm2CA7WthBh/CdZYEPF31XHquHwclZch5g=
