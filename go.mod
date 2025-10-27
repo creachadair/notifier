@@ -18,6 +18,6 @@ require (
 )
 
 require (
-	github.com/creachadair/mds v0.25.6 // indirect
+	github.com/creachadair/mds v0.25.9 // indirect
 	golang.org/x/sync v0.17.0 // indirect
 )
