@@ -74,7 +74,6 @@ func PluginAssigner(cfg *Config) jrpc2.Assigner {
 		go func() {
 			for range ch {
 				for name, plug := range plugins {
-					name, plug := name, plug
 					go func() {
 						if err := plug.Update(); err != nil {
 							log.Printf("ERROR updating plugin %q: %v", name, err)
