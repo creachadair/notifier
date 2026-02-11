@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"maps"
 	"os"
 	"os/exec"
 	"sync"
@@ -87,9 +88,7 @@ func (c *clipper) loadFromFile() error {
 	if err := json.Unmarshal(bits, &m); err != nil {
 		return err
 	}
-	for key, val := range m {
-		c.saved[key] = val
-	}
+	maps.Copy(c.saved, m)
 	return nil
 }
 
