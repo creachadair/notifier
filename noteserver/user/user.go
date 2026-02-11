@@ -59,8 +59,8 @@ func (u *input) Text(ctx context.Context, req *notifier.TextRequest) (string, er
 
 	// Parse the result out of the text delivered to stdout.
 	const needle = "text returned:"
-	if i := strings.Index(out, needle); i >= 0 {
-		return out[i+len(needle):], nil
+	if _, after, ok := strings.Cut(out, needle); ok {
+		return after, nil
 	}
 	return "", jrpc2.Errorf(jrpc2.InternalError, "missing user input")
 }
